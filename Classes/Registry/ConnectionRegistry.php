@@ -11,7 +11,7 @@ use TYPO3\CMS\Core\SingletonInterface;
 class ConnectionRegistry implements SingletonInterface
 {
     /**
-     * @var AbstractConnection[]
+     * @var AbstractConnection[][]
      */
     protected $requiredConnections = [];
 

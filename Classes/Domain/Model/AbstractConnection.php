@@ -8,6 +8,8 @@ use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
  */
 abstract class AbstractConnection extends AbstractEntity
 {
+    const COMBINED_IDENTITY_GLUE = '|';
+
     /**
      * @var string
      */
@@ -48,5 +50,23 @@ abstract class AbstractConnection extends AbstractEntity
     public function setIdentityKey($identityKey)
     {
         $this->identityKey = $identityKey;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCombinedIdentity()
+    {
+        return self::combineIdentity($this->package, $this->identityKey);
+    }
+
+    /**
+     * @param string $package
+     * @param string $identityKey
+     * @return string
+     */
+    public static function combineIdentity($package, $identityKey)
+    {
+        return $package . self::COMBINED_IDENTITY_GLUE . $identityKey;
     }
 }
