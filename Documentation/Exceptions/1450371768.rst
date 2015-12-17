@@ -1,0 +1,7 @@
+ConnectionTypeNotSupportedException
+===================================
+
+This Exception indicates that the given FQCN of the connection is not supported by this extension, because it does not
+extend the required class \In2code\In2connector\Domain\Model\AbstractConnection
+
+If you want to use your own Connection class you MUST extend the AbstractConnection.
