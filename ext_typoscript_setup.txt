@@ -1,0 +1,13 @@
+temp.commonConnectionColumns {
+	mapping {
+		columns {
+			package.mapOnProperty = package
+			identity_key.mapOnProperty = identityKey
+		}
+	}
+}
+
+config.tx_extbase.persistence.classes {
+	In2code\In2connector\Domain\Model\LdapConnection < temp.commonConnectionColumns
+	In2code\In2connector\Domain\Model\SoapConnection < temp.commonConnectionColumns
+}

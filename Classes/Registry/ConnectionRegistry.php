@@ -17,14 +17,14 @@ class ConnectionRegistry implements SingletonInterface
 
     /**
      * @param string $package Must be the extension key of the requiring extension.
-     * @param string $identifier Can be anything but must be unique within the requiring extension.
+     * @param string $identityKey Can be anything but must be unique within the requiring extension.
      * @param string $type The FQCN of the required Connection type. Available Connections are LDAP and SOAP.
      * @throws ConnectionTypeNotSupportedException If the required connection is not supported
      */
-    public function requireConnection($package, $identifier, $type)
+    public function requireConnection($package, $identityKey, $type)
     {
         if (is_subclass_of($type, AbstractConnection::class)) {
-            $this->requiredConnections[$package][$identifier] = $type;
+            $this->requiredConnections[$package][$identityKey] = $type;
         } else {
             throw new ConnectionTypeNotSupportedException(
                 'The connection class ' . htmlspecialchars($type) . ' is not supported',

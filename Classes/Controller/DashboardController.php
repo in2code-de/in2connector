@@ -31,6 +31,6 @@ class DashboardController extends ActionController
      */
     public function indexAction()
     {
-        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($this, __CLASS__ . '@' . __LINE__, 20);die;
+        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump($this->ldapConnectionRepository->findAll(), __CLASS__ . '@' . __LINE__, 20);die;
     }
 }
