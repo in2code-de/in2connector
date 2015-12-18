@@ -25,6 +25,11 @@ abstract class AbstractConnection extends AbstractEntity
     protected $identityKey = '';
 
     /**
+     * @var bool
+     */
+    protected $active = false;
+
+    /**
      * @transient
      * @var int
      */
@@ -60,6 +65,22 @@ abstract class AbstractConnection extends AbstractEntity
     public function setIdentityKey($identityKey)
     {
         $this->identityKey = $identityKey;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isActive()
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param boolean $active
+     */
+    public function setActive($active)
+    {
+        $this->active = $active;
     }
 
     /**
@@ -102,5 +123,14 @@ abstract class AbstractConnection extends AbstractEntity
     public function getClassName()
     {
         return get_class($this);
+    }
+
+    /**
+     * @return string
+     */
+    public function getControllerName()
+    {
+        $connectionClassName = $this->getClassName();
+        return substr($connectionClassName, strrpos($connectionClassName, '\\Domain\\Model\\') + 14);
     }
 }

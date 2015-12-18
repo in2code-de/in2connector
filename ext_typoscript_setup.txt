@@ -3,6 +3,7 @@ temp.commonConnectionColumns {
 		columns {
 			package.mapOnProperty = package
 			identity_key.mapOnProperty = identityKey
+			active.mapOnProperty = active
 		}
 	}
 }

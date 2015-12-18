@@ -20,5 +20,6 @@ class DashboardController extends ActionController
     public function indexAction()
     {
         $this->view->assign('connections', $this->connectionRequirementsResolver->getConnectionsForRequirements());
+        $this->view->assign('orphanedConnections', $this->connectionRequirementsResolver->getOrphanedConnections());
     }
 }
