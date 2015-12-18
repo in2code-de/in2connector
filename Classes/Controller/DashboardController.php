@@ -1,7 +1,6 @@
 <?php
 namespace In2code\In2connector\Controller;
 
-use In2code\In2connector\Domain\Model\Cato\ConnectionCato;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 /**
@@ -10,36 +9,16 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 class DashboardController extends ActionController
 {
     /**
-     * @var \In2code\In2connector\Registry\ConnectionRegistry
+     * @var \In2code\In2connector\Domain\Service\ConnectionRequirementsResolver
      * @inject
      */
-    protected $connectionRegistry = null;
-
-    /**
-     * @var \In2code\In2connector\Domain\Repository\SoapConnectionRepository
-     * @inject
-     */
-    protected $soapConnectionRepository = null;
-
-    /**
-     * @var \In2code\In2connector\Domain\Repository\LdapConnectionRepository
-     * @inject
-     */
-    protected $ldapConnectionRepository = null;
+    protected $connectionRequirementsResolver = null;
 
     /**
      * @return void
      */
     public function indexAction()
     {
-        $this->view->assign(
-            'connectionDco',
-            new ConnectionCato(
-                $this->connectionRegistry->getRequiredConnections(), [
-                    $this->soapConnectionRepository->findAll(),
-                    $this->ldapConnectionRepository->findAll(),
-                ]
-            )
-        );
+        $this->view->assign('connections', $this->connectionRequirementsResolver->getConnectionsForRequirements());
     }
 }

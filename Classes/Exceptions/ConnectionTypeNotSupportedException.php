@@ -1,5 +1,5 @@
 <?php
-namespace In2code\In2connector\Registry\Exceptions;
+namespace In2code\In2connector\Exceptions;
 
 /**
  * Class ConnectionTypeNotSupportedException

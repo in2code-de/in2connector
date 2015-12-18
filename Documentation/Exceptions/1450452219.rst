@@ -1,7 +1,7 @@
 ConnectionTypeNotSupportedException
 ===================================
 
-Thrown by the \In2code\In2connector\Registry\ConnectionRegistry and indicates that this connection can not be required.
+Thrown by the \In2code\In2connector\Domain\Factory\ConnectionFactory and indicates that the given connection type can not be created.
 
 This Exception indicates that the given FQCN of the connection is not supported by this extension, because it does not
 extend the required class \In2code\In2connector\Domain\Model\AbstractConnection

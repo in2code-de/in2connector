@@ -2,7 +2,7 @@
 namespace In2code\In2connector\Registry;
 
 use In2code\In2connector\Domain\Model\AbstractConnection;
-use In2code\In2connector\Registry\Exceptions\ConnectionTypeNotSupportedException;
+use In2code\In2connector\Exceptions\ConnectionTypeNotSupportedException;
 use TYPO3\CMS\Core\SingletonInterface;
 
 /**

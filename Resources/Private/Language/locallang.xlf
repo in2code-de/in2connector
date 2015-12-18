@@ -12,6 +12,19 @@
             <trans-unit id="mlang_tabs_tab">
                 <source>in2connector</source>
             </trans-unit>
+
+            <trans-unit id="model.abstract_connection.status.-1">
+                <source>Undefined</source>
+            </trans-unit>
+            <trans-unit id="model.abstract_connection.status.0">
+                <source>Matching</source>
+            </trans-unit>
+            <trans-unit id="model.abstract_connection.status.1">
+                <source>Required</source>
+            </trans-unit>
+            <trans-unit id="model.abstract_connection.status.2">
+                <source>Orphaned</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

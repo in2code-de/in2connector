@@ -15,6 +15,7 @@ if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
                 '',
                 array(
                     'Dashboard' => 'index',
+                    'Connection' => 'add',
                 ),
                 array(
                     'access' => 'user,group',

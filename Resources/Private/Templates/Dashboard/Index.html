@@ -1,0 +1,51 @@
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+
+<f:layout name="Backend"/>
+
+<f:section name="Main">
+    <table class="table table-striped table-hover  dataTable no-footer">
+        <thead>
+        <tr>
+            <th>
+                Package
+            </th>
+            <th>
+                IdentityKey
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Options
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <f:for each="{connections}" as="connection" iteration="i">
+            <tr>
+                <td>
+                    {connection.package}
+                </td>
+                <td>
+                    {connection.identityKey}
+                </td>
+                <td>
+                    <f:translate key="model.abstract_connection.status.{connection.status}"/>
+                </td>
+                <td>
+                    <f:if condition="{connection.status} == 1">
+                        <div class="btn-group">
+                            <span class="btn btn-default">
+                                <f:link.action action="add" controller="Connection" arguments="{package:connection.package,identityKey:connection.identityKey,className:connection.className}">
+                                    <core:icon identifier="actions-edit-add"/>
+                                </f:link.action>
+                            </span>
+                        </div>
+                    </f:if>
+                </td>
+            </tr>
+        </f:for>
+        </tbody>
+    </table>
+</f:section>
+

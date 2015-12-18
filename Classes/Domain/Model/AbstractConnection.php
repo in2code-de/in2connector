@@ -9,6 +9,10 @@ use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 abstract class AbstractConnection extends AbstractEntity
 {
     const COMBINED_IDENTITY_GLUE = '|';
+    const STATUS_UNDEFINED = -1;
+    const STATUS_REQUIREMENT_MATCH_EXISTING = 0;
+    const STATUS_REQUIRED = 1;
+    const STATUS_ORPHANED = 2;
 
     /**
      * @var string
@@ -19,6 +23,12 @@ abstract class AbstractConnection extends AbstractEntity
      * @var string
      */
     protected $identityKey = '';
+
+    /**
+     * @transient
+     * @var int
+     */
+    protected $status = self::STATUS_UNDEFINED;
 
     /**
      * @return string
@@ -53,6 +63,22 @@ abstract class AbstractConnection extends AbstractEntity
     }
 
     /**
+     * @return int
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param int $status
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+
+    /**
      * @return string
      */
     public function getCombinedIdentity()
@@ -68,5 +94,13 @@ abstract class AbstractConnection extends AbstractEntity
     public static function combineIdentity($package, $identityKey)
     {
         return $package . self::COMBINED_IDENTITY_GLUE . $identityKey;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClassName()
+    {
+        return get_class($this);
     }
 }
