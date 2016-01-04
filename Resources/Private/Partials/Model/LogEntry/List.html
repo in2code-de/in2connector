@@ -1,3 +1,5 @@
+{namespace in2connector=In2code\In2connector\ViewHelpers}
+
 <table class="table">
 	<thead>
 		<tr>
@@ -40,7 +42,7 @@
 					{logEntry.message}
 				</td>
 				<td>
-					{logEntry.data}
+					<in2connector:printArray array="{logEntry.decodedData}"/>
 				</td>
 			</tr>
 		</f:for>

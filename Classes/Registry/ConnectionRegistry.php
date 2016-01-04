@@ -113,6 +113,7 @@ class ConnectionRegistry implements SingletonInterface
                             'package' => $package,
                             'identityKey' => $identityKey,
                             'type' => $this->requiredConnections[$package][$identityKey],
+                            'uid' => $connection->getUid(),
                         ]
                     );
                     return $connection;

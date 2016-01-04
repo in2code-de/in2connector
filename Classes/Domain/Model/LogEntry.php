@@ -127,6 +127,14 @@ class LogEntry extends AbstractEntity
     }
 
     /**
+     * @return array
+     */
+    public function getDecodedData()
+    {
+        return json_decode(substr($this->data, 2), true);
+    }
+
+    /**
      * @param string $data
      */
     public function setData($data)
