@@ -12,16 +12,17 @@
 
 <f:section name="Main">
 
-	<h2>Mathicng</h2>
+	<h2><f:translate key="view.template.dashboard.index.matching_connections">matching connections</f:translate></h2>
 	<f:render partial="Model/Connection/List" arguments="{connections:connectionLinker.matchingConnections}"/>
 
-	<h2>Orphaned</h2>
+	<h2><f:translate key="view.template.dashboard.index.orphaned_connections">orphaned connections</f:translate></h2>
 	<f:render partial="Model/Connection/List" arguments="{connections:connectionLinker.orphanedConnections}"/>
 
-	<h2>Missig</h2>
+	<h2><f:translate key="view.template.dashboard.index.missing_connections">missing connections</f:translate></h2>
 	<f:render partial="Model/Dto/ConnectionDemand/List"
 			  arguments="{connections:connectionLinker.unconfiguredConnections}"/>
 
+	<h2><f:translate key="view.template.dashboard.index.logs">logs</f:translate></h2>
 	<f:render partial="Model/Log/List" arguments="{logs:logs}"/>
 
 </f:section>

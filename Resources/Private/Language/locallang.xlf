@@ -16,6 +16,30 @@
             <trans-unit id="domain.model.dto.configuration.field.log_level">
                 <source>Log level</source>
             </trans-unit>
+            <trans-unit id="domain.model.dto.configuration.field.log_level.emergency">
+                <source>Emergency</source>
+            </trans-unit>
+            <trans-unit id="domain.model.dto.configuration.field.log_level.alert">
+                <source>Alert</source>
+            </trans-unit>
+            <trans-unit id="domain.model.dto.configuration.field.log_level.critical">
+                <source>Critical</source>
+            </trans-unit>
+            <trans-unit id="domain.model.dto.configuration.field.log_level.error">
+                <source>Error</source>
+            </trans-unit>
+            <trans-unit id="domain.model.dto.configuration.field.log_level.warning">
+                <source>Warning</source>
+            </trans-unit>
+            <trans-unit id="domain.model.dto.configuration.field.log_level.notice">
+                <source>Notice</source>
+            </trans-unit>
+            <trans-unit id="domain.model.dto.configuration.field.log_level.info">
+                <source>Info</source>
+            </trans-unit>
+            <trans-unit id="domain.model.dto.configuration.field.log_level.debug">
+                <source>Debug</source>
+            </trans-unit>
             <trans-unit id="domain.model.dto.configuration.field.logs_per_page">
                 <source>Logs per page</source>
             </trans-unit>
@@ -25,6 +49,52 @@
 
             <trans-unit id="view.save">
                 <source>Save</source>
+            </trans-unit>
+
+            <trans-unit id="view.template.dashboard.index.matching_connections">
+                <source>Matching connection</source>
+            </trans-unit>
+            <trans-unit id="view.template.dashboard.index.orphaned_connections">
+                <source>Orphaned connection</source>
+            </trans-unit>
+            <trans-unit id="view.template.dashboard.index.missing_connections">
+                <source>Missing connection</source>
+            </trans-unit>
+            <trans-unit id="view.template.dashboard.index.logs">
+                <source>Logs</source>
+            </trans-unit>
+
+            <trans-unit id="model.connection.field.identity_key">
+                <source>Identity Key</source>
+            </trans-unit>
+            <trans-unit id="model.connection.field.driver">
+                <source>Driver</source>
+            </trans-unit>
+
+            <trans-unit id="model.dto.connection_demand.field.identity_key">
+                <source>Identity Key</source>
+            </trans-unit>
+            <trans-unit id="model.dto.connection_demand.field.driver">
+                <source>Driver</source>
+            </trans-unit>
+
+            <trans-unit id="model.log.field.request_id">
+                <source>Request ID</source>
+            </trans-unit>
+            <trans-unit id="model.log.field.time_micro">
+                <source>Microtime</source>
+            </trans-unit>
+            <trans-unit id="model.log.field.component">
+                <source>Component</source>
+            </trans-unit>
+            <trans-unit id="model.log.field.level">
+                <source>Level</source>
+            </trans-unit>
+            <trans-unit id="model.log.field.message">
+                <source>Message</source>
+            </trans-unit>
+            <trans-unit id="model.log.field.data">
+                <source>Data</source>
             </trans-unit>
         </body>
     </file>

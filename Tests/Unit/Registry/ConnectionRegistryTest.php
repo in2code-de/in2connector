@@ -1,8 +1,6 @@
 <?php
 namespace In2code\In2template\Tests\Domain\Model;
 
-use In2code\In2connector\Domain\Model\SoapConnection;
-use In2code\In2connector\Exceptions\ConnectionTypeNotSupportedException;
 use In2code\In2connector\Registry\ConnectionRegistry;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
