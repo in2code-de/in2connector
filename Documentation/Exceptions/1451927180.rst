@@ -1,0 +1,7 @@
+DriverNameNotRegistered
+=======================
+
+Thrown by \In2code\In2connector\Registry\ConnectionRegistry because no driver was registered for the given name.
+
+The driver you tried to unset was never registered with this name. Check the loading order of your extensions and
+spelling of the name. Use the defined constant if possible.

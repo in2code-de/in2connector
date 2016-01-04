@@ -1,0 +1,28 @@
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				identity key
+			</th>
+			<th>
+				driver
+			</th>
+			<th>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<f:for each="{connections}" as="connection">
+			<tr>
+				<td>
+					{connection.identityKey}
+				</td>
+				<td>
+					{connection.driverName}
+				</td>
+				<td>
+				</td>
+			</tr>
+		</f:for>
+	</tbody>
+</table>

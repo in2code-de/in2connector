@@ -1,7 +1,7 @@
 <?php
 namespace In2code\In2connector\Controller;
 
-use In2code\In2connector\Domain\Model\Configuration;
+use In2code\In2connector\Domain\Model\Cato\ConnectionLinker;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 /**
@@ -9,59 +9,40 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
  */
 class DashboardController extends ActionController
 {
+    const CONTROLLER_NAME = 'Dashboard';
     const ACTION_INDEX = 'index';
-    const ACTION_EDIT_CONFIGURATION = 'editConfiguration';
-    const ACTION_UPDATE_CONFIGURATION = 'updateConfiguration';
 
     /**
-     * @var \In2code\In2connector\Domain\Service\ConnectionRequirementsResolver
+     * @var \In2code\In2connector\Domain\Repository\LogRepository
      * @inject
      */
-    protected $connectionRequirementsResolver = null;
+    protected $logRepository = null;
 
     /**
-     * @var \In2code\In2connector\Domain\Repository\LogEntryRepository
+     * @var \In2code\In2connector\Domain\Repository\ConnectionRepository
      * @inject
      */
-    protected $logEntryRepository = null;
+    protected $connectionRepository = null;
 
     /**
-     * @return void
+     * @var \In2code\In2connector\Registry\ConnectionRegistry
+     * @inject
      */
-    public function indexAction()
-    {
-        $this->view->assign(
-            'connections',
-            $this->connectionRequirementsResolver->getConnectionsForRequirements()
-        );
-        $this->view->assign(
-            'orphanedConnections',
-            $this->connectionRequirementsResolver->getOrphanedConnections()
-        );
-        $this->view->assign(
-            'logEntries',
-            $this->logEntryRepository->findLatest()
-        );
-    }
+    protected $connectionRegistry = null;
 
     /**
      *
      */
-    public function editConfigurationAction()
+    public function indexAction()
     {
+        $this->view->assign('logs', $this->logRepository->findWithLimit());
         $this->view->assign(
-            'configuration',
-            new Configuration()
+            'connectionLinker',
+            new ConnectionLinker(
+                $this->connectionRepository->findAll()->toArray(),
+                $this->connectionRegistry->getDemandedConnections()
+            )
         );
-    }
-
-    /**
-     * @param Configuration $configuration
-     */
-    public function updateConfigurationAction(Configuration $configuration)
-    {
-        $configuration->persist();
-        $this->redirect(self::ACTION_EDIT_CONFIGURATION);
     }
 
     /**
@@ -69,6 +50,6 @@ class DashboardController extends ActionController
      */
     public static function getModuleActions()
     {
-        return self::ACTION_INDEX . ',' . self::ACTION_EDIT_CONFIGURATION . ',' . self::ACTION_UPDATE_CONFIGURATION;
+        return implode(',', [self::ACTION_INDEX]);
     }
 }

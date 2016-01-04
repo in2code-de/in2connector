@@ -1,0 +1,11 @@
+ConnectionAlreadyDemandedException
+==================================
+
+Thrown by \In2code\In2connector\Registry\ConnectionRegistry because the connection identity key was already used to
+demand a connection.
+
+Identity keys must be unique. You MUST not register another connection for an existing identity key. Use another key.
+Your key should look like this: <package>|<somestring>
+
+<package> is the EXTKEY of your extension
+<somestring> should be concerned with the usage of the connection (e.g. ldap_for_import)

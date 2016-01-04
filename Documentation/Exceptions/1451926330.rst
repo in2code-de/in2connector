@@ -1,0 +1,8 @@
+DriverNameAlreadyRegisteredException
+====================================
+
+Thrown by \In2code\In2connector\Registry\ConnectionRegistry because a driver was already registered with the given name.
+
+Driver names can be registered only once, to prevent overwriting of driver classes.
+To replace a driver class with another consider the extbase configuration to replace the class name.
+You should use ConnectionRegistry::deregisterDriver() only when there is no other option!

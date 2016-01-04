@@ -1,0 +1,50 @@
+{namespace in2connector=In2code\In2connector\ViewHelpers}
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				request
+			</th>
+			<th>
+				time
+			</th>
+			<th>
+				component
+			</th>
+			<th>
+				level
+			</th>
+			<th>
+				message
+			</th>
+			<th>
+				data
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<f:for each="{logs}" as="log">
+			<tr>
+				<td>
+					{log.requestId}
+				</td>
+				<td>
+					{log.timeMicro}
+				</td>
+				<td>
+					{log.component}
+				</td>
+				<td>
+					{log.level}
+				</td>
+				<td>
+					{log.message}
+				</td>
+				<td>
+					<in2connector:printArray array="{log.decodedData}"/>
+				</td>
+			</tr>
+		</f:for>
+	</tbody>
+</table>

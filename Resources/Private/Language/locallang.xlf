@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
     <file source-language="en" datatype="plaintext" original="messages" product-name="in2connector">
-        <header />
+        <header/>
         <body>
             <trans-unit id="mlang_labels_tablabel">
                 <source>in2connector</source>
@@ -13,40 +13,18 @@
                 <source>in2connector</source>
             </trans-unit>
 
-            <trans-unit id="model.abstract_connection.status.-1">
-                <source>Undefined</source>
+            <trans-unit id="domain.model.dto.configuration.field.log_level">
+                <source>Log level</source>
             </trans-unit>
-            <trans-unit id="model.abstract_connection.status.0">
-                <source>Matching</source>
+            <trans-unit id="domain.model.dto.configuration.field.logs_per_page">
+                <source>Logs per page</source>
             </trans-unit>
-            <trans-unit id="model.abstract_connection.status.1">
-                <source>Required</source>
-            </trans-unit>
-            <trans-unit id="model.abstract_connection.status.2">
-                <source>Orphaned</source>
+            <trans-unit id="domain.model.dto.configuration.field.production_context">
+                <source>Production context</source>
             </trans-unit>
 
             <trans-unit id="view.save">
                 <source>Save</source>
-            </trans-unit>
-
-            <trans-unit id="model.ldap_connection.field.hostname">
-                <source>Hostname</source>
-            </trans-unit>
-            <trans-unit id="model.ldap_connection.field.port">
-                <source>Port</source>
-            </trans-unit>
-            <trans-unit id="model.ldap_connection.field.password">
-                <source>Password</source>
-            </trans-unit>
-            <trans-unit id="model.ldap_connection.field.username">
-                <source>Username</source>
-            </trans-unit>
-            <trans-unit id="model.ldap_connection.field.protocol_version">
-                <source>Protocol Version</source>
-            </trans-unit>
-            <trans-unit id="model.ldap_connection.field.base_dn">
-                <source>Base DN</source>
             </trans-unit>
         </body>
     </file>

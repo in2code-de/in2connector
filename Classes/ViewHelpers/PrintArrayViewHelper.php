@@ -15,10 +15,8 @@ class PrintArrayViewHelper extends AbstractViewHelper
     public function render($array)
     {
         if (count($array) > 0) {
-            return '<pre>' . print_r(
-                $array,
-                true
-            ) . '</pre>';
+            return '<pre>' . print_r($array, true) . '</pre>';
         }
+        return '';
     }
 }

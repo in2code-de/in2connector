@@ -1,0 +1,20 @@
+<f:layout name="Backend"/>
+
+<f:section name="ToolBarLeft">
+	<f:render partial="View/ButtonGroup/Open"/>
+	<f:render partial="View/Buttons/Close" arguments="{action:'index',controller:'Dashboard'}"/>
+	<f:render partial="View/Buttons/Submit" arguments="{form:'EditConfiguration'}"/>
+	<f:render partial="View/ButtonGroup/Close"/>
+</f:section>
+
+<f:section name="ToolBarRight">
+</f:section>
+
+<f:section name="Welcome">
+</f:section>
+
+<f:section name="Main">
+	<f:form id="EditConfiguration" action="update" object="{configuration}" objectName="configuration" method="post">
+		<f:render partial="Model/Dto/Configuration/Forms/Edit"/>
+	</f:form>
+</f:section>
