@@ -71,6 +71,7 @@ class ConnectionLinker
                         $this->matchingConnections[] = $configuredConnection;
                         unset($demanded[$demandedKey]);
                         unset($configured[$configuredKey]);
+                        break;
                     }
                 }
             }
