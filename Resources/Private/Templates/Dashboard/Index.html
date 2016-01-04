@@ -2,6 +2,15 @@
 
 <f:layout name="Backend"/>
 
+<f:section name="ToolBarLeft">
+</f:section>
+
+<f:section name="ToolBarRight">
+</f:section>
+
+<f:section name="Welcome">
+</f:section>
+
 <f:section name="Main">
 	<table class="table table-striped table-hover  dataTable no-footer">
 		<thead>
@@ -13,7 +22,13 @@
 					IdentityKey
 				</th>
 				<th>
-					Status
+					Type
+				</th>
+				<th>
+					Required
+				</th>
+				<th>
+					Connection Status
 				</th>
 				<th>
 					Options
@@ -30,15 +45,42 @@
 						{connection.identityKey}
 					</td>
 					<td>
-						<f:translate key="model.abstract_connection.status.{connection.status}"/>
+						{connection.type}
+					</td>
+					<td>
+						<f:translate key="model.abstract_connection.status.{connection.requiredStatus}"/>
+					</td>
+					<td>
+						<f:switch expression="{connection.connectionStatus}">
+							<f:case value="0">
+								<core:icon identifier="status-dialog-ok"/>
+								{connection.connectionError}
+							</f:case>
+							<f:case value="1">
+								<core:icon identifier="status-dialog-warning"/>
+								{connection.connectionError}
+							</f:case>
+							<f:case value="2">
+								<core:icon identifier="status-dialog-error"/>
+								{connection.connectionError}
+							</f:case>
+							<f:case value="-1">
+								<core:icon identifier="status-dialog-warning"/>
+								{connection.connectionError}
+							</f:case>
+							<f:case default="TRUE">
+								<core:icon identifier="status-dialog-error"/>
+								{connection.connectionError}
+							</f:case>
+						</f:switch>
 					</td>
 					<td>
 						<div class="btn-group">
-							<f:if condition="{connection.status} == 0">
+							<f:if condition="{connection.requiredStatus} == 0">
 								<f:then>
 									<span class="btn btn-default">
 										<f:link.action action="edit" controller="{connection.controllerName}"
-													   arguments="{package:connection.package,identityKey:connection.identityKey}">
+													   arguments="{connection:connection}">
 											<core:icon identifier="actions-edit-rename"/>
 										</f:link.action>
 									</span>
@@ -49,7 +91,7 @@
 									</span>
 								</f:else>
 							</f:if>
-							<f:if condition="{connection.status} == 1">
+							<f:if condition="{connection.requiredStatus} == 1">
 								<f:then>
 									<span class="btn btn-default">
 										<f:link.action action="add" controller="{connection.controllerName}"
@@ -70,4 +112,6 @@
 			</f:for>
 		</tbody>
 	</table>
+
+	<f:render partial="Model/LogEntry/List" arguments="{logEntries:logEntries}"/>
 </f:section>

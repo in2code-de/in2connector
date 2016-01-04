@@ -9,10 +9,14 @@ use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 abstract class AbstractConnection extends AbstractEntity
 {
     const COMBINED_IDENTITY_GLUE = '|';
-    const STATUS_UNDEFINED = -1;
-    const STATUS_REQUIREMENT_MATCH_EXISTING = 0;
-    const STATUS_REQUIRED = 1;
-    const STATUS_ORPHANED = 2;
+    const REQUIRED_STATUS_UNDEFINED = -1;
+    const REQUIRED_STATUS_MATCH = 0;
+    const REQUIRED_STATUS_REQUIRED = 1;
+    const REQUIRED_STATUS_ORPHANED = 2;
+    const CONNECTION_STATUS_UNDEFINED = -1;
+    const CONNECTION_STATUS_OK = 0;
+    const CONNECTION_STATUS_WARNING = 1;
+    const CONNECTION_STATUS_ERROR = 2;
 
     /**
      * @var string
@@ -33,7 +37,21 @@ abstract class AbstractConnection extends AbstractEntity
      * @transient
      * @var int
      */
-    protected $status = self::STATUS_UNDEFINED;
+    protected $requiredStatus = self::REQUIRED_STATUS_UNDEFINED;
+
+    /**
+     * @transient
+     * @var int
+     */
+    protected $connectionStatus = self::CONNECTION_STATUS_UNDEFINED;
+
+    /**
+     * Error message
+     *
+     * @transient
+     * @var string
+     */
+    protected $connectionError = '';
 
     /**
      * @return string
@@ -86,17 +104,17 @@ abstract class AbstractConnection extends AbstractEntity
     /**
      * @return int
      */
-    public function getStatus()
+    public function getRequiredStatus()
     {
-        return $this->status;
+        return $this->requiredStatus;
     }
 
     /**
-     * @param int $status
+     * @param int $requiredStatus
      */
-    public function setStatus($status)
+    public function setRequiredStatus($requiredStatus)
     {
-        $this->status = $status;
+        $this->requiredStatus = $requiredStatus;
     }
 
     /**
@@ -133,4 +151,55 @@ abstract class AbstractConnection extends AbstractEntity
         $connectionClassName = $this->getClassName();
         return substr($connectionClassName, strrpos($connectionClassName, '\\Domain\\Model\\') + 14);
     }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return get_class($this);
+    }
+
+    /**
+     * @return int
+     */
+    public function getConnectionStatus()
+    {
+        return $this->testConnect();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getConnectionError()
+    {
+        return $this->connectionError;
+    }
+
+    /**
+     * Same as $this->connect
+     *
+     * @return mixed
+     */
+    protected function testConnect()
+    {
+        $this->connect();
+        $status = $this->connectionStatus;
+        $this->disconnect();
+        return $status;
+    }
+
+    /**
+     * Must not throw an exception but set this->connectionStatus
+     *
+     * @return mixed
+     */
+    abstract protected function connect();
+
+    /**
+     * Must not throw an exception and this->connectionStatus to self::CONNECTION_STATUS_UNDEFINED
+     *
+     * @return mixed
+     */
+    abstract protected function disconnect();
 }

@@ -10,5 +10,31 @@ temp.commonConnectionColumns {
 
 config.tx_extbase.persistence.classes {
 	In2code\In2connector\Domain\Model\LdapConnection < temp.commonConnectionColumns
+	In2code\In2connector\Domain\Model\LdapConnection {
+		mapping {
+			columns {
+				hostname.mapOnProperty = hostname
+				username.mapOnProperty = username
+				password.mapOnProperty = password
+				port.mapOnProperty = port
+				protocol_version.mapOnProperty = protocolVersion
+			}
+		}
+	}
+
 	In2code\In2connector\Domain\Model\SoapConnection < temp.commonConnectionColumns
+
+	In2code\In2connector\Domain\Model\LogEntry {
+		mapping {
+			tableName = tx_in2connector_log
+			columns {
+				request_id.mapOnProperty = requestId
+				time_micro.mapOnProperty = timeMicro
+				component.mapOnProperty = component
+				level.mapOnProperty = level
+				message.mapOnProperty = message
+				data.mapOnProperty = data
+			}
+		}
+	}
 }

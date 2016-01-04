@@ -1,30 +1,57 @@
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+
 <f:be.container>
-    <div class="module-docheader t3js-module-docheader">
-        <div class="module-docheader-bar module-docheader-bar-navigation t3js-module-docheader-bar t3js-module-docheader-bar-navigation">
+	<div class="module" data-module-id="" data-module-name="">
+		<div class="module-docheader t3js-module-docheader">
+			<div class="module-docheader-bar module-docheader-bar-navigation">
+				<div class="module-docheader-bar-column-left">
 
-            <f:comment>
-                Left column content
-            </f:comment>
-            <div class="module-docheader-bar-column-left">
-                <f:be.menus.actionMenu>
-                    <f:be.menus.actionMenuItem label="blabalba" controller="Whaat" action="blubb"/>
-                </f:be.menus.actionMenu>
-            </div>
+					<f:comment>
+						Section "toolbar top left"
+						Defined in the Layout. Used for global navigation stuff.
+					</f:comment>
 
-            <f:comment>
-                Right column content
-            </f:comment>
+				</div>
+				<div class="module-docheader-bar-column-right">
 
-            <div class="module-docheader-bar-column-right">
-            </div>
-        </div>
-    </div>
+					<f:comment>
+						Section "toolbar top right".
+						No usage defined yet.
+					</f:comment>
 
-    <f:comment>
-        Main content
-    </f:comment>
+				</div>
+			</div>
+			<div
+				class="module-docheader-bar module-docheader-bar-buttons">
+				<div class="module-docheader-bar-column-left">
 
-    <div class="module-body t3js-module-body">
-        <f:render section="Main"/>
-    </div>
+					<f:comment>
+						Section "toolbar bottom left"
+						This content is defined by the Template and used for form buttons
+					</f:comment>
+
+					<f:render section="ToolBarLeft"/>
+				</div>
+				<div class="module-docheader-bar-column-right">
+
+					<f:comment>
+						Section "toolbar bottom right"
+						This content is defined by the Template and used for navigation or additional stuff
+						not related to the active form
+					</f:comment>
+
+					<f:render section="ToolBarRight"/>
+				</div>
+			</div>
+		</div>
+
+		<div class="module-body t3js-module-body" style="padding-top: 89px;">
+			<f:render section="Welcome"/>
+
+			<f:flashMessages/>
+
+			<f:render section="Main"/>
+		</div>
+
+	</div>
 </f:be.container>

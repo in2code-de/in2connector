@@ -37,8 +37,11 @@ class ConnectionRequirementsResolver
         return $connections;
     }
 
+    /**
+     * @return array
+     */
     public function getOrphanedConnections()
     {
-
+        return [];
     }
 }

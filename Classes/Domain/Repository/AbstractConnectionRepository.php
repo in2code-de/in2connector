@@ -31,7 +31,7 @@ abstract class AbstractConnectionRepository extends Repository
                 $identityKey
             );
         } else {
-            $connection->setStatus(AbstractConnection::STATUS_REQUIREMENT_MATCH_EXISTING);
+            $connection->setRequiredStatus(AbstractConnection::REQUIRED_STATUS_MATCH);
         }
         return $connection;
     }

@@ -45,7 +45,7 @@ class ConnectionFactory extends AbstractFactory
         }
         /** @var AbstractConnection $connection */
         $connection = $this->objectManager->get($className);
-        $connection->setStatus(AbstractConnection::STATUS_REQUIRED);
+        $connection->setRequiredStatus(AbstractConnection::REQUIRED_STATUS_REQUIRED);
         $connection->setPackage($package);
         $connection->setIdentityKey($identityKey);
         return $connection;

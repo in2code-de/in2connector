@@ -1,4 +1,5 @@
 <?php
+
 defined('TYPO3_MODE') or die('hard');
 
 if (!isset($_EXTKEY)) {
@@ -15,7 +16,7 @@ if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
                 '',
                 array(
                     'Dashboard' => 'index',
-                    'LdapConnection' => 'create',
+                    'LdapConnection' => \In2code\In2connector\Controller\LdapConnectionController::getModuleActions(),
                 ),
                 array(
                     'access' => 'user,group',
@@ -28,3 +29,10 @@ if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
     );
 }
 
+$GLOBALS['TYPO3_CONF_VARS']['LOG']['In2code']['In2connector']['writerConfiguration'] = [
+    \TYPO3\CMS\Core\Log\LogLevel::DEBUG => array(
+        \TYPO3\CMS\Core\Log\Writer\DatabaseWriter::class => array(
+            'logTable' => 'tx_in2connector_log',
+        ),
+    ),
+];

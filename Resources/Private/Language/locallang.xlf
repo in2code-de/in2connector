@@ -25,6 +25,26 @@
             <trans-unit id="model.abstract_connection.status.2">
                 <source>Orphaned</source>
             </trans-unit>
+
+            <trans-unit id="view.save">
+                <source>Save</source>
+            </trans-unit>
+
+            <trans-unit id="model.ldap_connection.field.hostname">
+                <source>Hostname</source>
+            </trans-unit>
+            <trans-unit id="model.ldap_connection.field.port">
+                <source>Port</source>
+            </trans-unit>
+            <trans-unit id="model.ldap_connection.field.password">
+                <source>Password</source>
+            </trans-unit>
+            <trans-unit id="model.ldap_connection.field.username">
+                <source>Username</source>
+            </trans-unit>
+            <trans-unit id="model.ldap_connection.field.protocol_version">
+                <source>Protocol Version</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>
