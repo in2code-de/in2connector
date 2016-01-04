@@ -1,8 +1,12 @@
 <?php
-namespace In2code\In2template\Tests\Domain\Model;
+namespace In2code\In2connector\Tests\Unit\Domain\Model;
 
+use In2code\In2connector\Domain\Model\Dto\DriverRegistration;
 use In2code\In2connector\Registry\ConnectionRegistry;
-use TYPO3\CMS\Core\SingletonInterface;
+use In2code\In2connector\Tests\Unit\Registry\Fixtures\InvalidDriver;
+use In2code\In2connector\Tests\Unit\Registry\Fixtures\ValidDriver;
+use Prophecy\Argument;
+use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -20,6 +24,38 @@ class ConnectionRegistryTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
+        $databaseProphecy = $this->prophesize(DatabaseConnection::class);
+        $databaseProphecy->fullQuoteStr(Argument::exact('TX_IN2CONNECTOR'), Argument::exact('sys_registry'))->willReturn(
+            'TX_IN2CONNECTOR'
+        );
+        $databaseProphecy->exec_SELECTgetRows(
+            Argument::exact('*'),
+            Argument::exact('sys_registry'),
+            Argument::exact('entry_namespace = TX_IN2CONNECTOR')
+        )->willReturn(
+            [
+                [
+                    'uid' => 1,
+                    'entry_namespace' => 'tx_in2connector',
+                    'entry_key' => 'logs_per_page',
+                    'entry_value' => 'i:13',
+                ],
+                [
+                    'uid' => 2,
+                    'entry_namespace' => 'tx_in2connector',
+                    'entry_key' => 'log_level',
+                    'entry_value' => 'i:5',
+                ],
+                [
+                    'uid' => 3,
+                    'entry_namespace' => 'tx_in2connector',
+                    'entry_key' => 'production_context',
+                    'entry_value' => 'b:1',
+                ],
+            ]
+        );
+        $GLOBALS['TYPO3_DB'] = $databaseProphecy->reveal();
+
         $this->subject = GeneralUtility::makeInstance(ConnectionRegistry::class);
     }
 
@@ -27,39 +63,14 @@ class ConnectionRegistryTest extends \PHPUnit_Framework_TestCase
      * @test
      * @return void
      */
-    public function requireConnectionThrowsExceptionIfClassDoesNotInheritCorrectly()
+    public function registerDriverAddsDriverToRegisteredClasses()
     {
-        $this->setExpectedException(
-            ConnectionTypeNotSupportedException::class,
-            'The connection class ' . htmlspecialchars(GeneralUtility::class) . ' is not supported',
-            1450371768
-        );
-        $this->subject->requireConnection('foo', 'bar', GeneralUtility::class);
-        $this->assertSame([], $this->subject->getRequiredConnections());
-    }
-
-    /**
-     * @test
-     * @return void
-     */
-    public function requireConnectionAddsGivenConnectionToArray()
-    {
-        $this->subject->requireConnection('foo', 'bar', SoapConnection::class);
-        $this->assertSame(['foo' => ['bar' => SoapConnection::class]], $this->subject->getRequiredConnections());
-    }
-
-    /**
-     * @test
-     * @return void
-     */
-    public function connectionRegistryIsSingleton()
-    {
-        $this->subject->requireConnection('foo', 'bar', SoapConnection::class);
-        $connectionRegistry = GeneralUtility::makeInstance(ConnectionRegistry::class);
-        $this->assertInstanceOf(SingletonInterface::class, $connectionRegistry);
-        $this->assertSame(
-            ['foo' => ['bar' => SoapConnection::class]],
-            $connectionRegistry->getRequiredConnections()
+        $this->subject->registerDriver('validDriver', ValidDriver::class);
+        $this->assertEquals(
+            [
+                'validDriver' => new DriverRegistration('validDriver', ValidDriver::class),
+            ],
+            $this->subject->getRegisteredDrivers()
         );
     }
 }
