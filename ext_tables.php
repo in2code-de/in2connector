@@ -20,7 +20,7 @@ if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
                 ),
                 array(
                     'access' => 'user,group',
-                    'icon' => 'EXT:' . $extKey . '/ext_icon.gif',
+                    'icon' => 'EXT:t3skin/icons/gfx/i/module.gif',
                     'labels' => 'LLL:EXT:' . $extKey . '/Resources/Private/Language/locallang.xlf',
                 )
             );
