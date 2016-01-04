@@ -15,7 +15,7 @@ if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
                 'mod1',
                 '',
                 array(
-                    'Dashboard' => 'index',
+                    'Dashboard' => \In2code\In2connector\Controller\DashboardController::getModuleActions(),
                     'LdapConnection' => \In2code\In2connector\Controller\LdapConnectionController::getModuleActions(),
                 ),
                 array(
@@ -29,8 +29,10 @@ if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
     );
 }
 
+$configuration = new \In2code\In2connector\Domain\Model\Configuration();
+
 $GLOBALS['TYPO3_CONF_VARS']['LOG']['In2code']['In2connector']['writerConfiguration'] = [
-    \TYPO3\CMS\Core\Log\LogLevel::DEBUG => array(
+    $configuration->getLogLevel() => array(
         \TYPO3\CMS\Core\Log\Writer\DatabaseWriter::class => array(
             'logTable' => 'tx_in2connector_log',
         ),

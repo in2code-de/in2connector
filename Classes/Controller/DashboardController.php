@@ -1,7 +1,7 @@
 <?php
 namespace In2code\In2connector\Controller;
 
-use In2code\In2connector\Logging\LoggerTrait;
+use In2code\In2connector\Domain\Model\Configuration;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 /**
@@ -9,6 +9,10 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
  */
 class DashboardController extends ActionController
 {
+    const ACTION_INDEX = 'index';
+    const ACTION_EDIT_CONFIGURATION = 'editConfiguration';
+    const ACTION_UPDATE_CONFIGURATION = 'updateConfiguration';
+
     /**
      * @var \In2code\In2connector\Domain\Service\ConnectionRequirementsResolver
      * @inject
@@ -21,21 +25,50 @@ class DashboardController extends ActionController
      */
     protected $logEntryRepository = null;
 
-    use LoggerTrait;
-
-    public function __construct()
-    {
-        parent::__construct();
-        $this->getLogger()->debug('Instantiated Controller ' . get_class($this));
-    }
-
     /**
      * @return void
      */
     public function indexAction()
     {
-        $this->view->assign('connections', $this->connectionRequirementsResolver->getConnectionsForRequirements());
-        $this->view->assign('orphanedConnections', $this->connectionRequirementsResolver->getOrphanedConnections());
-        $this->view->assign('logEntries', $this->logEntryRepository->findLatest(20));
+        $this->view->assign(
+            'connections',
+            $this->connectionRequirementsResolver->getConnectionsForRequirements()
+        );
+        $this->view->assign(
+            'orphanedConnections',
+            $this->connectionRequirementsResolver->getOrphanedConnections()
+        );
+        $this->view->assign(
+            'logEntries',
+            $this->logEntryRepository->findLatest()
+        );
+    }
+
+    /**
+     *
+     */
+    public function editConfigurationAction()
+    {
+        $this->view->assign(
+            'configuration',
+            new Configuration()
+        );
+    }
+
+    /**
+     * @param Configuration $configuration
+     */
+    public function updateConfigurationAction(Configuration $configuration)
+    {
+        $configuration->persist();
+        $this->redirect(self::ACTION_EDIT_CONFIGURATION);
+    }
+
+    /**
+     * @return string
+     */
+    public static function getModuleActions()
+    {
+        return self::ACTION_INDEX . ',' . self::ACTION_EDIT_CONFIGURATION . ',' . self::ACTION_UPDATE_CONFIGURATION;
     }
 }
