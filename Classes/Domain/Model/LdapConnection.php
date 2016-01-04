@@ -39,6 +39,11 @@ class LdapConnection extends AbstractConnection
     protected $protocolVersion = 3;
 
     /**
+     * @var string
+     */
+    protected $baseDn = '';
+
+    /**
      * @return string
      */
     public function getHostname()
@@ -119,6 +124,22 @@ class LdapConnection extends AbstractConnection
     }
 
     /**
+     * @return string
+     */
+    public function getBaseDn()
+    {
+        return $this->baseDn;
+    }
+
+    /**
+     * @param string $baseDn
+     */
+    public function setBaseDn($baseDn)
+    {
+        $this->baseDn = $baseDn;
+    }
+
+    /**
      * @param $errorLevel
      * @param $errorMessage
      * @param $errorFile
@@ -179,5 +200,30 @@ class LdapConnection extends AbstractConnection
             return ldap_unbind($this->connection);
         }
         return false;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isConnected()
+    {
+        return is_resource($this->connection);
+    }
+
+    protected function connectIfNeccessary()
+    {
+        if (!$this->isConnected()) {
+            $this->connect();
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function listDirectory()
+    {
+        $this->connectIfNeccessary();
+        $result = ldap_list($this->connection, $this->baseDn, 'ou=*');
+        return ldap_get_entries($this->connection, $result);
     }
 }

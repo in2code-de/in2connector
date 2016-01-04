@@ -18,6 +18,7 @@ config.tx_extbase.persistence.classes {
 				password.mapOnProperty = password
 				port.mapOnProperty = port
 				protocol_version.mapOnProperty = protocolVersion
+				base_dn.mapOnProperty = baseDn
 			}
 		}
 	}

@@ -45,6 +45,9 @@
             <trans-unit id="model.ldap_connection.field.protocol_version">
                 <source>Protocol Version</source>
             </trans-unit>
+            <trans-unit id="model.ldap_connection.field.base_dn">
+                <source>Base DN</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

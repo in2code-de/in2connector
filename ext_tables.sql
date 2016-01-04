@@ -18,6 +18,7 @@ CREATE TABLE tx_in2connector_domain_model_ldapconnection (
 	port int(11) DEFAULT '0' NOT NULL,
 	protocol_version int(11) DEFAULT '0' NOT NULL,
 	identity_key varchar(255) DEFAULT '' NOT NULL,
+	base_dn varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (uid)
 );
 
