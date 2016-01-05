@@ -173,7 +173,7 @@ class ConnectionRegistry implements SingletonInterface
     public function getRegisteredDriver($driverName)
     {
         if (!isset($this->registeredDrivers[$driverName])) {
-            $message = 'The name ' . $driverName . ' was not registered';
+            $message = 'The driver name "' . $driverName . '" was not registered';
             if ($this->configurationService->isProductionContext()) {
                 $this->getLogger()->error($message, ['function' => __FUNCTION__, 'name' => $driverName]);
                 return false;

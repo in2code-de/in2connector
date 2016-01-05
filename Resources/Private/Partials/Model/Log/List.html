@@ -1,50 +1,52 @@
 {namespace in2connector=In2code\In2connector\ViewHelpers}
 
-<table class="table">
-	<thead>
-		<tr>
-			<th>
-				<f:translate key="domain.model.log.field.request_id">request id</f:translate>
-			</th>
-			<th>
-				<f:translate key="domain.model.log.field.time_micro">time micro</f:translate>
-			</th>
-			<th>
-				<f:translate key="domain.model.log.field.component">component</f:translate>
-			</th>
-			<th>
-				<f:translate key="domain.model.log.field.level">level</f:translate>
-			</th>
-			<th>
-				<f:translate key="domain.model.log.field.message">message</f:translate>
-			</th>
-			<th>
-				<f:translate key="domain.model.log.field.data">data</f:translate>
-			</th>
-		</tr>
-	</thead>
-	<tbody>
-		<f:for each="{logs}" as="log">
+<html xmlns:f="http://xsd.helmut-hummel.de/ns/TYPO3/CMS/Fluid/ViewHelpers">
+	<table class="table">
+		<thead>
 			<tr>
-				<td>
-					{log.requestId}
-				</td>
-				<td>
-					{log.timeMicro}
-				</td>
-				<td>
-					{log.component}
-				</td>
-				<td>
-					{log.level}
-				</td>
-				<td>
-					{log.message}
-				</td>
-				<td>
-					<in2connector:printArray array="{log.decodedData}"/>
-				</td>
+				<th>
+					<f:translate key="domain.model.log.field.request_id">request id</f:translate>
+				</th>
+				<th>
+					<f:translate key="domain.model.log.field.time_micro">time micro</f:translate>
+				</th>
+				<th>
+					<f:translate key="domain.model.log.field.component">component</f:translate>
+				</th>
+				<th>
+					<f:translate key="domain.model.log.field.level">level</f:translate>
+				</th>
+				<th>
+					<f:translate key="domain.model.log.field.message">message</f:translate>
+				</th>
+				<th>
+					<f:translate key="domain.model.log.field.data">data</f:translate>
+				</th>
 			</tr>
-		</f:for>
-	</tbody>
-</table>
+		</thead>
+		<tbody>
+			<f:for each="{logs}" as="log">
+				<tr>
+					<td>
+						{log.requestId}
+					</td>
+					<td>
+						{log.timeMicro}
+					</td>
+					<td>
+						{log.component}
+					</td>
+					<td>
+						{log.level}
+					</td>
+					<td>
+						{log.message}
+					</td>
+					<td>
+						<in2connector:printArray array="{log.decodedData}"/>
+					</td>
+				</tr>
+			</f:for>
+		</tbody>
+	</table>
+</html>

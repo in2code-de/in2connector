@@ -3,15 +3,16 @@ namespace In2code\In2connector\Domain\Model;
 
 use In2code\In2connector\Registry\ConnectionRegistry;
 use In2code\In2connector\Registry\Exceptions\DriverNameNotRegisteredException;
+use In2code\In2connector\Translation\TranslationTrait;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Class Connection
  */
 class Connection extends AbstractEntity
 {
+    use TranslationTrait;
     const TEST_RESULT_OK = 0;
     const TEST_RESULT_INFO = 1;
     const TEST_RESULT_WARNING = 2;
@@ -70,8 +71,13 @@ class Connection extends AbstractEntity
      */
     public function getSettingsPartial()
     {
+        $partial = 'Driver/Blank';
         $connectionRegistry = GeneralUtility::makeInstance(ConnectionRegistry::class);
-        return $connectionRegistry->getRegisteredDriver($this->driver)->getSettingsPartial();
+        $driverRegistration = $connectionRegistry->getRegisteredDriver($this->driver);
+        if (false !== $driverRegistration) {
+            $partial = $driverRegistration->getSettingsPartial();
+        }
+        return $partial;
     }
 
     /**
@@ -105,9 +111,9 @@ class Connection extends AbstractEntity
      *********************************************/
 
     /**
-     * @var null|int
+     * @var bool
      */
-    protected $testResult = null;
+    protected $testExecuted = false;
 
     /**
      * @var string
@@ -115,35 +121,53 @@ class Connection extends AbstractEntity
     protected $testResultMessage = '';
 
     /**
-     *
+     * @var string
+     */
+    protected $testResultCode = 0;
+
+    /**
+     * @return string
+     */
+    public function getTestResultMessage()
+    {
+        return $this->testResultMessage;
+    }
+
+    /**
+     * @return int
      */
     public function getConnectionTestResult()
     {
-        if (null === $this->testResult) {
-            $this->testResultMessage = '';
+        if (false === $this->testExecuted) {
+            $this->testResultCode = self::TEST_RESULT_OK;
             if ($this->driver === '') {
-                $this->testResultMessage = LocalizationUtility::translate(
-                    'domain.model.connection.connection_test.result.no_driver',
-                    'in2connector'
+                $this->testResultMessage = $this->translate(
+                    'domain.model.connection.connection_test.result.no_driver'
                 );
-                return self::TEST_RESULT_ERROR;
+                $this->testResultCode = self::TEST_RESULT_ERROR;
             } else {
                 $connectionRegistry = GeneralUtility::makeInstance(ConnectionRegistry::class);
                 try {
-                    $driver = $connectionRegistry->getRegisteredDriver($this->driver);
+                    $driverRegistration = $connectionRegistry->getRegisteredDriver($this->driver);
                 } catch (DriverNameNotRegisteredException $e) {
-                    $driver = false;
+                    $driverRegistration = false;
                 }
-                if (!$driver) {
-                    $this->testResultMessage = LocalizationUtility::translate(
-                        'domain.model.connection.connection_test.result.driver_not_registered',
-                        'in2connector'
+                if (!$driverRegistration) {
+                    $this->testResultMessage = $this->translate(
+                        'domain.model.connection.connection_test.result.driver_not_registered'
                     );
-                    return self::TEST_RESULT_ERROR;
+                    $this->testResultCode = self::TEST_RESULT_ERROR;
+                } else {
+                    $driverInstance = $driverRegistration->getDriverInstance();
+                    $driverInstance->setSettings($this->getSettings());
+                    if (!$driverInstance->validateSettings()) {
+                        $this->testResultMessage = $driverInstance->getLastErrorMessage();
+                        $this->testResultCode = self::TEST_RESULT_WARNING;
+                    }
                 }
             }
         }
-        return self::TEST_RESULT_OK;
+        return $this->testResultCode;
     }
 
     /**
@@ -151,6 +175,7 @@ class Connection extends AbstractEntity
      */
     public function resetTestResult()
     {
-        $this->testResult = null;
+        $this->testExecuted = false;
+        $this->testResultMessage = '';
     }
 }

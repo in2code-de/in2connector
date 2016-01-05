@@ -1,59 +1,63 @@
 {namespace core=TYPO3\CMS\Core\ViewHelpers}
 
-<table class="table">
-	<thead>
-		<tr>
-			<th>
-				<f:translate key="domain.model.connection.field.identity_key">identity key</f:translate>
-			</th>
-			<th>
-				<f:translate key="domain.model.connection.field.driver">driver</f:translate>
-			</th>
-			<th>
-				<f:translate key="domain.model.connection.connection_test">connection test</f:translate>
-			</th>
-			<th>
-				<f:translate key="view.options">options</f:translate>
-			</th>
-		</tr>
-	</thead>
-	<tbody>
-		<f:for each="{connections}" as="connection">
+<html xmlns:f="http://xsd.helmut-hummel.de/ns/TYPO3/CMS/Fluid/ViewHelpers">
+	<table class="table">
+		<thead>
 			<tr>
-				<td>
-					{connection.identityKey}
-				</td>
-				<td>
-					{connection.driver}
-				</td>
-				<td>
-					<f:switch expression="{connection.connectionTestResult}">
-						<f:case value="0">
-							<core:icon identifier="status-dialog-ok"/>
-							{connection.connectionTestResultMessage}
-						</f:case>
-						<f:case value="1">
-							<core:icon identifier="status-dialog-information"/>
-							{connection.connectionTestResultMessage}
-						</f:case>
-						<f:case value="2">
-							<core:icon identifier="status-dialog-warning"/>
-							{connection.connectionTestResultMessage}
-						</f:case>
-						<f:case value="3">
-							<core:icon identifier="status-dialog-error"/>
-							{connection.connectionTestResultMessage}
-						</f:case>
-						<f:case default="TRUE">
-							<core:icon identifier="status-dialog-notification"/>
-							<f:translate key="domain.model.connection.connection_test.no_result">no test result</f:translate>
-						</f:case>
-					</f:switch>
-				</td>
-				<td>
-					<f:render partial="View/Buttons/ActionButton" arguments="{icon:'actions-system-extension-configure', action:'configure', controller:'Connection', arguments:'{connection:connection}'}"/>
-				</td>
+				<th>
+					<f:translate key="domain.model.connection.field.identity_key">identity key</f:translate>
+				</th>
+				<th>
+					<f:translate key="domain.model.connection.field.driver">driver</f:translate>
+				</th>
+				<th>
+					<f:translate key="domain.model.connection.connection_test">connection test</f:translate>
+				</th>
+				<th>
+					<f:translate key="view.options">options</f:translate>
+				</th>
 			</tr>
-		</f:for>
-	</tbody>
-</table>
+		</thead>
+		<tbody>
+			<f:for each="{connections}" as="connection">
+				<tr>
+					<td>
+						{connection.identityKey}
+					</td>
+					<td>
+						{connection.driver}
+					</td>
+					<td>
+						<f:switch expression="{connection.connectionTestResult}">
+							<f:case value="0">
+								<core:icon identifier="status-dialog-ok"/>
+								{connection.testResultMessage}
+							</f:case>
+							<f:case value="1">
+								<core:icon identifier="status-dialog-information"/>
+								{connection.testResultMessage}
+							</f:case>
+							<f:case value="2">
+								<core:icon identifier="status-dialog-warning"/>
+								{connection.testResultMessage}
+							</f:case>
+							<f:case value="3">
+								<core:icon identifier="status-dialog-error"/>
+								{connection.testResultMessage}
+							</f:case>
+							<f:case default="TRUE">
+								<core:icon identifier="status-dialog-notification"/>
+								<f:translate
+									key="domain.model.connection.connection_test.no_result">no test result</f:translate>
+							</f:case>
+						</f:switch>
+					</td>
+					<td>
+						<f:render partial="View/Buttons/ActionButton"
+								  arguments="{icon:'actions-system-extension-configure', action:'configure', controller:'Connection', arguments:'{connection:connection}'}"/>
+					</td>
+				</tr>
+			</f:for>
+		</tbody>
+	</table>
+</html>

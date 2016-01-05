@@ -53,6 +53,9 @@
             <trans-unit id="view.options">
                 <source>Options</source>
             </trans-unit>
+            <trans-unit id="view.driver.blank">
+                <source>The driver was not registered or did not define a settings partial</source>
+            </trans-unit>
 
             <trans-unit id="view.template.dashboard.index.matching_connections">
                 <source>Matching connection</source>
@@ -126,6 +129,45 @@
             </trans-unit>
             <trans-unit id="driver.ldap.settings.username">
                 <source>Username</source>
+            </trans-unit>
+            <trans-unit id="driver.ldap.settings.base_dn">
+                <source>Base DN</source>
+            </trans-unit>
+            <trans-unit id="driver.ldap.settings.ldaps">
+                <source>Use LDAPS (Secure)</source>
+            </trans-unit>
+            <trans-unit id="driver.ldap.test.hostname_empty">
+                <source>Hostname is empty</source>
+            </trans-unit>
+            <trans-unit id="driver.ldap.test.wrong_port">
+                <source>Wrong port: The port can not be %d</source>
+            </trans-unit>
+            <trans-unit id="driver.ldap.test.ok">
+                <source>Ok</source>
+            </trans-unit>
+            <trans-unit id="driver.ldap.test.connection_failed">
+                <source>Could not connect to the given host and port</source>
+            </trans-unit>
+            <trans-unit id="driver.ldap.test.protocol_version_empty">
+                <source>No protocol version has been chosen</source>
+            </trans-unit>
+            <trans-unit id="driver.ldap.test.protocol_version_not_settable">
+                <source>An error occured while setting the protocol version</source>
+            </trans-unit>
+            <trans-unit id="driver.ldap.test.wrong_credentials">
+                <source>Wrong credentials: The username (RDN/DN) or password was not accepted</source>
+            </trans-unit>
+            <trans-unit id="driver.ldap.test.protocol_version_mismatch">
+                <source>The protocol version "%d" was not accepted!</source>
+            </trans-unit>
+            <trans-unit id="driver.ldap.test.base_dn_not_readable">
+                <source>Could not read from the Base DN.</source>
+            </trans-unit>
+            <trans-unit id="driver.ldap.search_failed">
+                <source>The search on the given Base DN and RDNs failed.</source>
+            </trans-unit>
+            <trans-unit id="driver.ldap.server_unreachable">
+                <source>The server is unreachable. Check the hostname, port and server status.</source>
             </trans-unit>
         </body>
     </file>

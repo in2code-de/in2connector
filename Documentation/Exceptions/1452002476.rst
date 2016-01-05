@@ -1,0 +1,8 @@
+ErrorException
+==============
+
+Thrown by \In2code\In2connector\Driver\AbstractDriver when an unhandled error occurred in development context.
+
+Drivers are the most fragile part of the in2connector system. When a driver produces an error, it can investigate that
+error, but if does not recognize the error or can not handle it, an exception will be thrown indicating what's going
+wrong.

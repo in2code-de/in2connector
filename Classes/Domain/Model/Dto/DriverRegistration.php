@@ -1,6 +1,9 @@
 <?php
 namespace In2code\In2connector\Domain\Model\Dto;
 
+use In2code\In2connector\Driver\AbstractDriver;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Class DriverRegistration
  */
@@ -81,5 +84,13 @@ class DriverRegistration
     public function setSettingsPartial($settingsPartial)
     {
         $this->settingsPartial = $settingsPartial;
+    }
+
+    /**
+     * @return AbstractDriver
+     */
+    public function getDriverInstance()
+    {
+        return GeneralUtility::makeInstance($this->class);
     }
 }

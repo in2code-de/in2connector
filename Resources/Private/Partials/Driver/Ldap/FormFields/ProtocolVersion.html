@@ -1,10 +1,12 @@
-<fieldset class="form-section">
-	<div class="form-group">
-		<label>
-			<f:translate key="driver.ldap.settings.protocol_version">protocol version</f:translate>
-		</label>
-		<div class="form-control-wrap" style="max-width: 480px">
-			<f:form.select class="form-control" property="settings.protocolVersion" options="{2:'2', 3:'3'}"/>
+<html xmlns:f="http://xsd.helmut-hummel.de/ns/TYPO3/CMS/Fluid/ViewHelpers">
+	<fieldset class="form-section">
+		<div class="form-group">
+			<label>
+				<f:translate key="driver.ldap.settings.protocol_version">protocol version</f:translate>
+			</label>
+			<div class="form-control-wrap" style="max-width: 480px">
+				<f:form.select class="form-control" property="settings.protocolVersion" options="{2:'2', 3:'3'}"/>
+			</div>
 		</div>
-	</div>
-</fieldset>
+	</fieldset>
+</html>

@@ -1,13 +1,14 @@
-<fieldset class="form-section">
-	<div class="form-group">
-		<label>
-			<f:translate key="domain.model.dto.configuration.field.log_level">log level</f:translate>
-		</label>
-		<div class="form-control-wrap" style="max-width: 480px">
-			<f:form.select
-				class="form-control"
-				property="logLevel"
-				options="{
+<html xmlns:f="http://xsd.helmut-hummel.de/ns/TYPO3/CMS/Fluid/ViewHelpers">
+	<fieldset class="form-section">
+		<div class="form-group">
+			<label>
+				<f:translate key="domain.model.dto.configuration.field.log_level">log level</f:translate>
+			</label>
+			<div class="form-control-wrap" style="max-width: 480px">
+				<f:form.select
+					class="form-control"
+					property="logLevel"
+					options="{
 					0:'{f:translate(key:\'domain.model.dto.configuration.field.log_level.emergency\',default:\'emergency\')}',
 					1:'{f:translate(key:\'domain.model.dto.configuration.field.log_level.alert\',default:\'alert\')}',
 					2:'{f:translate(key:\'domain.model.dto.configuration.field.log_level.critical\',default:\'critical\')}',
@@ -17,6 +18,7 @@
 					6:'{f:translate(key:\'domain.model.dto.configuration.field.log_level.info\',default:\'info\')}',
 					7:'{f:translate(key:\'domain.model.dto.configuration.field.log_level.debug\',default:\'debug\')}'
 				}"/>
+			</div>
 		</div>
-	</div>
-</fieldset>
+	</fieldset>
+</html>

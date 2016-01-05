@@ -1,6 +1,8 @@
 {namespace core=TYPO3\CMS\Core\ViewHelpers}
 
-<button type="submit" class="btn btn-default" form="{form}">
-	<core:icon identifier="actions-document-save"/>
-	<f:translate key="view.save">save</f:translate>
-</button>
+<html xmlns:f="http://xsd.helmut-hummel.de/ns/TYPO3/CMS/Fluid/ViewHelpers">
+	<button type="submit" class="btn btn-default" form="{form}">
+		<core:icon identifier="actions-document-save"/>
+		<f:translate key="view.save">save</f:translate>
+	</button>
+</html>
