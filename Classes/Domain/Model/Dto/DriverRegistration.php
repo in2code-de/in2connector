@@ -9,7 +9,7 @@ class DriverRegistration
     /**
      * @var string
      */
-    protected $name = '';
+    protected $driverName = '';
 
     /**
      * @var string
@@ -17,31 +17,38 @@ class DriverRegistration
     protected $class = '';
 
     /**
+     * @var string
+     */
+    protected $settingsPartial = '';
+
+    /**
      * DriverRegistration constructor.
      *
-     * @param string $name
+     * @param string $driverName
      * @param string $class
+     * @param string $settingsPartial
      */
-    public function __construct($name, $class)
+    public function __construct($driverName, $class, $settingsPartial)
     {
-        $this->name = $name;
+        $this->driverName = $driverName;
         $this->class = $class;
+        $this->settingsPartial = $settingsPartial;
     }
 
     /**
      * @return string
      */
-    public function getName()
+    public function getDriverName()
     {
-        return $this->name;
+        return $this->driverName;
     }
 
     /**
-     * @param string $name
+     * @param string $driverName
      */
-    public function setName($name)
+    public function setDriverName($driverName)
     {
-        $this->name = $name;
+        $this->driverName = $driverName;
     }
 
     /**
@@ -58,5 +65,21 @@ class DriverRegistration
     public function setClass($class)
     {
         $this->class = $class;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSettingsPartial()
+    {
+        return $this->settingsPartial;
+    }
+
+    /**
+     * @param string $settingsPartial
+     */
+    public function setSettingsPartial($settingsPartial)
+    {
+        $this->settingsPartial = $settingsPartial;
     }
 }

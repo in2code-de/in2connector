@@ -1,0 +1,6 @@
+DriverNameNotRegisteredException
+================================
+
+Thrown by \In2code\In2connector\Registry\ConnectionRegistry because the name was never registered for a driver.
+You requested a driver registration using a name that was never registered. Check the loading order of your extensions
+and spelling of the name. Use the defined constant if possible.

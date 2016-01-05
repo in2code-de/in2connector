@@ -1,0 +1,20 @@
+<f:layout name="Backend"/>
+
+<f:section name="ToolBarLeft">
+	<f:render partial="View/ButtonGroup/Open"/>
+	<f:render partial="View/Buttons/ActionButton" arguments="{icon:'actions-document-close', action:'index', controller:'Dashboard'}"/>
+	<f:render partial="View/Buttons/Submit" arguments="{form:'ConfigureConnection'}"/>
+	<f:render partial="View/ButtonGroup/Close"/>
+</f:section>
+
+<f:section name="ToolBarRight">
+</f:section>
+
+<f:section name="Welcome">
+</f:section>
+
+<f:section name="Main">
+	<f:form id="ConfigureConnection" action="setConfig" object="{connection}" objectName="connection" method="post">
+		<f:render partial="Model/Connection/Forms/Configure" arguments="{connection:connection}"/>
+	</f:form>
+</f:section>

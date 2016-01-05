@@ -1,0 +1,14 @@
+{namespace core=TYPO3\CMS\Core\ViewHelpers}
+
+<f:if condition="{arguments}">
+	<f:then>
+		<f:link.action class="btn btn-default" action="{action}" controller="{controller}" arguments="{arguments}">
+			<core:icon identifier="{icon}"/>
+		</f:link.action>
+	</f:then>
+	<f:else>
+		<f:link.action class="btn btn-default" action="{action}" controller="{controller}">
+			<core:icon identifier="{icon}"/>
+		</f:link.action>
+	</f:else>
+</f:if>

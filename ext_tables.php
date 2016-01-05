@@ -35,7 +35,8 @@ if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
             );
             $connectionRegistry->registerDriver(
                 TX_IN2CONNECTOR_DRIVER_LDAP,
-                \In2code\In2connector\Driver\LdapDriver::class
+                \In2code\In2connector\Driver\LdapDriver::class,
+                'Driver/Ldap/Forms/Settings'
             );
 
             // register backend module
@@ -47,6 +48,7 @@ if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
                 [
                     'Dashboard' => \In2code\In2connector\Controller\DashboardController::getModuleActions(),
                     'Configuration' => \In2code\In2connector\Controller\ConfigurationController::getModuleActions(),
+                    'Connection' => \In2code\In2connector\Controller\ConnectionController::getModuleActions(),
                 ],
                 [
                     'access' => 'user,group',

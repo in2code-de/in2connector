@@ -1,0 +1,19 @@
+<fieldset class="form-section">
+	<div class="form-group">
+		<label>
+			<f:translate key="domain.model.connection.field.identity_key">identity key</f:translate>
+		</label>
+		<div class="form-control-wrap" style="max-width: 480px">
+			<f:if condition="{connection.identityKey}">
+				<f:then>
+					<input disabled="disabled" value="{connection.identityKey}"/>
+				</f:then>
+				<f:else>
+					<f:form.textfield class="form-control" property="identityKey"/>
+				</f:else>
+			</f:if>
+		</div>
+	</div>
+</fieldset>
+
+

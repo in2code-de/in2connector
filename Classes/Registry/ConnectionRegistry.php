@@ -8,7 +8,7 @@ use In2code\In2connector\Logging\LoggerTrait;
 use In2code\In2connector\Registry\Exceptions\ConnectionAlreadyDemandedException;
 use In2code\In2connector\Registry\Exceptions\DriverDoesNotExistException;
 use In2code\In2connector\Registry\Exceptions\DriverNameAlreadyRegisteredException;
-use In2code\In2connector\Registry\Exceptions\DriverNameNotRegistered;
+use In2code\In2connector\Registry\Exceptions\DriverNameNotRegisteredException;
 use In2code\In2connector\Registry\Exceptions\InvalidDriverException;
 use In2code\In2connector\Service\ConfigurationService;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -45,25 +45,26 @@ class ConnectionRegistry implements SingletonInterface
     }
 
     /**
-     * @param string $name
+     * @param string $driverName
      * @param string $class
+     * @param string $settingsPartial
      * @return bool
      * @throws DriverNameAlreadyRegisteredException
      * @throws InvalidDriverException
      */
-    public function registerDriver($name, $class)
+    public function registerDriver($driverName, $class, $settingsPartial)
     {
         $this->getLogger()->debug(
             'Registering driver',
-            ['function' => __FUNCTION__, 'name' => $name, 'class' => $class]
+            ['function' => __FUNCTION__, 'name' => $driverName, 'class' => $class]
         );
 
-        if (isset($this->registeredDrivers[$name])) {
-            $message = 'The driver name "' . $name . '" was already registered';
+        if (isset($this->registeredDrivers[$driverName])) {
+            $message = 'The driver name "' . $driverName . '" was already registered';
             if ($this->configurationService->isProductionContext()) {
                 $this->getLogger()->critical(
                     $message,
-                    ['function' => __FUNCTION__, 'name' => $name, 'class' => $class]
+                    ['function' => __FUNCTION__, 'name' => $driverName, 'class' => $class]
                 );
                 return false;
             } else {
@@ -77,7 +78,7 @@ class ConnectionRegistry implements SingletonInterface
             if ($this->configurationService->isProductionContext()) {
                 $this->getLogger()->emergency(
                     $message,
-                    ['function' => __FUNCTION__, 'name' => $name, 'class' => $class]
+                    ['function' => __FUNCTION__, 'name' => $driverName, 'class' => $class]
                 );
                 return false;
             } else {
@@ -85,30 +86,30 @@ class ConnectionRegistry implements SingletonInterface
             }
         }
 
-        $this->registeredDrivers[$name] = new DriverRegistration($name, $class);
+        $this->registeredDrivers[$driverName] = new DriverRegistration($driverName, $class, $settingsPartial);
         return true;
     }
 
     /**
-     * @param string $name
+     * @param string $driverName
      * @return bool
-     * @throws DriverNameNotRegistered
+     * @throws DriverNameNotRegisteredException
      */
-    public function deregisterDriver($name)
+    public function deregisterDriver($driverName)
     {
-        $this->getLogger()->info('Deregistering driver', ['function' => __FUNCTION__, 'name' => $name]);
+        $this->getLogger()->info('Deregistering driver', ['function' => __FUNCTION__, 'name' => $driverName]);
 
-        if (!isset($this->registeredDrivers[$name])) {
-            $message = 'The driver name "' . $name . '" was never registered';
+        if (!isset($this->registeredDrivers[$driverName])) {
+            $message = 'The driver name "' . $driverName . '" was never registered';
             if ($this->configurationService->isProductionContext()) {
-                $this->getLogger()->error($message, ['function' => __FUNCTION__, 'name' => $name]);
+                $this->getLogger()->error($message, ['function' => __FUNCTION__, 'name' => $driverName]);
                 return false;
             } else {
-                throw new DriverNameNotRegistered($message, 1451927180);
+                throw new DriverNameNotRegisteredException($message, 1451927180);
             }
         }
 
-        unset($this->registeredDrivers[$name]);
+        unset($this->registeredDrivers[$driverName]);
         return true;
     }
 
@@ -162,6 +163,26 @@ class ConnectionRegistry implements SingletonInterface
     public function getRegisteredDrivers()
     {
         return $this->registeredDrivers;
+    }
+
+    /**
+     * @param string $driverName
+     * @return bool|DriverRegistration
+     * @throws DriverNameNotRegisteredException
+     */
+    public function getRegisteredDriver($driverName)
+    {
+        if (!isset($this->registeredDrivers[$driverName])) {
+            $message = 'The name ' . $driverName . ' was not registered';
+            if ($this->configurationService->isProductionContext()) {
+                $this->getLogger()->error($message, ['function' => __FUNCTION__, 'name' => $driverName]);
+                return false;
+            } else {
+                throw new DriverNameNotRegisteredException($message, 1451992063);
+            }
+        }
+
+        return $this->registeredDrivers[$driverName];
     }
 
     /**

@@ -1,13 +1,3 @@
-temp.commonConnectionColumns {
-	mapping {
-		columns {
-			package.mapOnProperty = package
-			identity_key.mapOnProperty = identityKey
-			active.mapOnProperty = active
-		}
-	}
-}
-
 config.tx_extbase.persistence.classes {
 	In2code\In2connector\Domain\Model\Log {
 		mapping {
@@ -19,6 +9,16 @@ config.tx_extbase.persistence.classes {
 				level.mapOnProperty = level
 				message.mapOnProperty = message
 				data.mapOnProperty = data
+			}
+		}
+	}
+	In2code\In2connector\Domain\Model\Connection {
+		mapping {
+			tableName = tx_in2connector_domain_model_connection
+			columns {
+				identity_key.mapOnProperty = identityKey
+				driver.mapOnProperty = driver
+				settings.mapOnProperty = settings
 			}
 		}
 	}

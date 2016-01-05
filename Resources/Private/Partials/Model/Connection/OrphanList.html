@@ -1,0 +1,30 @@
+<table class="table">
+	<thead>
+		<tr>
+			<th>
+				<f:translate key="domain.model.connection.field.identity_key">identity key</f:translate>
+			</th>
+			<th>
+				<f:translate key="domain.model.connection.field.driver">driver</f:translate>
+			</th>
+			<th>
+				<f:translate key="view.options">options</f:translate>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<f:for each="{connections}" as="connection">
+			<tr>
+				<td>
+					{connection.identityKey}
+				</td>
+				<td>
+					{connection.driver}
+				</td>
+				<td>
+					<f:render partial="View/Buttons/ActionButton" arguments="{icon:'actions-system-extension-configure', action:'configure', controller:'Connection', arguments:'{connection:connection}'}"/>
+				</td>
+			</tr>
+		</f:for>
+	</tbody>
+</table>

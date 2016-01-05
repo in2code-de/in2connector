@@ -77,6 +77,7 @@ class ConnectionLinker
             }
             $this->orphanedConnections = $configured;
             $this->unconfiguredConnections = $demanded;
+            $this->computed = true;
         }
 
     }
