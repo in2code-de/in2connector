@@ -74,6 +74,10 @@ class LdapDriver extends AbstractDriver
         } else {
             $connection = ldap_connect($this->settings['hostname'], $this->settings['port']);
         }
+
+        // reduce timeout to prevent php timeout and waiting time in the connection overview
+        ldap_set_option($connection, LDAP_OPT_NETWORK_TIMEOUT, 3);
+
         // check investigated error
         if ($this->lastErrorCode !== self::TEST_OK) {
             $this->captureErrors(false);
