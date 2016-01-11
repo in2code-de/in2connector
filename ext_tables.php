@@ -5,6 +5,7 @@ if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
     if (!defined('TX_IN2CONNECTOR')) {
         define('TX_IN2CONNECTOR', 'tx_in2connector');
         define('TX_IN2CONNECTOR_DRIVER_LDAP', 'ldap');
+        define('TX_IN2CONNECTOR_DRIVER_SOAP', 'soap');
     }
 
     // Extkey fallback
@@ -37,6 +38,11 @@ if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
                 TX_IN2CONNECTOR_DRIVER_LDAP,
                 \In2code\In2connector\Driver\LdapDriver::class,
                 'Driver/Ldap/Forms/Settings'
+            );
+            $connectionRegistry->registerDriver(
+                TX_IN2CONNECTOR_DRIVER_SOAP,
+                \In2code\In2connector\Driver\SoapDriver::class,
+                'Driver/Soap/Forms/Settings'
             );
 
             // register backend module

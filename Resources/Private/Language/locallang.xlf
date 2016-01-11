@@ -169,6 +169,49 @@
             <trans-unit id="driver.ldap.server_unreachable">
                 <source>The server is unreachable. Check the hostname, port and server status.</source>
             </trans-unit>
+
+            <trans-unit id="driver.soap.settings.wsdl_file">
+                <source>WSDL file</source>
+            </trans-unit>
+            <trans-unit id="driver.soap.settings.username">
+                <source>Username (only if authentication is required)</source>
+            </trans-unit>
+            <trans-unit id="driver.soap.settings.password">
+                <source>Password (only if authentication is required)</source>
+            </trans-unit>
+            <trans-unit id="driver.soap.test.wsdl_file_empty">
+                <source>No WSDL file configured</source>
+            </trans-unit>
+            <trans-unit id="driver.soap.test.wsdl_file_not_readable">
+                <source>The given WSDL file could not be retrieved. Check the file location and your network settings.</source>
+            </trans-unit>
+            <trans-unit id="driver.soap.settings.version">
+                <source>SOAP version</source>
+            </trans-unit>
+            <trans-unit id="driver.soap.test.version_not_recognized">
+                <source>The given SOAP version was not recognized</source>
+            </trans-unit>
+            <trans-unit id="driver.ldap.settings.compression">
+                <source>Enable compression</source>
+            </trans-unit>
+            <trans-unit id="driver.soap.test.compression_not_set">
+                <source>No compression setting detected</source>
+            </trans-unit>
+            <trans-unit id="driver.ldap.settings.encoding">
+                <source>Enable compression</source>
+            </trans-unit>
+            <trans-unit id="driver.soap.test.encoding_not_set">
+                <source>No encoding setting detected</source>
+            </trans-unit>
+            <trans-unit id="driver.soap.test.version_empty">
+                <source>No SOAP version configured</source>
+            </trans-unit>
+            <trans-unit id="driver.soap.test.encoding_not_recognized">
+                <source>The encoding type was not recognized</source>
+            </trans-unit>
+            <trans-unit id="driver.soap.test.soap_error">
+                <source>A SOAP error occured "[Code %d]: %s"</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>
