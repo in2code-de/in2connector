@@ -28,11 +28,6 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
  */
 class LogRepository extends Repository
 {
-    /**
-     * @var \In2code\In2connector\Service\ConfigurationService
-     * @inject
-     */
-    protected $configurationService = null;
 
     /**
      * Newest log entries first!
@@ -42,12 +37,4 @@ class LogRepository extends Repository
     protected $defaultOrderings = [
         'uid' => QueryInterface::ORDER_DESCENDING,
     ];
-
-    /**
-     * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
-     */
-    public function findWithLimit()
-    {
-        return $this->createQuery()->setLimit($this->configurationService->getLogsPerPage())->execute();
-    }
 }

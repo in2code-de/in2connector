@@ -48,11 +48,17 @@ class DashboardController extends ActionController
     protected $connectionRegistry = null;
 
     /**
+     * @var \In2code\In2connector\Service\ConfigurationService
+     * @inject
+     */
+    protected $configurationService = null;
+
+    /**
      *
      */
     public function indexAction()
     {
-        $this->view->assign('logs', $this->logRepository->findWithLimit());
+        $this->view->assign('logs', $this->logRepository->findAll());
         $this->view->assign(
             'connectionLinker',
             new ConnectionLinker(
@@ -60,6 +66,7 @@ class DashboardController extends ActionController
                 $this->connectionRegistry->getDemandedConnections()
             )
         );
+        $this->view->assign('logsPerPage', $this->configurationService->getLogsPerPage());
     }
 
     /**
