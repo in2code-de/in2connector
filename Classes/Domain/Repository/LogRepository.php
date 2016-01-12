@@ -4,7 +4,7 @@ namespace In2code\In2connector\Domain\Repository;
 /*
  * Copyright notice
  *
- * (c) 2015 Oliver Eglseder <oliver.eglseder@in2code.de>, in2code GmbH
+ * (c) 2015-2016 Oliver Eglseder <oliver.eglseder@in2code.de>, in2code GmbH
  *
  * All rights reserved
  *
