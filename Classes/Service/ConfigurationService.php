@@ -21,6 +21,7 @@ namespace In2code\In2connector\Service;
  */
 
 use In2code\In2connector\Domain\Model\Dto\Configuration;
+use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -62,7 +63,11 @@ class ConfigurationService implements SingletonInterface
      */
     public function __construct()
     {
-        $this->registry = GeneralUtility::makeInstance(Registry::class);
+        if ($this->isDatabaseReady()) {
+            $this->registry = GeneralUtility::makeInstance(Registry::class);
+        } else {
+            $this->registry = GeneralUtility::makeInstance(NullRegistry::class);
+        }
         $this->logLevel = $this->registry->get(TX_IN2CONNECTOR, self::LOG_LEVEL, $this->logLevel);
         $this->logsPerPage = $this->registry->get(TX_IN2CONNECTOR, self::LOGS_PER_PAGE, $this->logsPerPage);
         $this->productionContext = $this->registry->get(
@@ -145,5 +150,25 @@ class ConfigurationService implements SingletonInterface
     {
         $this->registry->set(TX_IN2CONNECTOR, self::PRODUCTION_CONTEXT, $productionContext);
         $this->productionContext = $productionContext;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isDatabaseReady()
+    {
+        $databaseConnection = $this->getDatabaseConnection();
+        if (null !== $databaseConnection) {
+            return in_array('tx_in2connector_log', $databaseConnection->admin_get_tables());
+        }
+        return false;
+    }
+
+    /**
+     * @return DatabaseConnection|null
+     */
+    protected function getDatabaseConnection()
+    {
+        return !empty($GLOBALS['TYPO3_DB']) ? $GLOBALS['TYPO3_DB'] : null;
     }
 }
