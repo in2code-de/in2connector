@@ -22,7 +22,7 @@
 			<f:then>
 				<f:form id="ConfigureConnection" action="setConfig" object="{connection}" objectName="connection"
 						method="post">
-					<f:render partial="Model/Connection/Forms/Configure" arguments="{connection:connection}"/>
+					<f:render partial="Model/Connection/Forms/Configure" arguments="{connection:connection,isDemanded:isDemanded}"/>
 				</f:form>
 			</f:then>
 			<f:else>

@@ -21,6 +21,7 @@ namespace In2code\In2connector\Controller;
  */
 
 use In2code\In2connector\Domain\Model\Connection;
+use In2code\In2connector\Registry\ConnectionRegistry;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 /**
@@ -75,6 +76,9 @@ class ConnectionController extends ActionController
      */
     public function configureAction(Connection $connection)
     {
+        $connectionRegistry = $this->objectManager->get(ConnectionRegistry::class);
+        $isDemanded = $connectionRegistry->hasDemandedConnection($connection->getIdentityKey());
+        $this->view->assign('isDemanded', $isDemanded);
         $this->view->assign('connection', $connection);
     }
 

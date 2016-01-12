@@ -211,4 +211,13 @@ class ConnectionRegistry implements SingletonInterface
     {
         return $this->demandedConnections;
     }
+
+    /**
+     * @param string $identityKey
+     * @return bool
+     */
+    public function hasDemandedConnection($identityKey)
+    {
+        return isset($this->demandedConnections[$identityKey]);
+    }
 }
