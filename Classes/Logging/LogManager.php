@@ -20,31 +20,29 @@ namespace In2code\In2connector\Logging;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Log\LogManager as CoreLogManager;
 
 /**
- * Class LoggerTrait
+ * Class LogManager
  */
-trait LoggerTrait
+class LogManager extends CoreLogManager
 {
     /**
-     * You should always use $this->getLogger() instead of $this->logger, because it might not be secured, that the
-     * logger was initialized already
-     *
-     * @var LoggerProxy
-     */
-    protected $logger = null;
-
-    /**
+     * @param string $name
      * @return LoggerProxy
-     * @api
      */
-    protected function getLogger()
+    public function getLogger($name = '')
     {
-        if (null === $this->logger) {
-            $this->logger = GeneralUtility::makeInstance(LogManager::class)
-                                          ->getLogger(get_class($this));
+        $name = str_replace(['_', '\\'], '.', $name);
+
+        if (isset($this->loggers[$name])) {
+            $logger = $this->loggers[$name];
+        } else {
+            $logger = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(LoggerProxy::class, $name);
+            $this->loggers[$name] = $logger;
+            $this->setWritersForLogger($logger);
+            $this->setProcessorsForLogger($logger);
         }
-        return $this->logger;
+        return $logger;
     }
 }
