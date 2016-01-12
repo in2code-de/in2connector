@@ -22,6 +22,8 @@ namespace In2code\In2connector\Controller;
 
 use In2code\In2connector\Domain\Model\Connection;
 use In2code\In2connector\Registry\ConnectionRegistry;
+use In2code\In2connector\Translation\TranslationTrait;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 /**
@@ -29,12 +31,14 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
  */
 class ConnectionController extends ActionController
 {
+    use TranslationTrait;
     const CONTROLLER_NAME = 'Connection';
     const ACTION_NEW_FROM_DEMAND = 'newFromDemand';
     const ACTION_NEW = 'new';
     const ACTION_CREATE = 'create';
     const ACTION_CONFIGURE = 'configure';
     const ACTION_SET_CONFIG = 'setConfig';
+    const ACTION_DELETE = 'delete';
 
     /**
      * @var \In2code\In2connector\Domain\Repository\ConnectionRepository
@@ -92,17 +96,40 @@ class ConnectionController extends ActionController
     }
 
     /**
+     * @param Connection $connection
+     */
+    public function deleteAction(Connection $connection)
+    {
+        $connectionRegistry = $this->objectManager->get(ConnectionRegistry::class);
+        if ($connectionRegistry->hasDemandedConnection($connection->getIdentityKey())) {
+            $this->addFlashMessage(
+                $this->translate(
+                    'controller.connection.delete.connection_is_demanded',
+                    [$connection->getIdentityKey()]
+                ),
+                $this->translate('controller.connection.delete.delete_failed'),
+                AbstractMessage::ERROR
+            );
+        } else {
+            $this->connectionRepository->removeAndPersist($connection);
+        }
+        $this->redirect(DashboardController::ACTION_INDEX, DashboardController::CONTROLLER_NAME);
+    }
+
+    /**
      * @return string
      */
     public static function getModuleActions()
     {
-        return implode(',',
+        return implode(
+            ',',
             [
                 self::ACTION_NEW_FROM_DEMAND,
                 self::ACTION_NEW,
                 self::ACTION_CREATE,
                 self::ACTION_CONFIGURE,
                 self::ACTION_SET_CONFIG,
+                self::ACTION_DELETE,
             ]
         );
     }

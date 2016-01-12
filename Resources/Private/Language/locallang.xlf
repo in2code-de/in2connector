@@ -212,6 +212,13 @@
             <trans-unit id="driver.soap.test.soap_error">
                 <source>A SOAP error occured "[Code %d]: %s"</source>
             </trans-unit>
+
+            <trans-unit id="controller.connection.delete.connection_is_demanded">
+                <source>Can not delete the connection "%s", because it has a demand</source>
+            </trans-unit>
+            <trans-unit id="controller.connection.delete.delete_failed">
+                <source>Deletion failed</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>

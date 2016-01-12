@@ -45,4 +45,13 @@ class ConnectionRepository extends Repository
         parent::update($connection);
         $this->persistenceManager->persistAll();
     }
+
+    /**
+     * @param Connection $connection
+     */
+    public function removeAndPersist(Connection $connection)
+    {
+        parent::remove($connection);
+        $this->persistenceManager->persistAll();
+    }
 }

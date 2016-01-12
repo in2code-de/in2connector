@@ -23,8 +23,12 @@
 						{connection.driver}
 					</td>
 					<td>
+						<f:render partial="View/ButtonGroup/Open"/>
 						<f:render partial="View/Buttons/ActionButton"
 								  arguments="{icon:'actions-system-extension-configure', action:'configure', controller:'Connection', arguments:'{connection:connection}'}"/>
+						<f:render partial="View/Buttons/ActionButton"
+								  arguments="{icon:'actions-edit-delete', action:'delete', controller:'Connection', arguments:'{connection:connection}'}"/>
+						<f:render partial="View/ButtonGroup/Close"/>
 					</td>
 				</tr>
 			</f:for>
