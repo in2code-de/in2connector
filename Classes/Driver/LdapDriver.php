@@ -69,8 +69,7 @@ class LdapDriver extends AbstractDriver
         }
 
         if (true === (bool)$this->settings['ldaps']) {
-//            $connection = ldap_connect(self::LDAPS_PROTOCOL . $this->settings['hostname'], $this->settings['port']);
-            $connection = ldap_connect('ldaps://localhost:10635');
+            $connection = ldap_connect(self::LDAPS_PROTOCOL . $this->settings['hostname'], $this->settings['port']);
         } else {
             $connection = ldap_connect($this->settings['hostname'], $this->settings['port']);
         }
