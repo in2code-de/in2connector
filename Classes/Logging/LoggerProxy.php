@@ -82,7 +82,7 @@ class LoggerProxy extends Logger
     {
         $databaseConnection = $this->getDatabaseConnection();
         if (null !== $databaseConnection) {
-            return in_array('tx_in2connector_log', $databaseConnection->admin_get_tables());
+            return in_array('tx_in2connector_log', array_keys($databaseConnection->admin_get_tables()));
         }
         return false;
     }

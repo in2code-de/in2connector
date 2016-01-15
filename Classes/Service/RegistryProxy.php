@@ -153,7 +153,7 @@ class RegistryProxy extends Registry
     {
         $databaseConnection = $this->getDatabaseConnection();
         if (null !== $databaseConnection) {
-            return in_array('sys_registry', $databaseConnection->admin_get_tables());
+            return in_array('sys_registry', array_keys($databaseConnection->admin_get_tables()));
         }
         return false;
     }
