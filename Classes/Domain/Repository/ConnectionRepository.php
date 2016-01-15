@@ -54,4 +54,24 @@ class ConnectionRepository extends Repository
         parent::remove($connection);
         $this->persistenceManager->persistAll();
     }
+
+    /**
+     * @param string $identityKey
+     * @return int
+     */
+    public function countByIdentityKey($identityKey)
+    {
+        $query = $this->createQuery();
+        return $query->matching($query->equals('identityKey', $identityKey))->execute()->count();
+    }
+
+    /**
+     * @param string $identityKey
+     * @return Connection
+     */
+    public function findOneByIdentityKey($identityKey)
+    {
+        $query = $this->createQuery();
+        return $query->matching($query->equals('identityKey', $identityKey))->setLimit(1)->execute()->getFirst();
+    }
 }
