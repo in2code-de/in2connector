@@ -197,4 +197,14 @@ class Connection extends AbstractEntity
         $this->testExecuted = false;
         $this->testResultMessage = '';
     }
+
+    /**
+     * @return \In2code\In2connector\Driver\AbstractDriver
+     * @throws DriverNameNotRegisteredException
+     */
+    public function getDriverInstance()
+    {
+        $connectionRegistry = GeneralUtility::makeInstance(ConnectionRegistry::class);
+        return $connectionRegistry->getRegisteredDriver($this->driver)->getDriverInstance();
+    }
 }
