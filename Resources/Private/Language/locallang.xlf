@@ -136,6 +136,9 @@
             <trans-unit id="driver.ldap.settings.ldaps">
                 <source>Use LDAPS (Secure)</source>
             </trans-unit>
+            <trans-unit id="driver.ldap.settings.timeout">
+                <source>Timout in seconds</source>
+            </trans-unit>
             <trans-unit id="driver.ldap.test.hostname_empty">
                 <source>Hostname is empty</source>
             </trans-unit>
