@@ -48,15 +48,6 @@ class SoapDriver extends AbstractDriver
             return false;
         }
 
-        $wsdlUrl = $this->getWsdlUrl();
-        $content = $this->getUrl($wsdlUrl);
-
-        if (false === $content) {
-            $this->lastErrorCode = self::TEST_WSDL_FILE_EMPTY;
-            $this->lastErrorMessage = $this->translate('driver.soap.test.wsdl_file_not_readable');
-            return false;
-        }
-
         $options = [];
 
         if (empty($this->settings['version'])) {
@@ -113,6 +104,7 @@ class SoapDriver extends AbstractDriver
             }
         }
 
+        $wsdlUrl = $this->getWsdlUrl();
         try {
             $soapClient = new \SoapClient($wsdlUrl, $options);
         } catch (\SoapFault $exception) {
@@ -129,19 +121,6 @@ class SoapDriver extends AbstractDriver
         }
 
         return true;
-    }
-
-    /**
-     * @param string $url
-     * @return string|false
-     */
-    protected function getUrl($url)
-    {
-        $backupCurlTimeout = $GLOBALS['TYPO3_CONF_VARS']['SYS']['curlTimeout'];
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['curlTimeout'] = 3;
-        $content = GeneralUtility::getUrl($url);
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['curlTimeout'] = $backupCurlTimeout;
-        return $content;
     }
 
     /**
