@@ -42,6 +42,11 @@ class LdapDriver extends AbstractDriver
     const ERROR_SEARCH_FAILED = 201;
 
     /**
+     * @var resource
+     */
+    protected $connection = null;
+
+    /**
      * @return bool
      */
     public function validateSettings()
@@ -177,7 +182,7 @@ class LdapDriver extends AbstractDriver
                 ]
             );
             return true;
-        } elseif('ldap_bind(): Unable to bind to server: Can\'t contact LDAP server' === $errorMessage) {
+        } elseif ('ldap_bind(): Unable to bind to server: Can\'t contact LDAP server' === $errorMessage) {
             $this->lastErrorCode = self::TEST_SERVER_UNREACHABLE;
             $this->lastErrorMessage = $this->translate('driver.ldap.server_unreachable');
             $this->getLogger()->error(
@@ -194,5 +199,127 @@ class LdapDriver extends AbstractDriver
             return true;
         }
         return false;
+    }
+
+    /**
+     *
+     */
+    protected function initialize()
+    {
+        if (!is_resource($this->connection)) {
+            if (true === (bool)$this->settings['ldaps']) {
+                $this->connection = ldap_connect(
+                    self::LDAPS_PROTOCOL . $this->settings['hostname'],
+                    $this->settings['port']
+                );
+            } else {
+                $this->connection = ldap_connect($this->settings['hostname'], $this->settings['port']);
+            }
+            ldap_set_option($this->connection, LDAP_OPT_NETWORK_TIMEOUT, $this->settings['timeout']);
+            ldap_set_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, (int)$this->settings['protocolVersion']);
+            ldap_bind($this->connection, $this->settings['username'], $this->settings['password']);
+        }
+    }
+
+    /**
+     *
+     */
+    public function __destruct()
+    {
+        if (is_resource($this->connection)) {
+            ldap_unbind($this->connection);
+        } else {
+            unset($this->connection);
+        }
+    }
+
+    /**
+     * @param string $distinguishedName
+     * @param string $filter
+     * @return resource
+     */
+    public function listDirectory($distinguishedName, $filter)
+    {
+        $this->initialize();
+        return ldap_list($this->connection, $distinguishedName, $filter);
+    }
+
+    /**
+     * @param resource $resource
+     * @return array
+     */
+    public function getResults($resource)
+    {
+        $this->initialize();
+        return ldap_get_entries($this->connection, $resource);
+    }
+
+    /**
+     * @param resource $resource
+     * @return array
+     */
+    public function countResults($resource)
+    {
+        $this->initialize();
+        return ldap_count_entries($this->connection, $resource);
+    }
+
+    /**
+     * @param string $distinguishedName
+     * @param string $filter
+     * @return resource
+     */
+    public function search($distinguishedName, $filter)
+    {
+        $this->initialize();
+        return ldap_search($this->connection, $distinguishedName, $filter);
+    }
+
+    /**
+     * @param resource $entry
+     * @return string
+     */
+    public function getDnOfEntry($entry)
+    {
+        $this->initialize();
+        return ldap_get_dn($this->connection, $entry);
+    }
+
+    /**
+     * Escapes LDAP Characters and Prevents LDAP Injection
+     *
+     * Example:
+     * $user = '*)(username=test+1234@lightwerk.com)';
+     * var_dump("cn=" . Ldap::escape($user));
+     * // string(64) "cn=\5c2a\5c29\5c28username\3dtest\2b1234@lightwerk.com\5c29"
+     * var_dump("cn=" . Ldap::escape($user, true));
+     * // string(52) "cn=\2a\29\28username=test+1234@lightwerk.com\29"
+     * var_dump("cn=" . Ldap::escape($user, false));
+     * // string(48) "cn=*)(username\3dtest\>2b1234@lightwerk.com)"
+     *
+     * @param String $string
+     * @param Boolean $dn
+     * @return String
+     */
+    protected function escape($string, $dn = null)
+    {
+        $escapeDn = array('\\', '*', '(', ')', "\x00");
+        $escape = array('\\', ',', '=', '+', '<', '>', ';', '"', '#');
+
+        $search = array();
+        if ($dn === null) {
+            $search = array_merge($search, $escapeDn, $escape);
+        } elseif ($dn === false) {
+            $search = array_merge($search, $escape);
+        } else {
+            $search = array_merge($search, $escapeDn);
+        }
+
+        $replace = array();
+        foreach ($search as $char) {
+            $replace[] = sprintf('\\%02x', ord($char));
+        }
+
+        return str_replace($search, $replace, $string);
     }
 }
