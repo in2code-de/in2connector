@@ -205,6 +205,8 @@ class Connection extends AbstractEntity
     public function getDriverInstance()
     {
         $connectionRegistry = GeneralUtility::makeInstance(ConnectionRegistry::class);
-        return $connectionRegistry->getRegisteredDriver($this->driver)->getDriverInstance();
+        $driverInstance = $connectionRegistry->getRegisteredDriver($this->driver)->getDriverInstance();
+        $driverInstance->setSettings($this->getSettings());
+        return $driverInstance;
     }
 }
