@@ -226,9 +226,18 @@ class LdapDriver extends AbstractDriver
                 );
             }
             ldap_set_option($this->connection, LDAP_OPT_NETWORK_TIMEOUT, $this->settings['timeout']);
-            ldap_bind($this->connection, $this->settings['username'], $this->settings['password']);
             if ('NULL' !== $this->settings['protocolVersion']) {
                 ldap_set_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, (int)$this->settings['protocolVersion']);
+            }
+            $success = ldap_bind($this->connection, $this->settings['username'], $this->settings['password']);
+            if (false === $success) {
+                $this->getLogger()->error(
+                    sprintf('Authentication to LDAP failed for user "%s"', $this->settings['username'])
+                );
+            } else {
+                $this->getLogger()->info(
+                    sprintf('Authentication to LDAP successful for user "%s"', $this->settings['username'])
+                );
             }
         }
     }
