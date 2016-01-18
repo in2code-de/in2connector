@@ -298,6 +298,29 @@ class LdapDriver extends AbstractDriver
     }
 
     /**
+     * @return array
+     */
+    public function getInfo()
+    {
+        $this->initialize();
+        $info = [];
+        ldap_get_option($this->connection, LDAP_OPT_DEREF, $info['LDAP_OPT_DEREF']);
+        ldap_get_option($this->connection, LDAP_OPT_SIZELIMIT, $info['LDAP_OPT_SIZELIMIT']);
+        ldap_get_option($this->connection, LDAP_OPT_TIMELIMIT, $info['LDAP_OPT_TIMELIMIT']);
+        ldap_get_option($this->connection, LDAP_OPT_NETWORK_TIMEOUT, $info['LDAP_OPT_NETWORK_TIMEOUT']);
+        ldap_get_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, $info['LDAP_OPT_PROTOCOL_VERSION']);
+        ldap_get_option($this->connection, LDAP_OPT_ERROR_NUMBER, $info['LDAP_OPT_ERROR_NUMBER']);
+        ldap_get_option($this->connection, LDAP_OPT_REFERRALS, $info['LDAP_OPT_REFERRALS']);
+        ldap_get_option($this->connection, LDAP_OPT_RESTART, $info['LDAP_OPT_RESTART']);
+        ldap_get_option($this->connection, LDAP_OPT_HOST_NAME, $info['LDAP_OPT_HOST_NAME']);
+        ldap_get_option($this->connection, LDAP_OPT_ERROR_STRING, $info['LDAP_OPT_ERROR_STRING']);
+        ldap_get_option($this->connection, LDAP_OPT_MATCHED_DN, $info['LDAP_OPT_MATCHED_DN']);
+        ldap_get_option($this->connection, LDAP_OPT_SERVER_CONTROLS, $info['LDAP_OPT_SERVER_CONTROLS']);
+        ldap_get_option($this->connection, LDAP_OPT_CLIENT_CONTROLS, $info['LDAP_OPT_CLIENT_CONTROLS']);
+        return $info;
+    }
+
+    /**
      * Escapes LDAP Characters and Prevents LDAP Injection
      *
      * Example:
