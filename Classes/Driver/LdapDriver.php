@@ -32,7 +32,7 @@ class LdapDriver extends AbstractDriver
     const TEST_OK = 0;
     const TEST_HOSTNAME_EMPTY = 100;
     const TEST_WRONG_PORT = 101;
-    const TEST_PROTOCOL_VERSION_EMPTY = 102;
+    const TEST_PROTOCOL_VERSION_ERROR = 102;
     const TEST_CONNECTION_FAILED = 103;
     const TEST_COULD_NOT_SET_PROTOCOL_VERSION = 104;
     const TEST_WRONG_CREDENTIALS = 105;
@@ -94,18 +94,20 @@ class LdapDriver extends AbstractDriver
             return false;
         }
 
-        if (!isset($this->settings['protocolVersion'])) {
-            $this->lastErrorCode = self::TEST_PROTOCOL_VERSION_EMPTY;
-            $this->lastErrorMessage = $this->translate('driver.ldap.test.protocol_version_empty');
-            $this->captureErrors(false);
-            return false;
-        }
-
-        if (!ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, (int)$this->settings['protocolVersion'])) {
-            $this->lastErrorCode = self::TEST_COULD_NOT_SET_PROTOCOL_VERSION;
-            $this->lastErrorMessage = $this->translate('driver.ldap.test.protocol_version_not_settable');
-            $this->captureErrors(false);
-            return false;
+        if ($this->settings['protocolVersion'] !== 'NULL') {
+            if (!in_array((int)$this->settings['protocolVersion'], [2, 3])) {
+                $this->lastErrorCode = self::TEST_PROTOCOL_VERSION_ERROR;
+                $this->lastErrorMessage = $this->translate('driver.ldap.test.protocol_version_error');
+                $this->captureErrors(false);
+                return false;
+            } else {
+                if (!ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, (int)$this->settings['protocolVersion'])) {
+                    $this->lastErrorCode = self::TEST_COULD_NOT_SET_PROTOCOL_VERSION;
+                    $this->lastErrorMessage = $this->translate('driver.ldap.test.protocol_version_not_settable');
+                    $this->captureErrors(false);
+                    return false;
+                }
+            }
         }
 
         if (!ldap_bind($connection, $this->settings['username'], $this->settings['password'])) {
@@ -224,8 +226,10 @@ class LdapDriver extends AbstractDriver
                 );
             }
             ldap_set_option($this->connection, LDAP_OPT_NETWORK_TIMEOUT, $this->settings['timeout']);
-            ldap_set_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, (int)$this->settings['protocolVersion']);
             ldap_bind($this->connection, $this->settings['username'], $this->settings['password']);
+            if ('NULL' !== $this->settings['protocolVersion']) {
+                ldap_set_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, (int)$this->settings['protocolVersion']);
+            }
         }
     }
 
