@@ -74,10 +74,11 @@ class LdapDriver extends AbstractDriver
         }
 
         if (true === (bool)$this->settings['ldaps']) {
-            $connection = ldap_connect(self::LDAPS_PROTOCOL . $this->settings['hostname'], $this->settings['port']);
+            $hostname = self::LDAPS_PROTOCOL . $this->settings['hostname'];
         } else {
-            $connection = ldap_connect($this->settings['hostname'], $this->settings['port']);
+            $hostname = $this->settings['hostname'];
         }
+        $connection = ldap_connect($hostname, $this->settings['port']);
 
         // reduce timeout to prevent php timeout and waiting time in the connection overview
         ldap_set_option($connection, LDAP_OPT_NETWORK_TIMEOUT, 3);
@@ -208,12 +209,19 @@ class LdapDriver extends AbstractDriver
     {
         if (!is_resource($this->connection)) {
             if (true === (bool)$this->settings['ldaps']) {
-                $this->connection = ldap_connect(
-                    self::LDAPS_PROTOCOL . $this->settings['hostname'],
-                    $this->settings['port']
+                $hostName = self::LDAPS_PROTOCOL . $this->settings['hostname'];
+            } else {
+                $hostName = $this->settings['hostname'];
+            }
+            $this->connection = ldap_connect($hostName, (int)$this->settings['port']);
+            if (false === $this->connection) {
+                $this->getLogger()->error(
+                    sprintf('Connection to "%s" on port [%d] failed', $hostName, $this->settings['port'])
                 );
             } else {
-                $this->connection = ldap_connect($this->settings['hostname'], $this->settings['port']);
+                $this->getLogger()->info(
+                    sprintf('Successful connected to "%s" on port [%d]', $hostName, $this->settings['port'])
+                );
             }
             ldap_set_option($this->connection, LDAP_OPT_NETWORK_TIMEOUT, $this->settings['timeout']);
             ldap_set_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, (int)$this->settings['protocolVersion']);
