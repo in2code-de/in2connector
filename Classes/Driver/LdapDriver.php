@@ -286,6 +286,15 @@ class LdapDriver extends AbstractDriver
     }
 
     /**
+     * @param resource $resource
+     * @return bool
+     */
+    public function freeResult($resource)
+    {
+        return ldap_free_result($resource);
+    }
+
+    /**
      * @param string $distinguishedName
      * @param string $filter
      * @return resource
