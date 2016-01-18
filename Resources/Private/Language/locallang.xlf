@@ -151,8 +151,8 @@
             <trans-unit id="driver.ldap.test.connection_failed">
                 <source>Could not connect to the given host and port</source>
             </trans-unit>
-            <trans-unit id="driver.ldap.test.protocol_version_empty">
-                <source>No protocol version has been chosen</source>
+            <trans-unit id="driver.ldap.test.protocol_version_error">
+                <source>The chosen protocol version was not recognized</source>
             </trans-unit>
             <trans-unit id="driver.ldap.test.protocol_version_not_settable">
                 <source>An error occured while setting the protocol version</source>
