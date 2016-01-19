@@ -205,10 +205,11 @@ class LdapDriver extends AbstractDriver
     }
 
     /**
-     *
+     * @return bool
      */
     protected function initialize()
     {
+        $success = false;
         if (!is_resource($this->connection)) {
             if (true === (bool)$this->settings['ldaps']) {
                 $hostName = self::LDAPS_PROTOCOL . $this->settings['hostname'];
@@ -240,6 +241,7 @@ class LdapDriver extends AbstractDriver
                 );
             }
         }
+        return $success;
     }
 
     /**
@@ -316,6 +318,44 @@ class LdapDriver extends AbstractDriver
     }
 
     /**
+     * @param $distinguishedName
+     * @return bool
+     */
+    public function delete($distinguishedName)
+    {
+        $this->initialize();
+        return ldap_delete($this->connection, $distinguishedName);
+    }
+
+    /**
+     * @param string $distinguishedName
+     * @param array $values
+     * @return bool
+     */
+    public function modify($distinguishedName, array $values)
+    {
+        foreach ($values as $key => $unescaped) {
+            $values[$key] = $this->escape($unescaped);
+        }
+        $this->initialize();
+        return ldap_modify($this->connection, $distinguishedName, $values);
+    }
+
+    /**
+     * @param $distinguishedName
+     * @param array $values
+     * @return bool
+     */
+    public function add($distinguishedName, array $values)
+    {
+        foreach ($values as $key => $unescaped) {
+            $values[$key] = $this->escape($unescaped);
+        }
+        $this->initialize();
+        return ldap_add($this->connection, $distinguishedName, $values);
+    }
+
+    /**
      * @return array
      */
     public function getInfo()
@@ -336,6 +376,35 @@ class LdapDriver extends AbstractDriver
         ldap_get_option($this->connection, LDAP_OPT_SERVER_CONTROLS, $info['LDAP_OPT_SERVER_CONTROLS']);
         ldap_get_option($this->connection, LDAP_OPT_CLIENT_CONTROLS, $info['LDAP_OPT_CLIENT_CONTROLS']);
         return $info;
+    }
+
+    /**
+     *
+     */
+    public function logout()
+    {
+        if (is_resource($this->connection)) {
+            ldap_unbind($this->connection);
+        }
+    }
+
+    /**
+     * @param string $distinguishedName
+     * @param string $password
+     * @return bool
+     */
+    public function testLogin($distinguishedName, $password)
+    {
+        $settings = $this->settings;
+        $settings['username'] = $distinguishedName;
+        $settings['password'] = $password;
+
+        $ldapDriver = clone $this;
+        $ldapDriver->setSettings($settings);
+        $ldapDriver->logout();
+        $result = $ldapDriver->initialize();
+        $ldapDriver->logout();
+        return $result;
     }
 
     /**
