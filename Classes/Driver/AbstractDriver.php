@@ -76,9 +76,11 @@ abstract class AbstractDriver
     /**
      * @param array $settings
      */
-    public function setSettings(array $settings)
+    public function setSettings(array $settings = null)
     {
-        $this->settings = $settings;
+        if (null !== $settings) {
+            $this->settings = $settings;
+        }
     }
 
     /**

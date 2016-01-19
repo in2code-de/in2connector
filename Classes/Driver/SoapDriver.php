@@ -234,10 +234,14 @@ class SoapDriver extends AbstractDriver
      * @param mixed $parameter
      * @return mixed
      */
-    public function call($function, $parameter)
+    public function call($function, $parameter = null)
     {
         $this->initialize();
-        return call_user_func([$this->soapClient, $function], $parameter);
+        if (null === $parameter) {
+            return call_user_func([$this->soapClient, $function]);
+        } else {
+            return call_user_func([$this->soapClient, $function], $parameter);
+        }
     }
 
     /**
