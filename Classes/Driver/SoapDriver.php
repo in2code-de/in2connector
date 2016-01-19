@@ -38,6 +38,11 @@ class SoapDriver extends AbstractDriver
     const TEST_SOAP_ERROR = 306;
 
     /**
+     * @var \SoapClient
+     */
+    protected $soapClient = null;
+
+    /**
      * @return bool
      */
     public function validateSettings()
@@ -143,5 +148,106 @@ class SoapDriver extends AbstractDriver
             }
         }
         return $url;
+    }
+
+    public function initialize()
+    {
+        $result = false;
+        if (null === $this->soapClient) {
+            $wsdlUrl = $this->getWsdlUrl();
+            switch ($this->settings['version']) {
+                case '1001':
+                    $options['soap_version'] = SOAP_1_1;
+                    break;
+                case '1002':
+                    $options['soap_version'] = SOAP_1_2;
+                    break;
+                default:
+                    $this->lastErrorCode = self::TEST_UNRECOGNIZED_VERSION;
+                    $this->lastErrorMessage = $this->translate('driver.soap.test.version_not_recognized');
+                    return false;
+            }
+
+            if (!empty($this->settings['username'])) {
+                $options['login'] = $this->settings['username'];
+            }
+
+            if (!empty($this->settings['password'])) {
+                $options['password'] = $this->settings['password'];
+            }
+            if (true === (bool)$this->settings['compression']) {
+                $options['compression'] = SOAP_COMPRESSION_ACCEPT | SOAP_COMPRESSION_GZIP;
+            }
+            if (!empty($this->settings['classmap'])) {
+                $options['classmap'] = $this->settings['classmap'];
+            }
+
+            try {
+                $this->soapClient = new \SoapClient($wsdlUrl, $options);
+                $result = true;
+            } catch (\SoapFault $exception) {
+                // TODO: log stuff
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFunctions()
+    {
+        $this->initialize();
+        $signatures = $this->soapClient->__getFunctions();
+        $functions = [];
+        foreach ($signatures as $signature) {
+            if (1 === preg_match(
+                    '~(?P<return>[^\s]*) (?P<function>[^(]*)\((?P<arguments>.*)\)~',
+                    $signature,
+                    $matches
+                )
+            ) {
+                $functions[$matches['function']]['return'] = $matches['return'];
+                foreach (GeneralUtility::trimExplode(',', $matches['arguments']) as $key => $argument) {
+                    list($argumentType, $argumentName) = explode(' ', $argument);
+                    $functions[$matches['function']]['arguments']['[' . $key . '] ' . $argumentName] = $argumentType;
+                }
+            }
+        }
+        return $functions;
+    }
+
+    /**
+     * @param array $classMap
+     */
+    public function setClassMap(array $classMap)
+    {
+        if (is_object($this->soapClient)) {
+            // destroy current client
+            $this->soapClient = null;
+        }
+        $this->settings['classmap'] = $classMap;
+    }
+
+    /**
+     * @param string $function
+     * @param mixed $parameter
+     * @return mixed
+     */
+    public function call($function, $parameter)
+    {
+        $this->initialize();
+        return call_user_func([$this->soapClient, $function], $parameter);
+    }
+
+    /**
+     * @return array
+     */
+    public function getResponse()
+    {
+        return [
+            'header' => $this->soapClient->__getLastResponseHeaders(),
+            'response' => $this->soapClient->__getLastResponse(),
+        ];
     }
 }

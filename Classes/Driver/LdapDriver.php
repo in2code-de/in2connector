@@ -279,7 +279,7 @@ class LdapDriver extends AbstractDriver
 
     /**
      * @param resource $resource
-     * @return array
+     * @return int
      */
     public function countResults($resource)
     {
