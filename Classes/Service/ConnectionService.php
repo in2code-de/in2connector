@@ -20,6 +20,7 @@ namespace In2code\In2connector\Service;
  * The TYPO3 project - inspiring people to share!
  */
 
+use In2code\In2connector\Domain\Model\Connection;
 use In2code\In2connector\Domain\Repository\ConnectionRepository;
 use In2code\In2connector\Logging\LoggerTrait;
 use In2code\In2connector\Registry\ConnectionRegistry;
@@ -70,7 +71,10 @@ class ConnectionService implements SingletonInterface
     public function hasConnection($identityKey)
     {
         return true === $this->connectionRegistry->hasDemandedConnection($identityKey)
-               && 1 === $this->connectionRepository->countByIdentityKey($identityKey);
+               && 1 === $this->connectionRepository->countByIdentityKey($identityKey)
+               && (($connection = $this->connectionRepository->findOneByIdentityKey($identityKey)) instanceof
+                   Connection)
+               && ($connection::TEST_RESULT_OK === $connection->getConnectionTestResult());
     }
 
     /**
