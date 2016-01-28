@@ -21,6 +21,7 @@ namespace In2code\In2connector\Service;
  */
 
 use In2code\In2connector\Domain\Model\Dto\Configuration;
+use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Log\LogLevel;
 use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -33,6 +34,7 @@ class ConfigurationService implements SingletonInterface
 {
     const DEFAULT_LOGS_PER_PAGE = 25;
     const DEFAULT_PRODUCTION_CONTEXT = true;
+    const DEFAULT_LOG_LEVEL = LogLevel::DEBUG;
     const LOG_LEVEL = 'log_level';
     const LOGS_PER_PAGE = 'logs_per_page';
     const PRODUCTION_CONTEXT = 'production_context';
@@ -45,24 +47,31 @@ class ConfigurationService implements SingletonInterface
     /**
      * @var int
      */
-    protected $logLevel = LogLevel::DEBUG;
+    protected $logLevel = null;
 
     /**
      * @var int
      */
-    protected $logsPerPage = self::DEFAULT_LOGS_PER_PAGE;
+    protected $logsPerPage = null;
 
     /**
      * @var bool
      */
-    protected $productionContext = self::DEFAULT_PRODUCTION_CONTEXT;
+    protected $productionContext = null;
 
     /**
      * ConfigurationService constructor.
      */
     public function __construct()
     {
-        $this->registry = GeneralUtility::makeInstance(RegistryProxy::class);
+        $this->registry = GeneralUtility::makeInstance(Registry::class);
+    }
+
+    /**
+     *
+     */
+    protected function updateFromDatabase()
+    {
         $this->logLevel = $this->registry->get(TX_IN2CONNECTOR, self::LOG_LEVEL, $this->logLevel);
         $this->logsPerPage = $this->registry->get(TX_IN2CONNECTOR, self::LOGS_PER_PAGE, $this->logsPerPage);
         $this->productionContext = $this->registry->get(
@@ -78,9 +87,9 @@ class ConfigurationService implements SingletonInterface
     public function getConfigurationDto()
     {
         $configuration = new Configuration();
-        $configuration->setLogLevel($this->logLevel);
-        $configuration->setLogsPerPage($this->logsPerPage);
-        $configuration->setProductionContext($this->productionContext);
+        $configuration->setLogLevel($this->getLogLevel());
+        $configuration->setLogsPerPage($this->getLogsPerPage());
+        $configuration->setProductionContext($this->isProductionContext());
         return $configuration;
     }
 
@@ -99,6 +108,12 @@ class ConfigurationService implements SingletonInterface
      */
     public function getLogLevel()
     {
+        if (null === $this->logLevel) {
+            if (!$this->isDatabaseReady()) {
+                return self::DEFAULT_LOG_LEVEL;
+            }
+            $this->logLevel = $this->registry->get(TX_IN2CONNECTOR, self::LOG_LEVEL, $this->logLevel);
+        }
         return $this->logLevel;
     }
 
@@ -108,7 +123,9 @@ class ConfigurationService implements SingletonInterface
     public function setLogLevel($logLevel)
     {
         if (($logLevel >= LogLevel::EMERGENCY) && ($logLevel <= LogLevel::DEBUG)) {
-            $this->registry->set(TX_IN2CONNECTOR, self::LOG_LEVEL, $logLevel);
+            if (!$this->isDatabaseReady()) {
+                $this->registry->set(TX_IN2CONNECTOR, self::LOG_LEVEL, $logLevel);
+            }
             $this->logLevel = $logLevel;
         }
     }
@@ -118,6 +135,12 @@ class ConfigurationService implements SingletonInterface
      */
     public function getLogsPerPage()
     {
+        if (null === $this->logsPerPage) {
+            if (!$this->isDatabaseReady()) {
+                return self::DEFAULT_LOGS_PER_PAGE;
+            }
+            $this->logsPerPage = $this->registry->get(TX_IN2CONNECTOR, self::LOGS_PER_PAGE, $this->logsPerPage);
+        }
         return $this->logsPerPage;
     }
 
@@ -126,7 +149,9 @@ class ConfigurationService implements SingletonInterface
      */
     public function setLogsPerPage($logsPerPage)
     {
-        $this->registry->set(TX_IN2CONNECTOR, self::LOGS_PER_PAGE, $logsPerPage);
+        if (!$this->isDatabaseReady()) {
+            $this->registry->set(TX_IN2CONNECTOR, self::LOGS_PER_PAGE, $logsPerPage);
+        }
         $this->logsPerPage = $logsPerPage;
     }
 
@@ -135,6 +160,16 @@ class ConfigurationService implements SingletonInterface
      */
     public function isProductionContext()
     {
+        if (null === $this->productionContext) {
+            if (!$this->isDatabaseReady()) {
+                return self::DEFAULT_PRODUCTION_CONTEXT;
+            }
+            $this->productionContext = $this->registry->get(
+                TX_IN2CONNECTOR,
+                self::PRODUCTION_CONTEXT,
+                $this->productionContext
+            );
+        }
         return $this->productionContext;
     }
 
@@ -143,7 +178,41 @@ class ConfigurationService implements SingletonInterface
      */
     public function setProductionContext($productionContext)
     {
-        $this->registry->set(TX_IN2CONNECTOR, self::PRODUCTION_CONTEXT, $productionContext);
+        if (!$this->isDatabaseReady()) {
+            $this->registry->set(TX_IN2CONNECTOR, self::PRODUCTION_CONTEXT, $productionContext);
+        }
         $this->productionContext = $productionContext;
+    }
+
+    /**
+     * Ensure to write all cached stuff back to the registry
+     */
+    public function __destruct()
+    {
+        if ($this->isDatabaseReady()) {
+            $this->registry->set(TX_IN2CONNECTOR, self::LOG_LEVEL, $this->logLevel);
+            $this->registry->set(TX_IN2CONNECTOR, self::LOGS_PER_PAGE, $this->logsPerPage);
+            $this->registry->set(TX_IN2CONNECTOR, self::PRODUCTION_CONTEXT, $this->productionContext);
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    protected function isDatabaseReady()
+    {
+        $databaseConnection = $this->getDatabaseConnection();
+        if (null !== $databaseConnection) {
+            return in_array('sys_registry', array_keys($databaseConnection->admin_get_tables()));
+        }
+        return false;
+    }
+
+    /**
+     * @return DatabaseConnection|null
+     */
+    protected function getDatabaseConnection()
+    {
+        return !empty($GLOBALS['TYPO3_DB']) ? $GLOBALS['TYPO3_DB'] : null;
     }
 }
