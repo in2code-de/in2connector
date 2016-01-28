@@ -53,10 +53,12 @@ class Configuration
 
     /**
      * @param int $logLevel
+     * @return $this
      */
     public function setLogLevel($logLevel)
     {
         $this->logLevel = $logLevel;
+        return $this;
     }
 
     /**
@@ -69,10 +71,12 @@ class Configuration
 
     /**
      * @param int $logsPerPage
+     * @return $this
      */
     public function setLogsPerPage($logsPerPage)
     {
         $this->logsPerPage = $logsPerPage;
+        return $this;
     }
 
     /**
@@ -84,10 +88,12 @@ class Configuration
     }
 
     /**
-     * @param boolean $productionContext
+     * @param bool $productionContext
+     * @return $this
      */
     public function setProductionContext($productionContext)
     {
         $this->productionContext = $productionContext;
+        return $this;
     }
 }

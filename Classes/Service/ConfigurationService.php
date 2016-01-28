@@ -68,29 +68,14 @@ class ConfigurationService implements SingletonInterface
     }
 
     /**
-     *
-     */
-    protected function updateFromDatabase()
-    {
-        $this->logLevel = $this->registry->get(TX_IN2CONNECTOR, self::LOG_LEVEL, $this->logLevel);
-        $this->logsPerPage = $this->registry->get(TX_IN2CONNECTOR, self::LOGS_PER_PAGE, $this->logsPerPage);
-        $this->productionContext = $this->registry->get(
-            TX_IN2CONNECTOR,
-            self::PRODUCTION_CONTEXT,
-            $this->productionContext
-        );
-    }
-
-    /**
      * @return Configuration
      */
     public function getConfigurationDto()
     {
         $configuration = new Configuration();
-        $configuration->setLogLevel($this->getLogLevel());
-        $configuration->setLogsPerPage($this->getLogsPerPage());
-        $configuration->setProductionContext($this->isProductionContext());
-        return $configuration;
+        return $configuration->setLogLevel($this->getLogLevel())
+                             ->setLogsPerPage($this->getLogsPerPage())
+                             ->setProductionContext($this->isProductionContext());
     }
 
     /**
@@ -109,10 +94,11 @@ class ConfigurationService implements SingletonInterface
     public function getLogLevel()
     {
         if (null === $this->logLevel) {
-            if (!$this->isDatabaseReady()) {
+            if ($this->isDatabaseReady()) {
+                $this->loadFromDatabase();
+            } else {
                 return self::DEFAULT_LOG_LEVEL;
             }
-            $this->logLevel = $this->registry->get(TX_IN2CONNECTOR, self::LOG_LEVEL, $this->logLevel);
         }
         return $this->logLevel;
     }
@@ -123,9 +109,6 @@ class ConfigurationService implements SingletonInterface
     public function setLogLevel($logLevel)
     {
         if (($logLevel >= LogLevel::EMERGENCY) && ($logLevel <= LogLevel::DEBUG)) {
-            if (!$this->isDatabaseReady()) {
-                $this->registry->set(TX_IN2CONNECTOR, self::LOG_LEVEL, $logLevel);
-            }
             $this->logLevel = $logLevel;
         }
     }
@@ -136,10 +119,11 @@ class ConfigurationService implements SingletonInterface
     public function getLogsPerPage()
     {
         if (null === $this->logsPerPage) {
-            if (!$this->isDatabaseReady()) {
+            if ($this->isDatabaseReady()) {
+                $this->loadFromDatabase();
+            } else {
                 return self::DEFAULT_LOGS_PER_PAGE;
             }
-            $this->logsPerPage = $this->registry->get(TX_IN2CONNECTOR, self::LOGS_PER_PAGE, $this->logsPerPage);
         }
         return $this->logsPerPage;
     }
@@ -149,9 +133,6 @@ class ConfigurationService implements SingletonInterface
      */
     public function setLogsPerPage($logsPerPage)
     {
-        if (!$this->isDatabaseReady()) {
-            $this->registry->set(TX_IN2CONNECTOR, self::LOGS_PER_PAGE, $logsPerPage);
-        }
         $this->logsPerPage = $logsPerPage;
     }
 
@@ -161,14 +142,11 @@ class ConfigurationService implements SingletonInterface
     public function isProductionContext()
     {
         if (null === $this->productionContext) {
-            if (!$this->isDatabaseReady()) {
+            if ($this->isDatabaseReady()) {
+                $this->loadFromDatabase();
+            } else {
                 return self::DEFAULT_PRODUCTION_CONTEXT;
             }
-            $this->productionContext = $this->registry->get(
-                TX_IN2CONNECTOR,
-                self::PRODUCTION_CONTEXT,
-                $this->productionContext
-            );
         }
         return $this->productionContext;
     }
@@ -178,10 +156,21 @@ class ConfigurationService implements SingletonInterface
      */
     public function setProductionContext($productionContext)
     {
-        if (!$this->isDatabaseReady()) {
-            $this->registry->set(TX_IN2CONNECTOR, self::PRODUCTION_CONTEXT, $productionContext);
-        }
         $this->productionContext = $productionContext;
+    }
+
+    /**
+     *
+     */
+    protected function loadFromDatabase()
+    {
+        $this->logLevel = $this->registry->get(TX_IN2CONNECTOR, self::LOG_LEVEL, $this->logLevel);
+        $this->logsPerPage = $this->registry->get(TX_IN2CONNECTOR, self::LOGS_PER_PAGE, $this->logsPerPage);
+        $this->productionContext = $this->registry->get(
+            TX_IN2CONNECTOR,
+            self::PRODUCTION_CONTEXT,
+            $this->productionContext
+        );
     }
 
     /**
