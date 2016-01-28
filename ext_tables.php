@@ -17,9 +17,8 @@ if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
                 'mod1',
                 '',
                 [
-                    'Dashboard' => \In2code\In2connector\Controller\DashboardController::getModuleActions(),
-                    'Configuration' => \In2code\In2connector\Controller\ConfigurationController::getModuleActions(),
                     'Connection' => \In2code\In2connector\Controller\ConnectionController::getModuleActions(),
+                    'Configuration' => \In2code\In2connector\Controller\ConfigurationController::getModuleActions(),
                 ],
                 [
                     'access' => 'user,group',

@@ -20,6 +20,7 @@ namespace In2code\In2connector\Controller;
  * The TYPO3 project - inspiring people to share!
  */
 
+use In2code\In2connector\Domain\Model\Cato\ConnectionLinker;
 use In2code\In2connector\Domain\Model\Connection;
 use In2code\In2connector\Registry\ConnectionRegistry;
 use In2code\In2connector\Translation\TranslationTrait;
@@ -39,12 +40,45 @@ class ConnectionController extends ActionController
     const ACTION_CONFIGURE = 'configure';
     const ACTION_SET_CONFIG = 'setConfig';
     const ACTION_DELETE = 'delete';
+    const ACTION_INDEX = 'index';
+
+    /**
+     * @var \In2code\In2connector\Domain\Repository\LogRepository
+     * @inject
+     */
+    protected $logRepository = null;
+
+    /**
+     * @var \In2code\In2connector\Registry\ConnectionRegistry
+     * @inject
+     */
+    protected $connectionRegistry = null;
+
+    /**
+     * @var \In2code\In2connector\Service\ConfigurationService
+     * @inject
+     */
+    protected $configurationService = null;
 
     /**
      * @var \In2code\In2connector\Domain\Repository\ConnectionRepository
      * @inject
      */
     protected $connectionRepository = null;
+
+    public function indexAction()
+    {
+        $this->view->assign('logs', $this->logRepository->findAll());
+        $this->view->assign(
+            'connectionLinker',
+            new ConnectionLinker(
+                $this->connectionRepository->findAll()->toArray(),
+                $this->connectionRegistry->getDemandedConnections()
+            )
+        );
+        $this->view->assign('logsPerPage', $this->configurationService->getLogsPerPage());
+
+    }
 
     /**
      * @param string $identityKey
@@ -113,7 +147,7 @@ class ConnectionController extends ActionController
         } else {
             $this->connectionRepository->removeAndPersist($connection);
         }
-        $this->redirect(DashboardController::ACTION_INDEX, DashboardController::CONTROLLER_NAME);
+        $this->redirect(self::ACTION_INDEX);
     }
 
     /**
@@ -124,6 +158,7 @@ class ConnectionController extends ActionController
         return implode(
             ',',
             [
+                self::ACTION_INDEX,
                 self::ACTION_NEW_FROM_DEMAND,
                 self::ACTION_NEW,
                 self::ACTION_CREATE,

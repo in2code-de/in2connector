@@ -57,16 +57,16 @@
                 <source>The driver was not registered or did not define a settings partial</source>
             </trans-unit>
 
-            <trans-unit id="view.template.dashboard.index.matching_connections">
+            <trans-unit id="view.template.connection.index.matching_connections">
                 <source>Matching connection</source>
             </trans-unit>
-            <trans-unit id="view.template.dashboard.index.orphaned_connections">
+            <trans-unit id="view.template.connection.index.orphaned_connections">
                 <source>Orphaned connection</source>
             </trans-unit>
-            <trans-unit id="view.template.dashboard.index.missing_connections">
+            <trans-unit id="view.template.connection.index.missing_connections">
                 <source>Missing connection</source>
             </trans-unit>
-            <trans-unit id="view.template.dashboard.index.logs">
+            <trans-unit id="view.template.connection.index.logs">
                 <source>Logs</source>
             </trans-unit>/trans-unit>
 
