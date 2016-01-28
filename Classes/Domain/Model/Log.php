@@ -23,7 +23,7 @@ namespace In2code\In2connector\Domain\Model;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 /**
- * Log class to retrieve logged mesasge since there's no API
+ * Log class to retrieve logged message since there's no API
  * Uses Extbase for minimization of implementation effort
  */
 class Log extends AbstractEntity
