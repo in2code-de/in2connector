@@ -59,10 +59,13 @@ abstract class AbstractDriver
 
     /**
      * AbstractDriver constructor.
+     *
+     * @param array $settings
      */
-    public function __construct()
+    public function __construct(array $settings = [])
     {
         $this->configurationService = GeneralUtility::makeInstance(ConfigurationService::class);
+        $this->setSettings($settings);
     }
 
     /**
