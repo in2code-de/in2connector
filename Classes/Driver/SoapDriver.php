@@ -109,6 +109,12 @@ class SoapDriver extends AbstractDriver
             }
         }
 
+        $originalTimeout = ini_get('default_socket_timeout');
+        ini_set('default_socket_timeout', 3);
+
+
+        $options['connection_timeout'] = 3;
+
         $wsdlUrl = $this->getWsdlUrl();
         try {
             $soapClient = new \SoapClient($wsdlUrl, $options);
@@ -118,9 +124,12 @@ class SoapDriver extends AbstractDriver
                 'driver.soap.test.soap_error',
                 [$exception->getCode(), $exception->getMessage()]
             );
+            ini_set('default_socket_timeout', $originalTimeout);
+
             return false;
         }
 
+        ini_set('default_socket_timeout', $originalTimeout);
         if (isset($soapClient)) {
             unset($soapClient);
         }
