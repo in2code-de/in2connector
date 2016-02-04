@@ -161,6 +161,12 @@ class SoapDriver extends AbstractDriver
 
     public function initialize()
     {
+        $originalTimeout = ini_get('default_socket_timeout');
+        ini_set('default_socket_timeout', $this->settings['timeout']);
+
+        $options = [];
+        $options['connection_timeout'] = $this->settings['timeout'];
+
         $result = false;
         if (null === $this->soapClient) {
             $wsdlUrl = $this->getWsdlUrl();
@@ -198,6 +204,7 @@ class SoapDriver extends AbstractDriver
                 // TODO: log stuff
             }
         }
+        ini_set('default_socket_timeout', $originalTimeout);
         return $result;
     }
 

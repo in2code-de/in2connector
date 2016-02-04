@@ -182,6 +182,9 @@
             <trans-unit id="driver.soap.settings.password">
                 <source>Password (only if authentication is required)</source>
             </trans-unit>
+            <trans-unit id="driver.soap.settings.timeout">
+                <source>Timout in seconds</source>
+            </trans-unit>
             <trans-unit id="driver.soap.test.wsdl_file_empty">
                 <source>No WSDL file configured</source>
             </trans-unit>
