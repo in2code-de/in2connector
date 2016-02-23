@@ -73,12 +73,16 @@ class LdapDriver extends AbstractDriver
             }
         }
 
-        if (true === (bool)$this->settings['ldaps']) {
-            $hostname = self::LDAPS_PROTOCOL . $this->settings['hostname'];
+        if (strpos($this->settings['hostname'], 'ldaps:') === 0) {
+            $host = $this->settings['hostname'] . ':' . $this->settings['port'];
+            $connection = ldap_connect($host);
+        } elseif (true === (bool)$this->settings['ldaps']) {
+            $host = rtrim(self::LDAPS_PROTOCOL . $this->settings['hostname'], '/') . ':' . $this->settings['port'];
+            $connection = ldap_connect($host);
         } else {
-            $hostname = $this->settings['hostname'];
+            $connection = ldap_connect($this->settings['hostname'], $this->settings['port']);
         }
-        $connection = ldap_connect($hostname, $this->settings['port']);
+        ldap_set_option($connection, LDAP_OPT_REFERRALS, 0);
 
         // reduce timeout to prevent php timeout and waiting time in the connection overview
         ldap_set_option($connection, LDAP_OPT_NETWORK_TIMEOUT, 3);
