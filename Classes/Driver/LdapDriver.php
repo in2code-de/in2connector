@@ -215,12 +215,15 @@ class LdapDriver extends AbstractDriver
     {
         $success = false;
         if (!is_resource($this->connection)) {
-            if (true === (bool)$this->settings['ldaps']) {
-                $hostName = self::LDAPS_PROTOCOL . $this->settings['hostname'];
+            if (strpos($this->settings['hostname'], 'ldaps:') === 0) {
+                $host = $this->settings['hostname'] . ':' . $this->settings['port'];
+                $this->connection = ldap_connect($host);
+            } elseif (true === (bool)$this->settings['ldaps']) {
+                $host = rtrim(self::LDAPS_PROTOCOL . $this->settings['hostname'], '/') . ':' . $this->settings['port'];
+                $this->connection = ldap_connect($host);
             } else {
-                $hostName = $this->settings['hostname'];
+                $this->connection = ldap_connect($this->settings['hostname'], $this->settings['port']);
             }
-            $this->connection = ldap_connect($hostName, (int)$this->settings['port']);
             if (false === $this->connection) {
                 $this->getLogger()->error(
                     sprintf('Connection to "%s" on port [%d] failed', $hostName, $this->settings['port'])
