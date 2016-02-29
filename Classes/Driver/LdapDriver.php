@@ -226,11 +226,19 @@ class LdapDriver extends AbstractDriver
             }
             if (false === $this->connection) {
                 $this->getLogger()->error(
-                    sprintf('Connection to "%s" on port [%d] failed', $hostName, $this->settings['port'])
+                    sprintf(
+                        'Connection to "%s" on port [%d] failed',
+                        $this->settings['hostname'],
+                        $this->settings['port']
+                    )
                 );
             } else {
                 $this->getLogger()->info(
-                    sprintf('Successful connected to "%s" on port [%d]', $hostName, $this->settings['port'])
+                    sprintf(
+                        'Successful connected to "%s" on port [%d]',
+                        $this->settings['hostname'],
+                        $this->settings['port']
+                    )
                 );
             }
             ldap_set_option($this->connection, LDAP_OPT_NETWORK_TIMEOUT, $this->settings['timeout']);
@@ -312,6 +320,18 @@ class LdapDriver extends AbstractDriver
     {
         $this->initialize();
         return ldap_search($this->connection, $distinguishedName, $filter);
+    }
+
+    /**
+     * @param $distinguishedName
+     * @param $filter
+     * @return array
+     */
+    public function searchAndGetResults($distinguishedName, $filter)
+    {
+        $this->initialize();
+        $search = ldap_search($this->connection, $distinguishedName, $filter);
+        return $this->getResults($search);
     }
 
     /**
@@ -427,18 +447,18 @@ class LdapDriver extends AbstractDriver
      * // string(48) "cn=*)(username\3dtest\>2b1234@lightwerk.com)"
      *
      * @param String $string
-     * @param Boolean $dn
+     * @param Boolean $distinguishedName
      * @return String
      */
-    protected function escape($string, $dn = null)
+    protected function escape($string, $distinguishedName = null)
     {
         $escapeDn = array('\\', '*', '(', ')', "\x00");
         $escape = array('\\', ',', '=', '+', '<', '>', ';', '"', '#');
 
         $search = array();
-        if ($dn === null) {
+        if ($distinguishedName === null) {
             $search = array_merge($search, $escapeDn, $escape);
-        } elseif ($dn === false) {
+        } elseif ($distinguishedName === false) {
             $search = array_merge($search, $escape);
         } else {
             $search = array_merge($search, $escapeDn);
