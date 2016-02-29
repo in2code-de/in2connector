@@ -87,7 +87,7 @@ class ConnectionRegistry implements SingletonInterface
                 );
                 return false;
             } else {
-                throw new DriverNameAlreadyRegisteredException($message, 1451926330);
+//                throw new DriverNameAlreadyRegisteredException($message, 1451926330);
             }
         }
 
@@ -101,7 +101,7 @@ class ConnectionRegistry implements SingletonInterface
                 );
                 return false;
             } else {
-                throw new InvalidDriverException($message, 1451926497);
+//                throw new InvalidDriverException($message, 1451926497);
             }
         }
 
@@ -124,7 +124,7 @@ class ConnectionRegistry implements SingletonInterface
                 $this->getLogger()->error($message, ['function' => __FUNCTION__, 'name' => $driverName]);
                 return false;
             } else {
-                throw new DriverNameNotRegisteredException($message, 1451927180);
+//                throw new DriverNameNotRegisteredException($message, 1451927180);
             }
         }
 
@@ -155,7 +155,7 @@ class ConnectionRegistry implements SingletonInterface
                 );
                 return false;
             } else {
-                throw new ConnectionAlreadyDemandedException($message, 1451927594);
+//                throw new ConnectionAlreadyDemandedException($message, 1451927594);
             }
         }
 
@@ -168,7 +168,7 @@ class ConnectionRegistry implements SingletonInterface
                 );
                 return false;
             } else {
-                throw new DriverDoesNotExistException($message, 1451927594);
+//                throw new DriverDoesNotExistException($message, 1451927594);
             }
         }
 
@@ -197,7 +197,7 @@ class ConnectionRegistry implements SingletonInterface
                 $this->getLogger()->error($message, ['function' => __FUNCTION__, 'name' => $driverName]);
                 return false;
             } else {
-                throw new DriverNameNotRegisteredException($message, 1451992063);
+//                throw new DriverNameNotRegisteredException($message, 1451992063);
             }
         }
 
