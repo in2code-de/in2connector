@@ -179,9 +179,15 @@ class ConfigurationService implements SingletonInterface
     public function __destruct()
     {
         if ($this->isDatabaseReady()) {
-            $this->registry->set(TX_IN2CONNECTOR, self::LOG_LEVEL, $this->logLevel);
-            $this->registry->set(TX_IN2CONNECTOR, self::LOGS_PER_PAGE, $this->logsPerPage);
-            $this->registry->set(TX_IN2CONNECTOR, self::PRODUCTION_CONTEXT, $this->productionContext);
+            if (null !== $this->logLevel) {
+                $this->registry->set(TX_IN2CONNECTOR, self::LOG_LEVEL, $this->logLevel);
+            }
+            if (null !== $this->logsPerPage) {
+                $this->registry->set(TX_IN2CONNECTOR, self::LOGS_PER_PAGE, $this->logsPerPage);
+            }
+            if (null !== $this->productionContext) {
+                $this->registry->set(TX_IN2CONNECTOR, self::PRODUCTION_CONTEXT, $this->productionContext);
+            }
         }
     }
 
