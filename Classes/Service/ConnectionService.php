@@ -126,4 +126,20 @@ class ConnectionService implements SingletonInterface
         }
         return $connection;
     }
+
+    /**
+     * @param string $identityKey
+     * @return bool|Connection Returns the desired connection if it is available, otherwise false
+     * @throws ConnectionInvalidException
+     * @throws ConnectionNeverDemandedException
+     * @throws ConnectionNotConfiguredException
+     */
+    public function getConnectionIfAvailable($identityKey)
+    {
+        if ($this->hasConnection($identityKey)) {
+            return $this->getConnection($identityKey);
+        } else {
+            return false;
+        }
+    }
 }
