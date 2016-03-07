@@ -336,6 +336,22 @@ class LdapDriver extends AbstractDriver
     }
 
     /**
+     * @param string $distinguishedName
+     * @param string $filter
+     * @return int
+     */
+    public function searchAndCountResults($distinguishedName, $filter)
+    {
+        $this->initialize();
+        $search = $this->search($distinguishedName, $filter);
+        if (is_resource($search)) {
+            return $this->countResults($search);
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * @param resource $entry
      * @return string
      */
