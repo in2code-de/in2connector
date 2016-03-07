@@ -450,7 +450,7 @@ class LdapDriver extends AbstractDriver
      * @param Boolean $distinguishedName
      * @return String
      */
-    protected function escape($string, $distinguishedName = null)
+    public function escape($string, $distinguishedName = null)
     {
         $escapeDn = array('\\', '*', '(', ')', "\x00");
         $escape = array('\\', ',', '=', '+', '<', '>', ';', '"', '#');
