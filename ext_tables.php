@@ -1,7 +1,6 @@
 <?php
 
 if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
-
     // Extkey fallback
     if (!isset($_EXTKEY)) {
         $_EXTKEY = 'in2connector';
