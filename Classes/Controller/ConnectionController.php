@@ -60,6 +60,9 @@ class ConnectionController extends ActionController
      */
     protected $connectionRepository = null;
 
+    /**
+     *
+     */
     public function indexAction()
     {
         $this->view->assign('logs', $this->logRepository->findAll());
@@ -71,7 +74,6 @@ class ConnectionController extends ActionController
             )
         );
         $this->view->assign('logsPerPage', $this->configurationService->getLogsPerPage());
-
     }
 
     /**
