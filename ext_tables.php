@@ -16,7 +16,7 @@ if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
                 'mod1',
                 '',
                 [
-                    'Connection' => \In2code\In2connector\Controller\ConnectionController::getModuleActions(),
+                    'Connection' => 'index,newFromDemand,new,create,configure,setConfig,delete',
                     'Configuration' => 'edit,update',
                 ],
                 [

@@ -33,13 +33,7 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 class ConnectionController extends ActionController
 {
     use TranslationTrait;
-    const CONTROLLER_NAME = 'Connection';
-    const ACTION_NEW_FROM_DEMAND = 'newFromDemand';
-    const ACTION_NEW = 'new';
-    const ACTION_CREATE = 'create';
     const ACTION_CONFIGURE = 'configure';
-    const ACTION_SET_CONFIG = 'setConfig';
-    const ACTION_DELETE = 'delete';
     const ACTION_INDEX = 'index';
 
     /**
@@ -148,24 +142,5 @@ class ConnectionController extends ActionController
             $this->connectionRepository->removeAndPersist($connection);
         }
         $this->redirect(self::ACTION_INDEX);
-    }
-
-    /**
-     * @return string
-     */
-    public static function getModuleActions()
-    {
-        return implode(
-            ',',
-            [
-                self::ACTION_INDEX,
-                self::ACTION_NEW_FROM_DEMAND,
-                self::ACTION_NEW,
-                self::ACTION_CREATE,
-                self::ACTION_CONFIGURE,
-                self::ACTION_SET_CONFIG,
-                self::ACTION_DELETE,
-            ]
-        );
     }
 }
