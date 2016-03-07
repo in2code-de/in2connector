@@ -142,4 +142,18 @@ class ConnectionService implements SingletonInterface
             return false;
         }
     }
+
+    /**
+     * @param string $identityKey Returns the desired connection's driver if it is available, otherwise false
+     * @return bool|\In2code\In2connector\Driver\AbstractDriver
+     */
+    public function getDriverInstanceIfAvailable($identityKey)
+    {
+        $connection = $this->getConnectionIfAvailable($identityKey);
+        if ($connection instanceof Connection) {
+            return $connection->getDriverInstance();
+        } else {
+            return false;
+        }
+    }
 }
