@@ -28,9 +28,7 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
  */
 class ConfigurationController extends ActionController
 {
-    const CONTROLLER_NAME = 'Configuration';
     const ACTION_EDIT = 'edit';
-    const ACTION_UPDATE = 'update';
 
     /**
      * @var \In2code\In2connector\Service\ConfigurationService
@@ -53,13 +51,5 @@ class ConfigurationController extends ActionController
     {
         $this->configurationService->updateFromConfigurationDto($configuration);
         $this->redirect(self::ACTION_EDIT);
-    }
-
-    /**
-     * @return string
-     */
-    public static function getModuleActions()
-    {
-        return implode(',', [self::ACTION_EDIT, self::ACTION_UPDATE]);
     }
 }

@@ -18,7 +18,7 @@ if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
                 '',
                 [
                     'Connection' => \In2code\In2connector\Controller\ConnectionController::getModuleActions(),
-                    'Configuration' => \In2code\In2connector\Controller\ConfigurationController::getModuleActions(),
+                    'Configuration' => 'edit,update',
                 ],
                 [
                     'access' => 'user,group',
