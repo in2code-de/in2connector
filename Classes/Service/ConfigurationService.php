@@ -174,6 +174,7 @@ class ConfigurationService implements SingletonInterface
     }
 
     /**
+     * TODO: this updates all configurations on each request. only update when really needed!
      * Ensure to write all cached stuff back to the registry
      */
     public function __destruct()
