@@ -233,7 +233,7 @@ class LdapDriver extends AbstractDriver
                     )
                 );
             } else {
-                $this->getLogger()->info(
+                $this->getLogger()->debug(
                     sprintf(
                         'Successful connected to "%s" on port [%d]',
                         $this->settings['hostname'],
