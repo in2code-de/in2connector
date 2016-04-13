@@ -232,14 +232,6 @@ class LdapDriver extends AbstractDriver
                         $this->settings['port']
                     )
                 );
-            } else {
-                $this->getLogger()->debug(
-                    sprintf(
-                        'Successful connected to "%s" on port [%d]',
-                        $this->settings['hostname'],
-                        $this->settings['port']
-                    )
-                );
             }
             ldap_set_option($this->connection, LDAP_OPT_NETWORK_TIMEOUT, $this->settings['timeout']);
             if ('NULL' !== $this->settings['protocolVersion']) {
@@ -249,10 +241,6 @@ class LdapDriver extends AbstractDriver
             if (false === $success) {
                 $this->getLogger()->error(
                     sprintf('Authentication to LDAP failed for user "%s"', $this->settings['username'])
-                );
-            } else {
-                $this->getLogger()->info(
-                    sprintf('Authentication to LDAP successful for user "%s"', $this->settings['username'])
                 );
             }
         }
