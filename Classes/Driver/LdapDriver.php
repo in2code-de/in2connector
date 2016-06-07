@@ -254,9 +254,8 @@ class LdapDriver extends AbstractDriver
     {
         if (is_resource($this->connection)) {
             ldap_unbind($this->connection);
-        } else {
-            unset($this->connection);
         }
+        unset($this->connection);
     }
 
     /**
