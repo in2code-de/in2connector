@@ -255,7 +255,9 @@ class LdapDriver extends AbstractDriver
     public function listDirectory($distinguishedName, $filter)
     {
         $this->initialize();
-        return ldap_list($this->connection, $distinguishedName, $filter);
+        $return = ldap_list($this->connection, $distinguishedName, $filter);
+
+        return ($return === false ? $this->fetchErrors() : $return);
     }
 
     /**
@@ -265,7 +267,9 @@ class LdapDriver extends AbstractDriver
     public function getResults($resource)
     {
         $this->initialize();
-        return ldap_get_entries($this->connection, $resource);
+        $return = ldap_get_entries($this->connection, $resource);
+
+        return ($return === false ? $this->fetchErrors() : $return);
     }
 
     /**
@@ -275,7 +279,9 @@ class LdapDriver extends AbstractDriver
     public function countResults($resource)
     {
         $this->initialize();
-        return ldap_count_entries($this->connection, $resource);
+        $return = ldap_count_entries($this->connection, $resource);
+
+        return ($return === false ? $this->fetchErrors() : $return);
     }
 
     /**
@@ -284,7 +290,9 @@ class LdapDriver extends AbstractDriver
      */
     public function freeResult($resource)
     {
-        return ldap_free_result($resource);
+        $return = ldap_free_result($resource);
+
+        return ($return === false ? $this->fetchErrors() : $return);
     }
 
     /**
@@ -296,7 +304,9 @@ class LdapDriver extends AbstractDriver
     public function search($distinguishedName, $filter, array $attributes = [])
     {
         $this->initialize();
-        return ldap_search($this->connection, $distinguishedName, $filter, $attributes);
+        $return = ldap_search($this->connection, $distinguishedName, $filter, $attributes);
+
+        return ($return === false ? $this->fetchErrors() : $return);
     }
 
     /**
@@ -309,8 +319,9 @@ class LdapDriver extends AbstractDriver
     public function searchAndGetResults($distinguishedName, $filter, $attributes = [], $limit = PHP_INT_MAX)
     {
         $this->initialize();
-        $search = ldap_search($this->connection, $distinguishedName, $filter, $attributes, 0, $limit);
-        return $this->getResults($search);
+        $return = ldap_search($this->connection, $distinguishedName, $filter, $attributes, 0, $limit);
+
+        return ($return === false ? $this->fetchErrors() : $this->getResults($return));
     }
 
     /**
@@ -321,12 +332,9 @@ class LdapDriver extends AbstractDriver
     public function searchAndCountResults($distinguishedName, $filter)
     {
         $this->initialize();
-        $search = $this->search($distinguishedName, $filter);
-        if (is_resource($search)) {
-            return $this->countResults($search);
-        } else {
-            return false;
-        }
+        $return = $this->search($distinguishedName, $filter);
+
+        return ($return === false ? $this->fetchErrors() : $this->countResults($return));
     }
 
     /**
@@ -336,7 +344,9 @@ class LdapDriver extends AbstractDriver
     public function getDnOfEntry($entry)
     {
         $this->initialize();
-        return ldap_get_dn($this->connection, $entry);
+        $return = ldap_get_dn($this->connection, $entry);
+
+        return ($return === false ? $this->fetchErrors() : $return);
     }
 
     /**
@@ -346,7 +356,9 @@ class LdapDriver extends AbstractDriver
     public function delete($distinguishedName)
     {
         $this->initialize();
-        return ldap_delete($this->connection, $distinguishedName);
+        $return = ldap_delete($this->connection, $distinguishedName);
+
+        return ($return === false ? $this->fetchErrors() : $return);
     }
 
     /**
@@ -360,7 +372,9 @@ class LdapDriver extends AbstractDriver
             $values[$key] = $this->escape($unescaped);
         }
         $this->initialize();
-        return ldap_modify($this->connection, $distinguishedName, $values);
+        $return = ldap_modify($this->connection, $distinguishedName, $values);
+
+        return ($return === false ? $this->fetchErrors() : $return);
     }
 
     /**
@@ -374,8 +388,28 @@ class LdapDriver extends AbstractDriver
             $values[$key] = $this->escape($unescaped);
         }
         $this->initialize();
-        return ldap_add($this->connection, $distinguishedName, $values);
+        $return = ldap_add($this->connection, $distinguishedName, $values);
+
+        return ($return === false ? $this->fetchErrors() : $return);
     }
+
+
+    // currently unused
+//    /**
+//     * @param string $distinguishedName
+//     * @param array $values
+//     * @return bool
+//     */
+//    public function addAttribute($distinguishedName, array $values)
+//    {
+//        foreach ($values as $key => $unescaped) {
+//            $values[$key] = $this->escape($unescaped);
+//        }
+//        $this->initialize();
+//        $return = ldap_mod_add($this->connection, $distinguishedName, $values);
+//
+//        return ($return === false ? $this->fetchErrors() : $return);
+//    }
 
     /**
      * @return array
@@ -474,5 +508,18 @@ class LdapDriver extends AbstractDriver
         }
 
         return str_replace($search, $replace, $string);
+    }
+
+    /**
+     * Always returns false
+     *
+     * @return false
+     */
+    protected function fetchErrors()
+    {
+        $this->lastErrorCode = ldap_errno($this->connection);
+        $this->lastErrorMessage = ldap_error($this->connection);
+        $this->logger->error('Fetched error', ['code' => $this->lastErrorCode, 'message' => $this->lastErrorMessage]);
+        return false;
     }
 }
