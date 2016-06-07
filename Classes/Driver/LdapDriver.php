@@ -302,12 +302,13 @@ class LdapDriver extends AbstractDriver
     /**
      * @param string $distinguishedName
      * @param string $filter
+     * @param array $attributes
      * @return resource
      */
-    public function search($distinguishedName, $filter)
+    public function search($distinguishedName, $filter, array $attributes = [])
     {
         $this->initialize();
-        return ldap_search($this->connection, $distinguishedName, $filter);
+        return ldap_search($this->connection, $distinguishedName, $filter, $attributes);
     }
 
     /**
