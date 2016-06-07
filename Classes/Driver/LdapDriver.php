@@ -248,17 +248,6 @@ class LdapDriver extends AbstractDriver
     }
 
     /**
-     *
-     */
-    public function __destruct()
-    {
-        if (is_resource($this->connection)) {
-            ldap_unbind($this->connection);
-        }
-        unset($this->connection);
-    }
-
-    /**
      * @param string $distinguishedName
      * @param string $filter
      * @return resource
@@ -414,11 +403,20 @@ class LdapDriver extends AbstractDriver
     /**
      *
      */
+    public function __destruct()
+    {
+        $this->logout();
+    }
+
+    /**
+     *
+     */
     public function logout()
     {
         if (is_resource($this->connection)) {
             ldap_unbind($this->connection);
         }
+        unset($this->connection);
     }
 
     /**
