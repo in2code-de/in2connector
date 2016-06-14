@@ -519,7 +519,7 @@ class LdapDriver extends AbstractDriver
     {
         $this->lastErrorCode = ldap_errno($this->connection);
         $this->lastErrorMessage = ldap_error($this->connection);
-        $this->logger->error('Fetched error', ['code' => $this->lastErrorCode, 'message' => $this->lastErrorMessage]);
+        $this->getLogger()->error('Fetched error', ['code' => $this->lastErrorCode, 'message' => $this->lastErrorMessage]);
         return false;
     }
 }
