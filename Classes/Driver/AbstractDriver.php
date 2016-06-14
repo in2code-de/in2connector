@@ -156,9 +156,30 @@ abstract class AbstractDriver
      * @param array $context
      * @return bool Returns true if the error was investigated and can be ignored, false if it should be logged and
      *     reported
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     protected function investigateError($errorCode, $errorMessage, $file, $line, $context)
     {
         return false;
     }
+
+    /**
+     * @return false
+     */
+    abstract public function fetchErrors();
+
+    /**
+     * @return string
+     */
+    abstract public function getErrors();
+
+    /**
+     * @return true
+     */
+    abstract public function resetErrors();
+
+    /**
+     * @return bool
+     */
+    abstract public function hasErrors();
 }
