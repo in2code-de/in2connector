@@ -112,7 +112,6 @@ class SoapDriver extends AbstractDriver
         $originalTimeout = ini_get('default_socket_timeout');
         ini_set('default_socket_timeout', 3);
 
-
         $options['connection_timeout'] = 3;
 
         $wsdlUrl = $this->getWsdlUrl();
@@ -254,10 +253,14 @@ class SoapDriver extends AbstractDriver
     {
         $this->initialize();
         if (null === $parameter) {
-            return call_user_func([$this->soapClient, $function]);
+            $result = call_user_func([$this->soapClient, $function]);
         } else {
-            return call_user_func([$this->soapClient, $function], $parameter);
+            $result = call_user_func([$this->soapClient, $function], $parameter);
         }
+        if (false === $result) {
+            $this->fetchErrors();
+        }
+        return $result;
     }
 
     /**
@@ -269,5 +272,44 @@ class SoapDriver extends AbstractDriver
             'header' => $this->soapClient->__getLastResponseHeaders(),
             'response' => $this->soapClient->__getLastResponse(),
         ];
+    }
+
+    /**
+     * @return false
+     */
+    public function fetchErrors()
+    {
+        $this->lastErrorMessage = $this->soapClient->__getLastResponse();
+        $this->lastErrorCode = $this->soapClient->__getLastResponseHeaders();
+        return false;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getErrors()
+    {
+        return sprintf('[Code %s] %s', $this->lastErrorCode, $this->lastErrorMessage);
+    }
+
+    /**
+     * Always returns true
+     *
+     * @return bool
+     */
+    public function resetErrors()
+    {
+        $this->lastErrorCode = 0;
+        $this->lastErrorMessage = '';
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasErrors()
+    {
+        return 0 !== $this->lastErrorCode || '' !== $this->lastErrorMessage;
     }
 }
