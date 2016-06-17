@@ -395,21 +395,21 @@ class LdapDriver extends AbstractDriver
 
 
     // currently unused
-//    /**
-//     * @param string $distinguishedName
-//     * @param array $values
-//     * @return bool
-//     */
-//    public function addAttribute($distinguishedName, array $values)
-//    {
-//        foreach ($values as $key => $unescaped) {
-//            $values[$key] = $this->escape($unescaped);
-//        }
-//        $this->initialize();
-//        $return = ldap_mod_add($this->connection, $distinguishedName, $values);
-//
-//        return ($return === false ? $this->fetchErrors() : $return);
-//    }
+    //    /**
+    //     * @param string $distinguishedName
+    //     * @param array $values
+    //     * @return bool
+    //     */
+    //    public function addAttribute($distinguishedName, array $values)
+    //    {
+    //        foreach ($values as $key => $unescaped) {
+    //            $values[$key] = $this->escape($unescaped);
+    //        }
+    //        $this->initialize();
+    //        $return = ldap_mod_add($this->connection, $distinguishedName, $values);
+    //
+    //        return ($return === false ? $this->fetchErrors() : $return);
+    //    }
 
     /**
      * @return array
@@ -519,7 +519,10 @@ class LdapDriver extends AbstractDriver
     {
         $this->lastErrorCode = ldap_errno($this->connection);
         $this->lastErrorMessage = ldap_error($this->connection);
-        $this->getLogger()->error('Fetched error', ['code' => $this->lastErrorCode, 'message' => $this->lastErrorMessage]);
+        $this->getLogger()->error(
+            'Fetched error',
+            ['code' => $this->lastErrorCode, 'message' => $this->lastErrorMessage]
+        );
         return false;
     }
 
