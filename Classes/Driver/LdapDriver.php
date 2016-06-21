@@ -393,6 +393,22 @@ class LdapDriver extends AbstractDriver
         return ($return === false ? $this->fetchErrors() : $return);
     }
 
+    /**
+     * @param string $distinguishedName
+     * @param array $values
+     * @return bool
+     */
+    public function removeAttributes($distinguishedName, array $values)
+    {
+        foreach ($values as $key => $unescaped) {
+            $values[$key] = $this->escape($unescaped);
+        }
+        $this->initialize();
+        $return = ldap_mod_del($this->connection, $distinguishedName, $values);
+
+        return ($return === false ? $this->fetchErrors() : $return);
+    }
+
 
     // currently unused
     //    /**
