@@ -20,6 +20,7 @@ namespace In2code\In2connector\Logging;
  * The TYPO3 project - inspiring people to share!
  */
 
+use Psr\Log\NullLogger;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -41,9 +42,14 @@ trait LoggerTrait
      */
     protected function getLogger()
     {
-        if (null === $this->logger) {
-            $this->logger = GeneralUtility::makeInstance(LogManager::class)
-                                          ->getLogger(get_class($this));
+        if (null === $this->logger || $this->logger instanceof NullLogger) {
+            try {
+                $this->logger = GeneralUtility::makeInstance(LogManager::class)
+                                              ->getLogger(get_class($this));
+            } catch (\Psr\Log\InvalidArgumentException $e) {
+                // If the catch'd exception was thrown it means, that the logger is not configured, yet
+                $this->logger = new NullLogger();
+            }
         }
         return $this->logger;
     }
