@@ -23,13 +23,14 @@ namespace In2code\In2connector\Registry;
 use In2code\In2connector\Domain\Model\Dto\ConnectionDemand;
 use In2code\In2connector\Domain\Model\Dto\DriverRegistration;
 use In2code\In2connector\Driver\AbstractDriver;
-use In2code\In2connector\Logging\LoggerTrait;
 use In2code\In2connector\Registry\Exceptions\ConnectionAlreadyDemandedException;
 use In2code\In2connector\Registry\Exceptions\DriverDoesNotExistException;
 use In2code\In2connector\Registry\Exceptions\DriverNameAlreadyRegisteredException;
 use In2code\In2connector\Registry\Exceptions\DriverNameNotRegisteredException;
 use In2code\In2connector\Registry\Exceptions\InvalidDriverException;
 use In2code\In2connector\Service\ConfigurationService;
+use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -38,8 +39,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ConnectionRegistry implements SingletonInterface
 {
-    use LoggerTrait;
-
     /**
      * @var \In2code\In2connector\Service\ConfigurationService
      */
@@ -56,10 +55,16 @@ class ConnectionRegistry implements SingletonInterface
     protected $demandedConnections = [];
 
     /**
+     * @var LoggerInterface
+     */
+    protected $logger = null;
+
+    /**
      * ConnectionRegistry constructor.
      */
     public function __construct()
     {
+        $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(get_class($this));
         $this->configurationService = GeneralUtility::makeInstance(ConfigurationService::class);
     }
 
@@ -73,7 +78,7 @@ class ConnectionRegistry implements SingletonInterface
      */
     public function registerDriver($driverName, $class, $settingsPartial)
     {
-        $this->getLogger()->debug(
+        $this->logger->debug(
             'Registering driver',
             ['function' => __FUNCTION__, 'name' => $driverName, 'class' => $class]
         );
@@ -81,7 +86,7 @@ class ConnectionRegistry implements SingletonInterface
         if (isset($this->registeredDrivers[$driverName])) {
             $message = 'The driver name "' . $driverName . '" was already registered';
             if ($this->configurationService->isProductionContext()) {
-                $this->getLogger()->critical(
+                $this->logger->critical(
                     $message,
                     ['function' => __FUNCTION__, 'name' => $driverName, 'class' => $class]
                 );
@@ -95,7 +100,7 @@ class ConnectionRegistry implements SingletonInterface
             $message = 'The driver class "' . $class
                        . '" is not a valid driver. It must inherit from \In2code\In2connector\Driver\AbstractDriver';
             if ($this->configurationService->isProductionContext()) {
-                $this->getLogger()->emergency(
+                $this->logger->emergency(
                     $message,
                     ['function' => __FUNCTION__, 'name' => $driverName, 'class' => $class]
                 );
@@ -116,12 +121,12 @@ class ConnectionRegistry implements SingletonInterface
      */
     public function deregisterDriver($driverName)
     {
-        $this->getLogger()->info('Deregistering driver', ['function' => __FUNCTION__, 'name' => $driverName]);
+        $this->logger->info('Deregistering driver', ['function' => __FUNCTION__, 'name' => $driverName]);
 
         if (!isset($this->registeredDrivers[$driverName])) {
             $message = 'The driver name "' . $driverName . '" was never registered';
             if ($this->configurationService->isProductionContext()) {
-                $this->getLogger()->error($message, ['function' => __FUNCTION__, 'name' => $driverName]);
+                $this->logger->error($message, ['function' => __FUNCTION__, 'name' => $driverName]);
                 return false;
             } else {
 //                throw new DriverNameNotRegisteredException($message, 1451927180);
@@ -141,7 +146,7 @@ class ConnectionRegistry implements SingletonInterface
      */
     public function demandConnection($identityKey, $driverName)
     {
-        $this->getLogger()->info(
+        $this->logger->info(
             'Connection demanded',
             ['function' => __FUNCTION__, 'identityKey' => $identityKey, 'driverName' => $driverName]
         );
@@ -149,7 +154,7 @@ class ConnectionRegistry implements SingletonInterface
         if (isset($this->demandedConnections[$identityKey])) {
             $message = 'The connection with the identity key "' . $identityKey . '" was already demanded';
             if ($this->configurationService->isProductionContext()) {
-                $this->getLogger()->error(
+                $this->logger->error(
                     $message,
                     ['function' => __FUNCTION__, 'identityKey' => $identityKey, 'driverName' => $driverName]
                 );
@@ -162,7 +167,7 @@ class ConnectionRegistry implements SingletonInterface
         if (!isset($this->registeredDrivers[$driverName])) {
             $message = 'The requested driver for the identity key "' . $identityKey . '" was not registered';
             if ($this->configurationService->isProductionContext()) {
-                $this->getLogger()->alert(
+                $this->logger->alert(
                     $message,
                     ['function' => __FUNCTION__, 'identityKey' => $identityKey, 'driverName' => $driverName]
                 );
@@ -194,7 +199,7 @@ class ConnectionRegistry implements SingletonInterface
         if (!isset($this->registeredDrivers[$driverName])) {
             $message = 'The driver name "' . $driverName . '" was not registered';
             if ($this->configurationService->isProductionContext()) {
-                $this->getLogger()->error($message, ['function' => __FUNCTION__, 'name' => $driverName]);
+                $this->logger->error($message, ['function' => __FUNCTION__, 'name' => $driverName]);
                 return false;
             } else {
 //                throw new DriverNameNotRegisteredException($message, 1451992063);

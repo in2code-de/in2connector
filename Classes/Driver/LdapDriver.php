@@ -158,7 +158,7 @@ class LdapDriver extends AbstractDriver
                 $port = $matches[1];
                 $this->lastErrorCode = self::TEST_WRONG_PORT;
                 $this->lastErrorMessage = $this->translate('driver.ldap.test.wrong_port', [$port]);
-                $this->getLogger()->error(
+                $this->logger->error(
                     'The port number "' . $port . '" is invalid.',
                     ['errorCode' => $errorCode, 'errorMessage' => $errorMessage, 'file' => $file, 'line' => $line]
                 );
@@ -170,7 +170,7 @@ class LdapDriver extends AbstractDriver
                 'driver.ldap.test.protocol_version_mismatch',
                 [$this->settings['protocolVersion']]
             );
-            $this->getLogger()->error(
+            $this->logger->error(
                 'The protocol version ' . $this->settings['protocolVersion'] . ' was not accepted',
                 ['errorCode' => $errorCode, 'errorMessage' => $errorMessage, 'file' => $file, 'line' => $line]
             );
@@ -178,7 +178,7 @@ class LdapDriver extends AbstractDriver
         } elseif ($errorMessage === 'ldap_list(): Search: No such object') {
             $this->lastErrorCode = self::ERROR_SEARCH_FAILED;
             $this->lastErrorMessage = $this->translate('driver.ldap.search_failed');
-            $this->getLogger()->error(
+            $this->logger->error(
                 'The configured search could not be executed. Check your base DN and RDNs',
                 [
                     'baseDN' => $this->settings['baseDn'],
@@ -192,7 +192,7 @@ class LdapDriver extends AbstractDriver
         } elseif ('ldap_bind(): Unable to bind to server: Can\'t contact LDAP server' === $errorMessage) {
             $this->lastErrorCode = self::TEST_SERVER_UNREACHABLE;
             $this->lastErrorMessage = $this->translate('driver.ldap.server_unreachable');
-            $this->getLogger()->error(
+            $this->logger->error(
                 'Could not connect to the server. Check the hostname and port and server status',
                 [
                     'hostname' => $this->settings['hostname'],
@@ -225,7 +225,7 @@ class LdapDriver extends AbstractDriver
                 $this->connection = ldap_connect($this->settings['hostname'], $this->settings['port']);
             }
             if (false === $this->connection) {
-                $this->getLogger()->error(
+                $this->logger->error(
                     sprintf(
                         'Connection to "%s" on port [%d] failed',
                         $this->settings['hostname'],
@@ -239,7 +239,7 @@ class LdapDriver extends AbstractDriver
             }
             $success = ldap_bind($this->connection, $this->settings['username'], $this->settings['password']);
             if (false === $success) {
-                $this->getLogger()->error(
+                $this->logger->error(
                     sprintf('Authentication to LDAP failed for user "%s"', $this->settings['username'])
                 );
             }
@@ -535,7 +535,7 @@ class LdapDriver extends AbstractDriver
     {
         $this->lastErrorCode = ldap_errno($this->connection);
         $this->lastErrorMessage = ldap_error($this->connection);
-        $this->getLogger()->error(
+        $this->logger->error(
             'Fetched error',
             ['code' => $this->lastErrorCode, 'message' => $this->lastErrorMessage]
         );

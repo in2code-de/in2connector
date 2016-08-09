@@ -22,11 +22,12 @@ namespace In2code\In2connector\Service;
 
 use In2code\In2connector\Domain\Model\Connection;
 use In2code\In2connector\Domain\Repository\ConnectionRepository;
-use In2code\In2connector\Logging\LoggerTrait;
 use In2code\In2connector\Registry\ConnectionRegistry;
 use In2code\In2connector\Service\Exceptions\ConnectionInvalidException;
 use In2code\In2connector\Service\Exceptions\ConnectionNeverDemandedException;
 use In2code\In2connector\Service\Exceptions\ConnectionNotConfiguredException;
+use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
@@ -36,8 +37,6 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
  */
 class ConnectionService implements SingletonInterface
 {
-    use LoggerTrait;
-
     /**
      * @var ConnectionRegistry
      */
@@ -54,10 +53,16 @@ class ConnectionService implements SingletonInterface
     protected $connectionRepository = null;
 
     /**
+     * @var LoggerInterface
+     */
+    protected $logger = null;
+
+    /**
      * ConnectionService constructor.
      */
     public function __construct()
     {
+        $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(get_class($this));
         $this->connectionRegistry = GeneralUtility::makeInstance(ConnectionRegistry::class);
         $this->configurationService = GeneralUtility::makeInstance(ConfigurationService::class);
         $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
@@ -90,7 +95,7 @@ class ConnectionService implements SingletonInterface
         if (!$this->connectionRegistry->hasDemandedConnection($identityKey)) {
             $message = sprintf('Requested connection with identityKey "%s" was never demanded', $identityKey);
             if ($isProduction) {
-                $this->getLogger()->alert($message);
+                $this->logger->alert($message);
                 return false;
             } else {
                 throw new ConnectionNeverDemandedException($message, 1452856398);
@@ -103,7 +108,7 @@ class ConnectionService implements SingletonInterface
                 $count
             );
             if ($isProduction) {
-                $this->getLogger()->alert($message);
+                $this->logger->alert($message);
                 return false;
             } else {
                 throw new ConnectionNotConfiguredException($message, 1452856469);
@@ -118,7 +123,7 @@ class ConnectionService implements SingletonInterface
                 $connection->getTestResultMessage()
             );
             if ($isProduction) {
-                $this->getLogger()->alert($message);
+                $this->logger->alert($message);
                 return false;
             } else {
                 throw new ConnectionInvalidException($message, 1452857678);

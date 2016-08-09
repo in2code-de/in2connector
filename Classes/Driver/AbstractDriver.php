@@ -21,8 +21,9 @@ namespace In2code\In2connector\Driver;
  */
 
 use In2code\In2connector\Driver\Exception\ErrorException;
-use In2code\In2connector\Logging\LoggerTrait;
 use In2code\In2connector\Service\ConfigurationService;
+use Psr\Log\LoggerInterface;
+use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -30,8 +31,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 abstract class AbstractDriver
 {
-    use LoggerTrait;
-
     /**
      * @var ConfigurationService
      */
@@ -58,12 +57,18 @@ abstract class AbstractDriver
     private static $errorCapturingEnabled = false;
 
     /**
+     * @var LoggerInterface
+     */
+    protected $logger = null;
+
+    /**
      * AbstractDriver constructor.
      *
      * @param array $settings
      */
     public function __construct(array $settings = [])
     {
+        $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(get_class($this));
         $this->configurationService = GeneralUtility::makeInstance(ConfigurationService::class);
         $this->setSettings($settings);
     }
@@ -138,7 +143,7 @@ abstract class AbstractDriver
             return;
         } else {
             if ($this->configurationService->isProductionContext()) {
-                $this->getLogger()->error(
+                $this->logger->error(
                     $errorMessage,
                     ['errorCode' => $errorCode, 'errorMessage' => $errorMessage, 'file' => $file, 'line' => $line]
                 );
