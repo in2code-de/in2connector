@@ -1,0 +1,6 @@
+# cat=settings/log_level; type=options[Debug=7,Info=6,Notice=5,Warning=4,Error=3,Critical=2,Alert=1,Emergency=0]; label=Log Level
+log_level = 7
+# cat=settings/logs_per_page; type=options[10,25,50,100,250,500,1000,2000,3000]; label=Logs per page
+logs_per_page = 50
+# cat=settings/production_context; type=boolean; label=Production Contenxt (If not enabled this extension throws exceptions on errors)
+production_context = 1

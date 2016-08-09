@@ -49,6 +49,7 @@ class ArrayToStringConverter extends AbstractTypeConverter
      * @param array $convertedChildProperties
      * @param PropertyMappingConfigurationInterface|null $configuration
      * @return string
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function convertFrom(
         $source,

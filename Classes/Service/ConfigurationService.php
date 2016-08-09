@@ -20,72 +20,52 @@ namespace In2code\In2connector\Service;
  * The TYPO3 project - inspiring people to share!
  */
 
-use In2code\In2connector\Domain\Model\Dto\Configuration;
-use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Log\LogLevel;
-use TYPO3\CMS\Core\Registry;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 
 /**
- * Wraps the TYPO3 registry for convenient usage to retrieve special values fast and easily
+ * Rewritten to access values from extConf instead of registry, because configuration might accessed before the
+ * database is ready
  */
 class ConfigurationService implements SingletonInterface
 {
-    const DEFAULT_LOGS_PER_PAGE = 25;
-    const DEFAULT_PRODUCTION_CONTEXT = true;
-    const DEFAULT_LOG_LEVEL = LogLevel::DEBUG;
     const LOG_LEVEL = 'log_level';
+    const LOG_LEVEL_DEFAULT = LogLevel::DEBUG;
     const LOGS_PER_PAGE = 'logs_per_page';
+    const LOGS_PER_PAGE_DEFAULT = 25;
     const PRODUCTION_CONTEXT = 'production_context';
+    const PRODUCTION_CONTEXT_DEFAULT = true;
 
     /**
-     * @var Registry
+     * Default configuration which gets overwritten on construction
+     *
+     * @var array
      */
-    protected $registry = null;
-
-    /**
-     * @var int
-     */
-    protected $logLevel = null;
-
-    /**
-     * @var int
-     */
-    protected $logsPerPage = null;
-
-    /**
-     * @var bool
-     */
-    protected $productionContext = null;
+    protected $configuration = array(
+        self::LOG_LEVEL => self::LOG_LEVEL_DEFAULT,
+        self::PRODUCTION_CONTEXT => self::PRODUCTION_CONTEXT_DEFAULT,
+        self::LOGS_PER_PAGE => self::LOGS_PER_PAGE_DEFAULT,
+    );
 
     /**
      * ConfigurationService constructor.
      */
     public function __construct()
     {
-        $this->registry = GeneralUtility::makeInstance(Registry::class);
+        ArrayUtility::mergeRecursiveWithOverrule($this->configuration, $this->readConfiguration());
     }
 
     /**
-     * @return Configuration
+     * @return array
+     * @SuppressWarnings("PHPMD.Superglobals")
      */
-    public function getConfigurationDto()
+    protected function readConfiguration()
     {
-        $configuration = new Configuration();
-        return $configuration->setLogLevel($this->getLogLevel())
-                             ->setLogsPerPage($this->getLogsPerPage())
-                             ->setProductionContext($this->isProductionContext());
-    }
-
-    /**
-     * @param Configuration $configuration
-     */
-    public function updateFromConfigurationDto(Configuration $configuration)
-    {
-        $this->setLogLevel($configuration->getLogLevel());
-        $this->setLogsPerPage($configuration->getLogsPerPage());
-        $this->setProductionContext($configuration->isProductionContext());
+        if (isset($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['in2connector'])) {
+            return (array)unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['in2connector']);
+        }
+        return array();
     }
 
     /**
@@ -93,24 +73,7 @@ class ConfigurationService implements SingletonInterface
      */
     public function getLogLevel()
     {
-        if (null === $this->logLevel) {
-            if ($this->isDatabaseReady()) {
-                $this->loadFromDatabase();
-            } else {
-                return self::DEFAULT_LOG_LEVEL;
-            }
-        }
-        return $this->logLevel;
-    }
-
-    /**
-     * @param int $logLevel
-     */
-    public function setLogLevel($logLevel)
-    {
-        if (($logLevel >= LogLevel::EMERGENCY) && ($logLevel <= LogLevel::DEBUG)) {
-            $this->logLevel = $logLevel;
-        }
+        return $this->configuration[self::LOG_LEVEL];
     }
 
     /**
@@ -118,22 +81,7 @@ class ConfigurationService implements SingletonInterface
      */
     public function getLogsPerPage()
     {
-        if (null === $this->logsPerPage) {
-            if ($this->isDatabaseReady()) {
-                $this->loadFromDatabase();
-            } else {
-                return self::DEFAULT_LOGS_PER_PAGE;
-            }
-        }
-        return $this->logsPerPage;
-    }
-
-    /**
-     * @param int $logsPerPage
-     */
-    public function setLogsPerPage($logsPerPage)
-    {
-        $this->logsPerPage = $logsPerPage;
+        return $this->configuration[self::LOGS_PER_PAGE];
     }
 
     /**
@@ -141,74 +89,6 @@ class ConfigurationService implements SingletonInterface
      */
     public function isProductionContext()
     {
-        if (null === $this->productionContext) {
-            if ($this->isDatabaseReady()) {
-                $this->loadFromDatabase();
-            } else {
-                return self::DEFAULT_PRODUCTION_CONTEXT;
-            }
-        }
-        return $this->productionContext;
-    }
-
-    /**
-     * @param boolean $productionContext
-     */
-    public function setProductionContext($productionContext)
-    {
-        $this->productionContext = $productionContext;
-    }
-
-    /**
-     *
-     */
-    protected function loadFromDatabase()
-    {
-        $this->logLevel = $this->registry->get(TX_IN2CONNECTOR, self::LOG_LEVEL, $this->logLevel);
-        $this->logsPerPage = $this->registry->get(TX_IN2CONNECTOR, self::LOGS_PER_PAGE, $this->logsPerPage);
-        $this->productionContext = $this->registry->get(
-            TX_IN2CONNECTOR,
-            self::PRODUCTION_CONTEXT,
-            $this->productionContext
-        );
-    }
-
-    /**
-     * TODO: this updates all configurations on each request. only update when really needed!
-     * Ensure to write all cached stuff back to the registry
-     */
-    public function __destruct()
-    {
-        if ($this->isDatabaseReady()) {
-            if (null !== $this->logLevel) {
-                $this->registry->set(TX_IN2CONNECTOR, self::LOG_LEVEL, $this->logLevel);
-            }
-            if (null !== $this->logsPerPage) {
-                $this->registry->set(TX_IN2CONNECTOR, self::LOGS_PER_PAGE, $this->logsPerPage);
-            }
-            if (null !== $this->productionContext) {
-                $this->registry->set(TX_IN2CONNECTOR, self::PRODUCTION_CONTEXT, $this->productionContext);
-            }
-        }
-    }
-
-    /**
-     * @return bool
-     */
-    protected function isDatabaseReady()
-    {
-        $databaseConnection = $this->getDatabaseConnection();
-        if (null !== $databaseConnection) {
-            return in_array('sys_registry', array_keys($databaseConnection->admin_get_tables()));
-        }
-        return false;
-    }
-
-    /**
-     * @return DatabaseConnection|null
-     */
-    protected function getDatabaseConnection()
-    {
-        return !empty($GLOBALS['TYPO3_DB']) ? $GLOBALS['TYPO3_DB'] : null;
+        return $this->configuration[self::PRODUCTION_CONTEXT];
     }
 }

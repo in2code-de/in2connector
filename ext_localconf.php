@@ -1,21 +1,14 @@
 <?php
 
 if (defined('TYPO3_MODE')) {
-    // define extension registry namespace
     if (!defined('TX_IN2CONNECTOR')) {
         define('TX_IN2CONNECTOR', 'tx_in2connector');
         define('TX_IN2CONNECTOR_DRIVER_LDAP', 'ldap');
         define('TX_IN2CONNECTOR_DRIVER_SOAP', 'soap');
     }
 
-    // Extkey fallback
-    if (!isset($_EXTKEY)) {
-        $_EXTKEY = 'in2connector';
-    }
-
-    // boot the extension
     call_user_func(
-        function ($extKey) {
+        function () {
             \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerTypeConverter(
                 \In2code\In2connector\Property\TypeConverter\ArrayToStringConverter::class
             );
@@ -48,8 +41,6 @@ if (defined('TYPO3_MODE')) {
                 \In2code\In2connector\Driver\SoapDriver::class,
                 'Driver/Soap/Forms/Settings'
             );
-        },
-        $_EXTKEY
+        }
     );
 }
-

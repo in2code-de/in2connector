@@ -1,32 +1,23 @@
 <?php
 
 if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
-    // Extkey fallback
-    if (!isset($_EXTKEY)) {
-        $_EXTKEY = 'in2connector';
-    }
-
-    // boot the extension
     call_user_func(
-        function ($extKey) {
-            // register backend module
+        function () {
             \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
-                'In2code.' . $extKey,
+                'In2code.In2connector',
                 'tools',
                 'mod1',
                 '',
                 [
                     'Connection' => 'index,newFromDemand,new,create,configure,setConfig,delete',
-                    'Configuration' => 'edit,update',
                 ],
                 [
                     'access' => 'user,group',
                     'icon' => 'EXT:t3skin/icons/gfx/i/module.gif',
-                    'labels' => 'LLL:EXT:' . $extKey . '/Resources/Private/Language/locallang.xlf',
+                    'labels' => 'LLL:EXT:in2connector/Resources/Private/Language/locallang.xlf',
                 ]
             );
-        },
-        $_EXTKEY
+        }
     );
 }
 
