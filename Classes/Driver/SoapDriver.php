@@ -284,7 +284,6 @@ class SoapDriver extends AbstractDriver
         return false;
     }
 
-
     /**
      * @return string
      */

@@ -20,11 +20,8 @@ namespace In2code\In2connector\Logging;
  * The TYPO3 project - inspiring people to share!
  */
 
-
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Log\Logger;
-use TYPO3\CMS\Core\Log\Processor;
-use TYPO3\CMS\Core\Log\Writer;
 
 /**
  * Class LoggerProxy

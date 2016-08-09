@@ -28,7 +28,6 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
  */
 class LogRepository extends Repository
 {
-
     /**
      * Newest log entries first!
      *
