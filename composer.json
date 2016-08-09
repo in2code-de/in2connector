@@ -1,23 +1,19 @@
 {
-  "name": "in2code/in2connector",
-  "description": "Enterprise Level Connection Manager for LDAP, SOAP etc.",
-  "type": "typo3-cms-extension",
-  "authors": [
-    {
-      "name": "Oliver Eglseder",
-      "email": "oliver.eglseder@in2code.de",
-      "homepage": "https://www.in2code.de",
-      "role": "Developer"
+    "name": "in2code/in2connector",
+    "description": "Enterprise Level Connection Manager for LDAP, SOAP etc.",
+    "type": "typo3-cms-extension",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Oliver Eglseder",
+            "email": "oliver.eglseder@in2code.de",
+            "homepage": "https://www.in2code.de",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "In2code\\In2connector\\": "Classes"
+        }
     }
-  ],
-  "autoload": {
-    "psr-4": {
-      "In2code\\In2connector\\": "Classes"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "In2code\\In2connector\\Tests": "Tests"
-    }
-  }
 }
