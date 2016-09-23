@@ -250,7 +250,7 @@ class LdapDriver extends AbstractDriver
     /**
      * @param string $distinguishedName
      * @param string $filter
-     * @return resource
+     * @return resource|false
      */
     public function listDirectory($distinguishedName, $filter)
     {
@@ -262,7 +262,7 @@ class LdapDriver extends AbstractDriver
 
     /**
      * @param resource $resource
-     * @return array
+     * @return array|false
      */
     public function getResults($resource)
     {
@@ -274,7 +274,7 @@ class LdapDriver extends AbstractDriver
 
     /**
      * @param resource $resource
-     * @return int
+     * @return int|false
      */
     public function countResults($resource)
     {
@@ -299,7 +299,7 @@ class LdapDriver extends AbstractDriver
      * @param string $distinguishedName
      * @param string $filter
      * @param array $attributes
-     * @return resource
+     * @return resource|false
      */
     public function search($distinguishedName, $filter, array $attributes = [])
     {
@@ -314,7 +314,7 @@ class LdapDriver extends AbstractDriver
      * @param string $filter
      * @param array $attributes
      * @param int $limit
-     * @return array
+     * @return array|false
      */
     public function searchAndGetResults($distinguishedName, $filter, $attributes = [], $limit = PHP_INT_MAX)
     {
@@ -327,7 +327,7 @@ class LdapDriver extends AbstractDriver
     /**
      * @param string $distinguishedName
      * @param string $filter
-     * @return int
+     * @return int|false
      */
     public function searchAndCountResults($distinguishedName, $filter)
     {
@@ -369,7 +369,7 @@ class LdapDriver extends AbstractDriver
     public function modify($distinguishedName, array $values)
     {
         foreach ($values as $key => $unescaped) {
-            $values[$key] = $this->escape($unescaped);
+            $values[$key] = ldap_escape($unescaped);
         }
         $this->initialize();
         $return = ldap_modify($this->connection, $distinguishedName, $values);
@@ -385,7 +385,7 @@ class LdapDriver extends AbstractDriver
     public function add($distinguishedName, array $values)
     {
         foreach ($values as $key => $unescaped) {
-            $values[$key] = $this->escape($unescaped);
+            $values[$key] = ldap_escape($unescaped);
         }
         $this->initialize();
         $return = ldap_add($this->connection, $distinguishedName, $values);
@@ -401,31 +401,13 @@ class LdapDriver extends AbstractDriver
     public function removeAttributes($distinguishedName, array $values)
     {
         foreach ($values as $key => $unescaped) {
-            $values[$key] = $this->escape($unescaped);
+            $values[$key] = ldap_escape($unescaped);
         }
         $this->initialize();
         $return = ldap_mod_del($this->connection, $distinguishedName, $values);
 
         return ($return === false ? $this->fetchErrors() : $return);
     }
-
-
-    // currently unused
-    //    /**
-    //     * @param string $distinguishedName
-    //     * @param array $values
-    //     * @return bool
-    //     */
-    //    public function addAttribute($distinguishedName, array $values)
-    //    {
-    //        foreach ($values as $key => $unescaped) {
-    //            $values[$key] = $this->escape($unescaped);
-    //        }
-    //        $this->initialize();
-    //        $return = ldap_mod_add($this->connection, $distinguishedName, $values);
-    //
-    //        return ($return === false ? $this->fetchErrors() : $return);
-    //    }
 
     /**
      * @return array
@@ -486,44 +468,6 @@ class LdapDriver extends AbstractDriver
         $result = $ldapDriver->initialize();
         $ldapDriver->logout();
         return $result;
-    }
-
-    /**
-     * Escapes LDAP Characters and Prevents LDAP Injection
-     *
-     * Example:
-     * $user = '*)(username=test+1234@lightwerk.com)';
-     * var_dump("cn=" . Ldap::escape($user));
-     * // string(64) "cn=\5c2a\5c29\5c28username\3dtest\2b1234@lightwerk.com\5c29"
-     * var_dump("cn=" . Ldap::escape($user, true));
-     * // string(52) "cn=\2a\29\28username=test+1234@lightwerk.com\29"
-     * var_dump("cn=" . Ldap::escape($user, false));
-     * // string(48) "cn=*)(username\3dtest\>2b1234@lightwerk.com)"
-     *
-     * @param String $string
-     * @param Boolean $distinguishedName
-     * @return String
-     */
-    public function escape($string, $distinguishedName = null)
-    {
-        $escapeDn = array('\\', '*', '(', ')', "\x00");
-        $escape = array('\\', ',', '=', '+', '<', '>', ';', '"', '#');
-
-        $search = array();
-        if ($distinguishedName === null) {
-            $search = array_merge($search, $escapeDn, $escape);
-        } elseif ($distinguishedName === false) {
-            $search = array_merge($search, $escape);
-        } else {
-            $search = array_merge($search, $escapeDn);
-        }
-
-        $replace = array();
-        foreach ($search as $char) {
-            $replace[] = sprintf('\\%02x', ord($char));
-        }
-
-        return str_replace($search, $replace, $string);
     }
 
     /**
