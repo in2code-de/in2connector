@@ -310,6 +310,43 @@ class LdapDriver extends AbstractDriver
     }
 
     /**
+     * @param $distinguishedName
+     * @param $filter
+     * @param array $attributes
+     * @return array|false
+     */
+    public function searchAndGetPagedResults($distinguishedName, $filter, $pageSize = 10, $attributes = [], $limit = PHP_INT_MAX)
+    {
+        $this->initialize();
+        $cookie = '';
+        do {
+            ldap_control_paged_result($this->connection, $pageSize, true, $cookie);
+
+            $result = ldap_search($this->connection, $distinguishedName, $filter, $attributes, 0, $limit);
+
+            if($result === false) {
+                $this->logger->error(
+                    'Server doesn\'t support pagination, the search will return no result.',
+                    [
+                        'errorMessage' => 'Server doesn\'t support pagination, the search will return no result.',
+                        'hostname' => $this->settings['hostname'],
+                        'port' => $this->settings['port'],
+                    ]
+                );
+
+                return $this->fetchErrors();
+            }
+
+
+            $return = ldap_get_entries($this->connection, $result);
+            ldap_control_paged_result_response($this->connection, $result, $cookie);
+
+        } while($cookie !== null && $cookie !== '');
+
+        return ($return === null ? $this->fetchErrors() : $this->getResults($return));
+    }
+
+    /**
      * @param string $distinguishedName
      * @param string $filter
      * @param array $attributes
