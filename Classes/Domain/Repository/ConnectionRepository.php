@@ -82,7 +82,7 @@ class ConnectionRepository
      */
     public function countByIdentityKey($identityKey)
     {
-        return (int)$this->getDatabase()->exec_SELECTcountRows('uid', static::TABLE, 'identity_key=' . $identityKey);
+        return (int)$this->getDatabase()->exec_SELECTcountRows('uid', static::TABLE, 'identity_key=' . $this->getDatabase()->fullQuoteStr($identityKey, static::TABLE));
     }
 
     /**
