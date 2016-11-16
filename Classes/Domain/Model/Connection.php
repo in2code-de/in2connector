@@ -24,18 +24,22 @@ use In2code\In2connector\Registry\ConnectionRegistry;
 use In2code\In2connector\Registry\Exceptions\DriverNameNotRegisteredException;
 use In2code\In2connector\Translation\TranslationTrait;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 /**
  * Class Connection
  */
-class Connection extends AbstractEntity
+class Connection
 {
     use TranslationTrait;
     const TEST_RESULT_OK = 0;
     const TEST_RESULT_INFO = 1;
     const TEST_RESULT_WARNING = 2;
     const TEST_RESULT_ERROR = 3;
+
+    /**
+     * @var int
+     */
+    protected $uid = 0;
 
     /**
      * @var string
@@ -51,6 +55,22 @@ class Connection extends AbstractEntity
      * @var string
      */
     protected $settings = [];
+
+    /**
+     * @return int
+     */
+    public function getUid()
+    {
+        return $this->uid;
+    }
+
+    /**
+     * @param int $uid
+     */
+    public function setUid($uid)
+    {
+        $this->uid = (int)$uid;
+    }
 
     /**
      * @return string
@@ -112,7 +132,7 @@ class Connection extends AbstractEntity
     }
 
     /**
-     * @param array|string $settings
+     * @param array $settings
      */
     public function setSettings($settings)
     {
@@ -208,5 +228,52 @@ class Connection extends AbstractEntity
         $driverInstance = $connectionRegistry->getRegisteredDriver($this->driver)->getDriverInstance();
         $driverInstance->setSettings($this->getSettings());
         return $driverInstance;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        $properties = array(
+            'identity_key' => $this->identityKey,
+            'driver' => $this->driver,
+            'settings' => json_encode($this->getSettings()),
+        );
+        if (!empty($this->uid)) {
+            $properties['uid'] = $this->uid;
+        }
+        return $properties;
+    }
+
+    /**
+     * @param array $properties
+     * @return static
+     */
+    public static function fromArray(array $properties)
+    {
+        $connection = new static();
+        if (isset($properties['uid'])) {
+            $connection->setUid($properties['uid']);
+        }
+        $connection->setSettings($properties['settings']);
+        $connection->setDriver($properties['driver']);
+        if (isset($properties['identity_key'])) {
+            $identityKey = $properties['identity_key'];
+        } elseif (isset($properties['identityKey'])) {
+            $identityKey = $properties['identityKey'];
+        } else {
+            $identityKey = '';
+        }
+        $connection->setIdentityKey($identityKey);
+        return $connection;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return (string)$this->uid;
     }
 }

@@ -12,14 +12,4 @@ config.tx_extbase.persistence.classes {
 			}
 		}
 	}
-	In2code\In2connector\Domain\Model\Connection {
-		mapping {
-			tableName = tx_in2connector_domain_model_connection
-			columns {
-				identity_key.mapOnProperty = identityKey
-				driver.mapOnProperty = driver
-				settings.mapOnProperty = settings
-			}
-		}
-	}
 }

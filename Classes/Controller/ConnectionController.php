@@ -25,6 +25,7 @@ use In2code\In2connector\Domain\Model\Connection;
 use In2code\In2connector\Registry\ConnectionRegistry;
 use In2code\In2connector\Translation\TranslationTrait;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 /**
@@ -69,7 +70,7 @@ class ConnectionController extends ActionController
         $this->view->assign(
             'connectionLinker',
             new ConnectionLinker(
-                $this->connectionRepository->findAll()->toArray(),
+                $this->connectionRepository->findAll(),
                 $this->connectionRegistry->getDemandedConnections()
             )
         );
@@ -82,7 +83,7 @@ class ConnectionController extends ActionController
      */
     public function newFromDemandAction($identityKey, $driverName)
     {
-        $connection = $this->objectManager->get(Connection::class);
+        $connection = GeneralUtility::makeInstance(Connection::class);
         $connection->setDriver($driverName);
         $connection->setIdentityKey($identityKey);
         $this->connectionRepository->addAndPersist($connection);
@@ -106,21 +107,23 @@ class ConnectionController extends ActionController
     }
 
     /**
-     * @param Connection $connection
+     * @param int $connection
      */
-    public function configureAction(Connection $connection)
+    public function configureAction($connection)
     {
-        $connectionRegistry = $this->objectManager->get(ConnectionRegistry::class);
+        $connection = $this->connectionRepository->findOneByUid($connection);
+        $connectionRegistry = GeneralUtility::makeInstance(ConnectionRegistry::class);
         $isDemanded = $connectionRegistry->hasDemandedConnection($connection->getIdentityKey());
         $this->view->assign('isDemanded', $isDemanded);
         $this->view->assign('connection', $connection);
     }
 
     /**
-     * @param Connection $connection
+     * @param array $connection
      */
-    public function setConfigAction(Connection $connection)
+    public function setConfigAction(array $connection)
     {
+        $connection = Connection::fromArray($connection);
         $this->connectionRepository->updateAndPersist($connection);
         $this->redirect(self::ACTION_CONFIGURE, null, null, ['connection' => $connection]);
     }
@@ -130,7 +133,7 @@ class ConnectionController extends ActionController
      */
     public function deleteAction(Connection $connection)
     {
-        $connectionRegistry = $this->objectManager->get(ConnectionRegistry::class);
+        $connectionRegistry = GeneralUtility::makeInstance(ConnectionRegistry::class);
         if ($connectionRegistry->hasDemandedConnection($connection->getIdentityKey())) {
             $this->addFlashMessage(
                 $this->translate(

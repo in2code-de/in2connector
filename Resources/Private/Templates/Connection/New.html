@@ -1,23 +1,22 @@
+<f:layout name="Backend"/>
 
-	<f:layout name="Backend"/>
+<f:section name="ToolBarLeft">
+	<f:render partial="View/ButtonGroup/Open"/>
+	<f:render partial="View/Buttons/ActionButton"
+			  arguments="{icon:'actions-document-close',action:'index',controller:'Connection'}"/>
+	<f:render partial="View/Buttons/Submit" arguments="{form:'NewConnection'}"/>
+	<f:render partial="View/ButtonGroup/Close"/>
+</f:section>
 
-	<f:section name="ToolBarLeft">
-		<f:render partial="View/ButtonGroup/Open"/>
-		<f:render partial="View/Buttons/ActionButton"
-				  arguments="{icon:'actions-document-close',action:'index',controller:'Connection'}"/>
-		<f:render partial="View/Buttons/Submit" arguments="{form:'NewConnection'}"/>
-		<f:render partial="View/ButtonGroup/Close"/>
-	</f:section>
+<f:section name="ToolBarRight">
+</f:section>
 
-	<f:section name="ToolBarRight">
-	</f:section>
+<f:section name="Welcome">
+</f:section>
 
-	<f:section name="Welcome">
-	</f:section>
-
-	<f:section name="Main">
-		<f:form id="NewConnection" action="create" object="{connection}" objectName="connection" method="post">
-			<f:render partial="Model/Connection/Forms/Edit" arguments="{connection:connection}"/>
-		</f:form>
-	</f:section>
+<f:section name="Main">
+	<f:form id="NewConnection" action="create" object="{connection}" objectName="connection" method="post">
+		<f:render partial="Model/Connection/Forms/Edit" arguments="{connection:connection}"/>
+	</f:form>
+</f:section>
 

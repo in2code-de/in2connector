@@ -1,4 +1,6 @@
-
-	<f:render partial="Model/Connection/FormFields/IdentityKey" arguments="{connection:connection,isDemanded:isDemanded}"/>
-	<f:render partial="{connection.settingsPartial}" arguments="{connection:connection}"/>
+<f:form.hidden property="uid" value="{connection.uid}"/>
+<f:form.hidden property="driver" value="{connection.driver}"/>
+<f:form.hidden property="identityKey" value="{connection.identityKey}"/>
+<f:render partial="Model/Connection/FormFields/IdentityKey" arguments="{connection:connection,isDemanded:isDemanded}"/>
+<f:render partial="{connection.settingsPartial}" arguments="{connection:connection}"/>
 

@@ -21,20 +21,40 @@ namespace In2code\In2connector\Domain\Repository;
  */
 
 use In2code\In2connector\Domain\Model\Connection;
-use TYPO3\CMS\Extbase\Persistence\Repository;
+use TYPO3\CMS\Core\Database\DatabaseConnection;
 
 /**
  * Class ConnectionRepository
  */
-class ConnectionRepository extends Repository
+class ConnectionRepository
 {
+    const TABLE = 'tx_in2connector_domain_model_connection';
+
+    /**
+     * @return Connection[]
+     */
+    public function findAll()
+    {
+        $connections = array();
+        $properties = (array)$this->getDatabase()->exec_SELECTgetRows(
+            'uid,identity_key,driver,settings',
+            static::TABLE,
+            '1=1'
+        );
+        foreach ($properties as $propertyArray) {
+            $connections[] = Connection::fromArray($propertyArray);
+        }
+        return $connections;
+    }
+
     /**
      * @param Connection $connection
      */
     public function addAndPersist(Connection $connection)
     {
-        parent::add($connection);
-        $this->persistenceManager->persistAll();
+        $properties = $connection->toArray();
+        $this->getDatabase()->exec_INSERTquery(static::TABLE, $properties);
+        $connection->setUid($this->getDatabase()->sql_insert_id());
     }
 
     /**
@@ -42,17 +62,18 @@ class ConnectionRepository extends Repository
      */
     public function updateAndPersist(Connection $connection)
     {
-        parent::update($connection);
-        $this->persistenceManager->persistAll();
+        $uid = $this->checkUid($connection);
+        $this->getDatabase()->exec_UPDATEquery(static::TABLE, 'uid=' . $uid, $connection->toArray());
     }
 
     /**
      * @param Connection $connection
+     * @return bool
      */
     public function removeAndPersist(Connection $connection)
     {
-        parent::remove($connection);
-        $this->persistenceManager->persistAll();
+        $uid = $this->checkUid($connection);
+        return (bool)$this->getDatabase()->exec_DELETEquery(static::TABLE, 'uid=' . $uid);
     }
 
     /**
@@ -61,8 +82,7 @@ class ConnectionRepository extends Repository
      */
     public function countByIdentityKey($identityKey)
     {
-        $query = $this->createQuery();
-        return $query->matching($query->equals('identityKey', $identityKey))->execute()->count();
+        return (int)$this->getDatabase()->exec_SELECTcountRows('uid', static::TABLE, 'identity_key=' . $identityKey);
     }
 
     /**
@@ -71,7 +91,49 @@ class ConnectionRepository extends Repository
      */
     public function findOneByIdentityKey($identityKey)
     {
-        $query = $this->createQuery();
-        return $query->matching($query->equals('identityKey', $identityKey))->setLimit(1)->execute()->getFirst();
+        $properties = (array)$this->getDatabase()->exec_SELECTgetSingleRow(
+            'uid,identity_key,driver,settings',
+            static::TABLE,
+            'identity_key=' . $this->getDatabase()->fullQuoteStr($identityKey, static::TABLE)
+        );
+        return Connection::fromArray($properties);
+    }
+
+    /**
+     * @param string|int $uid
+     * @return Connection
+     */
+    public function findOneByUid($uid)
+    {
+        $properties = (array)$this->getDatabase()->exec_SELECTgetSingleRow(
+            'uid,identity_key,driver,settings',
+            static::TABLE,
+            'uid=' . (int)$uid
+        );
+        return Connection::fromArray($properties);
+    }
+
+    /**
+     * @param Connection $connection
+     * @return int
+     */
+    protected function checkUid(Connection $connection)
+    {
+        if (!(0 < $uid = (int)$connection->getUid())) {
+            throw new \InvalidArgumentException(
+                'Can not update unpersisted connection ' . $connection->getIdentityKey(),
+                $uid = (int)$connection->getUid()
+            );
+        }
+        return $uid;
+    }
+
+    /**
+     * @return DatabaseConnection
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
+    protected function getDatabase()
+    {
+        return $GLOBALS['TYPO3_DB'];
     }
 }

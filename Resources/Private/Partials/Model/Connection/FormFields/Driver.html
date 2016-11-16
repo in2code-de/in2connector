@@ -1,15 +1,13 @@
 {namespace in2connector=In2code\In2connector\ViewHelpers}
-
-
-	<fieldset class="form-section">
-		<div class="form-group">
-			<label>
-				<f:translate key="domain.model.connection.field.driver">driver</f:translate>
-			</label>
-			<div class="form-control-wrap" style="max-width: 480px">
-				<f:form.select class="form-control" property="driver" options="{in2connector:availableDrivers()}"
-							   optionValueField="name" optionLabelField="name"/>
-			</div>
+<fieldset class="form-section">
+	<div class="form-group">
+		<label>
+			<f:translate key="domain.model.connection.field.driver">driver</f:translate>
+		</label>
+		<div class="form-control-wrap" style="max-width: 480px">
+			<f:form.select class="form-control" property="driver" options="{in2connector:availableDrivers()}"
+						   optionValueField="name" optionLabelField="name"/>
 		</div>
-	</fieldset>
+	</div>
+</fieldset>
 

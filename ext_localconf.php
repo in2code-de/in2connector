@@ -12,6 +12,9 @@ if (defined('TYPO3_MODE')) {
             \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerTypeConverter(
                 \In2code\In2connector\Property\TypeConverter\ArrayToStringConverter::class
             );
+            \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerTypeConverter(
+                \In2code\In2connector\Property\TypeConverter\StringToConnectionConverter::class
+            );
 
             // get configuration service
             $configurationService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
