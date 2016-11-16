@@ -15,5 +15,10 @@
         "psr-4": {
             "In2code\\In2connector\\": "Classes"
         }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.2.x-dev"
+        }
     }
 }
