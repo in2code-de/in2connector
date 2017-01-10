@@ -491,6 +491,8 @@ class LdapDriver extends AbstractDriver
     /**
      * Escapes LDAP Characters and Prevents LDAP Injection
      *
+     * TODO: Rewrite this to match https://tools.ietf.org/html/rfc4514
+     *
      * Example:
      * $user = '*)(username=test+1234@lightwerk.com)';
      * var_dump("cn=" . Ldap::escape($user));
