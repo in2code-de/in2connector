@@ -250,7 +250,7 @@ class LdapDriver extends AbstractDriver
     /**
      * @param string $distinguishedName
      * @param string $filter
-     * @return resource
+     * @return resource|bool
      */
     public function listDirectory($distinguishedName, $filter)
     {
@@ -262,7 +262,7 @@ class LdapDriver extends AbstractDriver
 
     /**
      * @param resource $resource
-     * @return array
+     * @return array|bool
      */
     public function getResults($resource)
     {
@@ -274,7 +274,7 @@ class LdapDriver extends AbstractDriver
 
     /**
      * @param resource $resource
-     * @return int
+     * @return int|bool
      */
     public function countResults($resource)
     {
@@ -299,7 +299,7 @@ class LdapDriver extends AbstractDriver
      * @param string $distinguishedName
      * @param string $filter
      * @param array $attributes
-     * @return resource
+     * @return resource|bool
      */
     public function search($distinguishedName, $filter, array $attributes = [])
     {
@@ -314,7 +314,7 @@ class LdapDriver extends AbstractDriver
      * @param string $filter
      * @param array $attributes
      * @param int $limit
-     * @return array
+     * @return array|bool
      */
     public function searchAndGetResults($distinguishedName, $filter, $attributes = [], $limit = PHP_INT_MAX)
     {
@@ -327,7 +327,7 @@ class LdapDriver extends AbstractDriver
     /**
      * @param string $distinguishedName
      * @param string $filter
-     * @return int
+     * @return int|bool
      */
     public function searchAndCountResults($distinguishedName, $filter)
     {
