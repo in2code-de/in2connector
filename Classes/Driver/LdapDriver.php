@@ -47,6 +47,11 @@ class LdapDriver extends AbstractDriver
     protected $connection = null;
 
     /**
+     * @var bool
+     */
+    protected $testResult = true;
+
+    /**
      * @return bool
      */
     public function validateSettings()
@@ -483,9 +488,32 @@ class LdapDriver extends AbstractDriver
         $ldapDriver = clone $this;
         $ldapDriver->setSettings($settings);
         $ldapDriver->logout();
-        $result = $ldapDriver->initialize();
+
+        $this->testResult = true;
+        set_error_handler([$this, 'testFail']);
+        try {
+            $result = $ldapDriver->initialize();
+        } catch (\Exception $exception) {
+            $result = false;
+        }
+        restore_error_handler();
         $ldapDriver->logout();
+
+        if (false === $this->testResult) {
+            $this->testResult = true;
+            return false;
+        }
         return $result;
+    }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function testFail($level, $message, $file, $line, $context)
+    {
+        if (strpos($message, 'Invalid credentials') !== false) {
+            $this->testResult = false;
+        }
     }
 
     /**
