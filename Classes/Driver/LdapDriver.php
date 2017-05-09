@@ -456,6 +456,25 @@ class LdapDriver extends AbstractDriver
     }
 
     /**
+     * @param string $distinguishedName
+     * @param string $filter
+     * @param array $attributes
+     * @return array|bool|false
+     */
+    public function getAttributes($distinguishedName, $filter = '', $attributes = [])
+    {
+        $result = $this->search($distinguishedName, $filter, $attributes);
+        if (false === $result) {
+            return false;
+        }
+        $attributes = ldap_get_attributes($this->connection, $result);
+        if ($attributes === false) {
+            return $this->fetchErrors();
+        }
+        return $this->getResults($attributes);
+    }
+
+    /**
      *
      */
     public function __destruct()
