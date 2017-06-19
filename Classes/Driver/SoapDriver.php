@@ -252,10 +252,16 @@ class SoapDriver extends AbstractDriver
     public function call($function, $parameter = null)
     {
         $this->initialize();
-        if (null === $parameter) {
-            $result = call_user_func([$this->soapClient, $function]);
-        } else {
-            $result = call_user_func([$this->soapClient, $function], $parameter);
+        try {
+            if (null === $parameter) {
+                $result = call_user_func([$this->soapClient, $function]);
+            } else {
+                $result = call_user_func([$this->soapClient, $function], $parameter);
+            }
+        } catch (\SoapFault $exception) {
+            $this->lastErrorCode = $exception->getCode();
+            $this->lastErrorMessage = $exception->getMessage();
+            $result = false;
         }
         if (false === $result) {
             $this->fetchErrors();
