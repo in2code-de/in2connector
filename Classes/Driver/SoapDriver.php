@@ -259,8 +259,10 @@ class SoapDriver extends AbstractDriver
                 $result = call_user_func([$this->soapClient, $function], $parameter);
             }
         } catch (\SoapFault $exception) {
-            $this->lastErrorCode = $exception->getCode();
-            $this->lastErrorMessage = $exception->getMessage();
+            $this->logger->error(
+                'SOAP call failed',
+                ['code' => $exception->getCode(), 'message' => $exception->getMessage()]
+            );
             $result = false;
         }
         if (false === $result) {
@@ -287,6 +289,13 @@ class SoapDriver extends AbstractDriver
     {
         $this->lastErrorMessage = $this->soapClient->__getLastResponse();
         $this->lastErrorCode = $this->soapClient->__getLastResponseHeaders();
+        $this->logger->error(
+            'Fetched errors from soap client',
+            [
+                'code' => $this->lastErrorCode,
+                'message' => $this->lastErrorMessage,
+            ]
+        );
         return false;
     }
 
