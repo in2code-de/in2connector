@@ -373,9 +373,7 @@ class LdapDriver extends AbstractDriver
      */
     public function modify($distinguishedName, array $values)
     {
-        foreach ($values as $key => $unescaped) {
-            $values[$key] = $this->escape($unescaped);
-        }
+        // Do not escape values anymore
         $this->initialize();
         $return = ldap_modify($this->connection, $distinguishedName, $values);
 
@@ -389,9 +387,7 @@ class LdapDriver extends AbstractDriver
      */
     public function add($distinguishedName, array $values)
     {
-        foreach ($values as $key => $unescaped) {
-            $values[$key] = $this->escape($unescaped);
-        }
+        // Do not escape values anymore
         $this->initialize();
         $return = ldap_add($this->connection, $distinguishedName, $values);
 
@@ -405,9 +401,7 @@ class LdapDriver extends AbstractDriver
      */
     public function removeAttributes($distinguishedName, array $values)
     {
-        foreach ($values as $key => $unescaped) {
-            $values[$key] = $this->escape($unescaped);
-        }
+        // Do not escape values anymore
         $this->initialize();
         $return = ldap_mod_del($this->connection, $distinguishedName, $values);
 
