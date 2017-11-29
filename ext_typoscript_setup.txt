@@ -1,1 +1,15 @@
+module.tx_in2connector {
+	view {
+		templateRootPaths {
+			10 = EXT:in2connector/Resources/Private/Html/in2connector/Templates
+		}
+
+		partialRootPaths {
+			10 = EXT:in2connector/Resources/Private/Html/in2connector/Partials
+		}
+
+		layoutRootPaths {
+			10 = EXT:in2connector/Resources/Private/Html/in2connector/Layouts
+		}
+	}
 }
