@@ -34,16 +34,20 @@ if (defined('TYPO3_MODE')) {
             $connectionRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
                 \In2code\In2connector\Registry\ConnectionRegistry::class
             );
-            $connectionRegistry->registerDriver(
-                TX_IN2CONNECTOR_DRIVER_LDAP,
-                \In2code\In2connector\Driver\LdapDriver::class,
-                'Driver/Ldap/Forms/Settings'
-            );
-            $connectionRegistry->registerDriver(
-                TX_IN2CONNECTOR_DRIVER_SOAP,
-                \In2code\In2connector\Driver\SoapDriver::class,
-                'Driver/Soap/Forms/Settings'
-            );
+            if (!$connectionRegistry->hasRegisteredDriver(TX_IN2CONNECTOR_DRIVER_LDAP)) {
+                $connectionRegistry->registerDriver(
+                    TX_IN2CONNECTOR_DRIVER_LDAP,
+                    \In2code\In2connector\Driver\LdapDriver::class,
+                    'Driver/Ldap/Forms/Settings'
+                );
+            }
+            if (!$connectionRegistry->hasRegisteredDriver(TX_IN2CONNECTOR_DRIVER_SOAP)) {
+                $connectionRegistry->registerDriver(
+                    TX_IN2CONNECTOR_DRIVER_SOAP,
+                    \In2code\In2connector\Driver\SoapDriver::class,
+                    'Driver/Soap/Forms/Settings'
+                );
+            }
         }
     );
 }

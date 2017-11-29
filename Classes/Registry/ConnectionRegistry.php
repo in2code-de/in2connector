@@ -120,6 +120,15 @@ class ConnectionRegistry implements SingletonInterface
     }
 
     /**
+     * @param string $driverName
+     * @return bool
+     */
+    public function hasRegisteredDriver($driverName)
+    {
+        return isset($this->registeredDrivers[$driverName]);
+    }
+
+    /**
      * @param string $identityKey
      * @param string $driverName
      * @return bool
