@@ -1,15 +1,1 @@
-config.tx_extbase.persistence.classes {
-	In2code\In2connector\Domain\Model\Log {
-		mapping {
-			tableName = tx_in2connector_log
-			columns {
-				request_id.mapOnProperty = requestId
-				time_micro.mapOnProperty = timeMicro
-				component.mapOnProperty = component
-				level.mapOnProperty = level
-				message.mapOnProperty = message
-				data.mapOnProperty = data
-			}
-		}
-	}
 }

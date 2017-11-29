@@ -38,12 +38,6 @@ class ConnectionController extends ActionController
     const ACTION_INDEX = 'index';
 
     /**
-     * @var \In2code\In2connector\Domain\Repository\LogRepository
-     * @inject
-     */
-    protected $logRepository = null;
-
-    /**
      * @var \In2code\In2connector\Registry\ConnectionRegistry
      * @inject
      */
@@ -66,7 +60,6 @@ class ConnectionController extends ActionController
      */
     public function indexAction()
     {
-        $this->view->assign('logs', $this->logRepository->findAll());
         $this->view->assign(
             'connectionLinker',
             new ConnectionLinker(
@@ -74,7 +67,6 @@ class ConnectionController extends ActionController
                 $this->connectionRegistry->getDemandedConnections()
             )
         );
-        $this->view->assign('logsPerPage', $this->configurationService->getLogsPerPage());
     }
 
     /**
