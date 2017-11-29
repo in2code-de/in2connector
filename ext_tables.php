@@ -13,7 +13,6 @@ if (defined('TYPO3_MODE') && TYPO3_MODE === 'BE') {
                 ],
                 [
                     'access' => 'user,group',
-                    'icon' => 'EXT:t3skin/icons/gfx/i/module.gif',
                     'labels' => 'LLL:EXT:in2connector/Resources/Private/Language/locallang.xlf',
                 ]
             );
