@@ -13,3 +13,11 @@ module.tx_in2connector {
 		}
 	}
 }
+
+config.tx_extbase {
+	objects {
+		TYPO3\CMS\Extbase\Persistence\Generic\Storage\BackendInterface {
+			className = In2code\In2connector\Persistence\Storage\LdapBackend
+		}
+	}
+}
