@@ -20,6 +20,11 @@ class LdapBackend implements BackendInterface
     protected $config = [];
 
     /**
+     * @var LdapQueryParser
+     */
+    protected $ldapQueryParser = null;
+
+    /**
      * LdapBackend constructor.
      *
      * @throws InvalidConfigurationTypeException
@@ -30,6 +35,7 @@ class LdapBackend implements BackendInterface
                                 ->get(ConfigurationManager::class)
                                 ->getConfiguration(ConfigurationManager::CONFIGURATION_TYPE_FRAMEWORK);
         $this->config = $config['persistence']['classes'];
+        $this->ldapQueryParser = GeneralUtility::makeInstance(LdapQueryParser::class);
     }
 
     public function addRow($tableName, array $fieldValues, $isRelation = false)
@@ -133,25 +139,37 @@ class LdapBackend implements BackendInterface
         $config = $this->config[$class];
 
         if (null !== $constraint = $query->getConstraint()) {
-            throw new NotImplementedException('Constraints in LDAP Backend');
+            $filter = $this->ldapQueryParser->parseQuery($query, array_flip($config['ldap_mapping']['columns']));
         } else {
             $filter = $config['ldap_mapping']['id'] . '=*';
         }
 
         $driver = $this->getDriver($config['mapping']['tableName']);
 
-        $results = $driver->searchAndGetResults('', $filter);
+        $results = $driver->searchAndGetResults(
+            '',
+            $filter,
+            array_merge([$config['ldap_mapping']['uid']], array_keys($config['ldap_mapping']['columns']))
+        );
         unset($results['count']);
 
         $rows = [];
 
         foreach ($results as $result) {
+            $uid = $result[$config['ldap_mapping']['uid']][0];
+            if (!is_numeric($uid) || !($uid > 0)) {
+                continue;
+            }
             $row = [
-                'uid' => (int)$result[$config['ldap_mapping']['uid']][0],
+                'uid' => (int)$uid,
                 'pid' => 0,
             ];
             foreach ($config['ldap_mapping']['columns'] as $ldapKey => $localKey) {
-                $row[$localKey] = $result[$ldapKey][0];
+                if (isset($result[$ldapKey][0])) {
+                    $row[$localKey] = $result[$ldapKey][0];
+                } else {
+                    $row[$localKey] = null;
+                }
             }
             $rows[] = $row;
         }
