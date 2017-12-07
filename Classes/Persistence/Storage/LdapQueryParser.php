@@ -3,6 +3,7 @@ namespace In2code\In2connector\Persistence\Storage;
 
 use In2code\In2connector\Driver\LdapDriver;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use TYPO3\CMS\Extbase\Persistence\Generic\Exception\NotImplementedException;
 use TYPO3\CMS\Extbase\Persistence\Generic\Qom\Comparison;
 use TYPO3\CMS\Extbase\Persistence\Generic\Qom\ConstraintInterface;
@@ -93,10 +94,22 @@ class LdapQueryParser
         $operands = [];
         $operator = $comparison->getOperator();
         $propertyName = $comparison->getOperand1()->getPropertyName();
-        $propertyValue = $this->driver->escape($comparison->getOperand2());
+        $propertyValue = $comparison->getOperand2();
 
         if (isset($propertyMap[$propertyName])) {
             $propertyName = $propertyMap[$propertyName];
+        }
+        if ($propertyValue instanceof AbstractEntity) {
+            $propertyValue = $propertyValue->getUid();
+        }
+
+        $propertyName = ldap_escape($propertyName, null, LDAP_ESCAPE_FILTER);
+        if (is_array($propertyValue)) {
+            foreach ($propertyValue as $index => $value) {
+                $propertyValue[$index] = ldap_escape($value, null, LDAP_ESCAPE_FILTER);
+            }
+        } else {
+            $propertyValue = ldap_escape($propertyValue, null, LDAP_ESCAPE_FILTER);
         }
 
         if ($operator === QueryInterface::OPERATOR_EQUAL_TO) {

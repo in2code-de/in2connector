@@ -12,8 +12,16 @@ use TYPO3\CMS\Extbase\Persistence\Generic\Exception\NotImplementedException;
 use TYPO3\CMS\Extbase\Persistence\Generic\Storage\BackendInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
+/**
+ * Class LdapBackend
+ */
 class LdapBackend implements BackendInterface
 {
+    /**
+     * @var ObjectManager
+     */
+    protected $objectManager;
+
     /**
      * @var array
      */
@@ -31,11 +39,11 @@ class LdapBackend implements BackendInterface
      */
     public function __construct()
     {
-        $config = GeneralUtility::makeInstance(ObjectManager::class)
-                                ->get(ConfigurationManager::class)
-                                ->getConfiguration(ConfigurationManager::CONFIGURATION_TYPE_FRAMEWORK);
+        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
+        $config = $this->objectManager->get(ConfigurationManager::class)
+                                      ->getConfiguration(ConfigurationManager::CONFIGURATION_TYPE_FRAMEWORK);
         $this->config = $config['persistence']['classes'];
-        $this->ldapQueryParser = GeneralUtility::makeInstance(LdapQueryParser::class);
+        $this->ldapQueryParser = $this->objectManager->get(LdapQueryParser::class);
     }
 
     public function addRow($tableName, array $fieldValues, $isRelation = false)
@@ -166,7 +174,8 @@ class LdapBackend implements BackendInterface
             ];
             foreach ($config['ldap_mapping']['columns'] as $ldapKey => $localKey) {
                 if (isset($result[$ldapKey][0])) {
-                    $row[$localKey] = $result[$ldapKey][0];
+                    unset($result[$ldapKey]['count']);
+                    $row[$localKey] = implode(',', $result[$ldapKey]);
                 } else {
                     $row[$localKey] = null;
                 }

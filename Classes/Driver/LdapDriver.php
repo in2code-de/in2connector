@@ -396,7 +396,6 @@ class LdapDriver extends AbstractDriver
     public function modify($distinguishedName, array $values)
     {
         $this->initialize();
-        $distinguishedName .= $this->settings['baseDn'];
         $return = ldap_modify($this->connection, $distinguishedName, $values);
         return ($return === false ? $this->fetchErrors() : $return);
     }
