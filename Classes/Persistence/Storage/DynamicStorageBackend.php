@@ -12,6 +12,9 @@ use TYPO3\CMS\Extbase\Persistence\Generic\Storage\BackendInterface;
 use TYPO3\CMS\Extbase\Persistence\Generic\Storage\Typo3DbBackend;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
+/**
+ * Class DynamicStorageBackend
+ */
 class DynamicStorageBackend implements BackendInterface
 {
     /**
@@ -102,7 +105,7 @@ class DynamicStorageBackend implements BackendInterface
      * @param string $tableName
      * @param array $fieldValues
      * @param bool $isRelation
-     * @return mixed|void
+     * @return mixed
      */
     public function updateRow($tableName, array $fieldValues, $isRelation = false)
     {
@@ -123,7 +126,7 @@ class DynamicStorageBackend implements BackendInterface
      * @param string $tableName
      * @param array $where
      * @param bool $isRelation
-     * @return mixed|void
+     * @return mixed
      */
     public function removeRow($tableName, array $where, $isRelation = false)
     {
@@ -167,6 +170,6 @@ class DynamicStorageBackend implements BackendInterface
      */
     public function getUidOfAlreadyPersistedValueObject(AbstractValueObject $object)
     {
-        return $this->getBackendForObject($object)->getUidOfAlreadyPersistedValueObject($query);
+        return $this->getBackendForObject($object)->getUidOfAlreadyPersistedValueObject($object);
     }
 }

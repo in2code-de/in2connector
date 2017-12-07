@@ -20,11 +20,6 @@ class LdapBackend implements BackendInterface
     protected $config = [];
 
     /**
-     * @var LdapQueryParser
-     */
-    protected $ldapQueryParser = null;
-
-    /**
      * LdapBackend constructor.
      *
      * @throws InvalidConfigurationTypeException
@@ -52,19 +47,34 @@ class LdapBackend implements BackendInterface
         die;
     }
 
+    /**
+     * @param string $tableName
+     * @param array $fieldValues
+     * @param bool $isRelation
+     * @return bool
+     * @throws InvalidDriverException
+     * @throws \Exception
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function updateRow($tableName, array $fieldValues, $isRelation = false)
     {
-        $this->getDriver($tableName);
-        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump(
-            func_get_args(),
-            __FILE__ . '@' . __LINE__,
-            20,
-            false,
-            true,
-            false,
-            array()
-        );
-        die;
+        $config = $this->getConfig($tableName);
+        $driver = $this->getDriver($tableName);
+        $mapping = array_flip($config['ldap_mapping']['columns']);
+
+        $uid = (int)$fieldValues['uid'];
+        unset($fieldValues['uid']);
+
+        $row = [];
+        foreach ($fieldValues as $name => $value) {
+            $row[isset($mapping[$name]) ? $mapping[$name] : $name] = $value;
+        }
+
+        $result = $driver->search('', '(' . $config['ldap_mapping']['uid'] . '=' . $uid . ')');
+        $entry = $driver->fetchFirst($result);
+        $distinguishedName = $driver->getDnOfEntry($entry);
+
+        return $driver->modify($distinguishedName, $row);
     }
 
     public function updateRelationTableRow($tableName, array $fieldValues)
@@ -109,18 +119,18 @@ class LdapBackend implements BackendInterface
         die;
     }
 
+    /**
+     * @param QueryInterface $query
+     * @return bool|int
+     * @throws InvalidDriverException
+     * @throws NotImplementedException
+     */
     public function getObjectCountByQuery(QueryInterface $query)
     {
-        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump(
-            func_get_args(),
-            __FILE__ . '@' . __LINE__,
-            20,
-            false,
-            true,
-            false,
-            array()
-        );
-        die;
+        $config = $this->getConfigForQuery($query);
+        $driver = $this->getDriver($config['mapping']['tableName']);
+        $filter = $this->ldapQueryParser->parseQuery($query, $config);
+        return $driver->searchAndCountResults('', $filter);
     }
 
     /**
@@ -131,22 +141,11 @@ class LdapBackend implements BackendInterface
      */
     public function getObjectDataByQuery(QueryInterface $query)
     {
-        $class = $query->getType();
-
-        if (!isset($this->config[$class]['ldap_mapping'])) {
-            throw new \InvalidArgumentException('Class ' . $class . ' is no configured');
-        }
-        $config = $this->config[$class];
-
-        if (null !== $constraint = $query->getConstraint()) {
-            $filter = $this->ldapQueryParser->parseQuery($query, array_flip($config['ldap_mapping']['columns']));
-        } else {
-            $filter = $config['ldap_mapping']['id'] . '=*';
-        }
-
+        $config = $this->getConfigForQuery($query);
+        $filter = $this->ldapQueryParser->parseQuery($query, $config);
         $driver = $this->getDriver($config['mapping']['tableName']);
 
-        $results = $driver->searchAndGetResults(
+        $results = $driver->listAndGetResults(
             '',
             $filter,
             array_merge([$config['ldap_mapping']['uid']], array_keys($config['ldap_mapping']['columns']))
@@ -203,5 +202,34 @@ class LdapBackend implements BackendInterface
             throw new InvalidDriverException('The driver for ' . $identityKey . ' does not exist or work');
         }
         return $driver;
+    }
+
+    /**
+     * @param string $tableName
+     * @return array
+     * @throws \Exception
+     */
+    protected function getConfig($tableName)
+    {
+        foreach ($this->config as $config) {
+            if (isset($config['mapping']['tableName']) && $config['mapping']['tableName'] === $tableName) {
+                return $config;
+            }
+        }
+        throw new \Exception('Could not identify config for table name');
+    }
+
+    /**
+     * @param QueryInterface $query
+     * @return mixed
+     */
+    protected function getConfigForQuery(QueryInterface $query)
+    {
+        $class = $query->getType();
+        if (!isset($this->config[$class]['ldap_mapping'])) {
+            throw new \InvalidArgumentException('Class ' . $class . ' is no configured');
+        }
+        $config = $this->config[$class];
+        return $config;
     }
 }

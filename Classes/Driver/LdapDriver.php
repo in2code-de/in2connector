@@ -218,36 +218,37 @@ class LdapDriver extends AbstractDriver
      */
     protected function initialize()
     {
-        $success = false;
-        if (!is_resource($this->connection)) {
-            if (strpos($this->settings['hostname'], 'ldaps:') === 0) {
-                $host = $this->settings['hostname'] . ':' . $this->settings['port'];
-                $this->connection = ldap_connect($host);
-            } elseif (true === (bool)$this->settings['ldaps']) {
-                $host = rtrim(self::LDAPS_PROTOCOL . $this->settings['hostname'], '/') . ':' . $this->settings['port'];
-                $this->connection = ldap_connect($host);
-            } else {
-                $this->connection = ldap_connect($this->settings['hostname'], $this->settings['port']);
-            }
-            if (false === $this->connection) {
-                $this->logger->error(
-                    sprintf(
-                        'Connection to "%s" on port [%d] failed',
-                        $this->settings['hostname'],
-                        $this->settings['port']
-                    )
-                );
-            }
-            ldap_set_option($this->connection, LDAP_OPT_NETWORK_TIMEOUT, $this->settings['timeout']);
-            if ('NULL' !== $this->settings['protocolVersion']) {
-                ldap_set_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, (int)$this->settings['protocolVersion']);
-            }
-            $success = ldap_bind($this->connection, $this->settings['username'], $this->settings['password']);
-            if (false === $success) {
-                $this->logger->error(
-                    sprintf('Authentication to LDAP failed for user "%s"', $this->settings['username'])
-                );
-            }
+        if (is_resource($this->connection)) {
+            return false;
+        }
+
+        if (strpos($this->settings['hostname'], 'ldaps:') === 0) {
+            $host = $this->settings['hostname'] . ':' . $this->settings['port'];
+            $this->connection = ldap_connect($host);
+        } elseif (true === (bool)$this->settings['ldaps']) {
+            $host = rtrim(self::LDAPS_PROTOCOL . $this->settings['hostname'], '/') . ':' . $this->settings['port'];
+            $this->connection = ldap_connect($host);
+        } else {
+            $this->connection = ldap_connect($this->settings['hostname'], $this->settings['port']);
+        }
+        if (false === $this->connection) {
+            $this->logger->error(
+                sprintf(
+                    'Connection to "%s" on port [%d] failed',
+                    $this->settings['hostname'],
+                    $this->settings['port']
+                )
+            );
+        }
+        ldap_set_option($this->connection, LDAP_OPT_NETWORK_TIMEOUT, $this->settings['timeout']);
+        if ('NULL' !== $this->settings['protocolVersion']) {
+            ldap_set_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, (int)$this->settings['protocolVersion']);
+        }
+        $success = ldap_bind($this->connection, $this->settings['username'], $this->settings['password']);
+        if (false === $success) {
+            $this->logger->error(
+                sprintf('Authentication to LDAP failed for user "%s"', $this->settings['username'])
+            );
         }
         return $success;
     }
@@ -255,12 +256,14 @@ class LdapDriver extends AbstractDriver
     /**
      * @param string $distinguishedName
      * @param string $filter
-     * @return resource|bool
+     * @param array $attributes
+     * @param int|null $limit
+     * @return false|resource
      */
-    public function listDirectory($distinguishedName, $filter)
+    public function listDirectory($distinguishedName = '', $filter = '', $attributes = [], $limit = null)
     {
         $this->initialize();
-        $return = ldap_list($this->connection, $distinguishedName, $filter);
+        $return = ldap_list($this->connection, $this->getFullDn($distinguishedName), $filter, $attributes, 0, $limit);
 
         return ($return === false ? $this->fetchErrors() : $return);
     }
@@ -304,42 +307,69 @@ class LdapDriver extends AbstractDriver
      * @param string $distinguishedName
      * @param string $filter
      * @param array $attributes
-     * @return resource|bool
+     * @param int|null $limit
+     * @return false|resource
      */
-    public function search($distinguishedName, $filter, array $attributes = [])
+    public function search($distinguishedName = '', $filter = '', array $attributes = [], $limit = null)
     {
         $this->initialize();
-        $return = ldap_search($this->connection, $distinguishedName, $filter, $attributes);
+        $return = ldap_search($this->connection, $this->getFullDn($distinguishedName), $filter, $attributes, 0, $limit);
 
         return ($return === false ? $this->fetchErrors() : $return);
+    }
+
+    /**
+     * @param resource $resource
+     * @return false|resource
+     */
+    public function fetchFirst($resource)
+    {
+        $this->initialize();
+        $entry = ldap_first_entry($this->connection, $resource);
+
+        return ($entry === false ? $this->fetchErrors() : $entry);
     }
 
     /**
      * @param string $distinguishedName
      * @param string $filter
      * @param array $attributes
-     * @param int $limit
+     * @param int|null $limit
      * @return array|bool
      */
-    public function searchAndGetResults($distinguishedName, $filter, $attributes = [], $limit = PHP_INT_MAX)
+    public function searchAndGetResults($distinguishedName = '', $filter = '', array $attributes = [], $limit = null)
     {
-        $this->initialize();
-        $return = ldap_search($this->connection, $distinguishedName . $this->settings['baseDn'], $filter, $attributes, 0, $limit);
+        $return = $this->search($distinguishedName, $filter, $attributes, $limit);
 
-        return ($return === false ? $this->fetchErrors() : $this->getResults($return));
+        return ($return === false ?: $this->getResults($return));
     }
 
     /**
      * @param string $distinguishedName
      * @param string $filter
-     * @return int|bool
+     * @param array $attributes
+     * @param int|null $limit
+     * @return bool|int
      */
-    public function searchAndCountResults($distinguishedName, $filter)
+    public function searchAndCountResults($distinguishedName = '', $filter = '', array $attributes = [], $limit = null)
     {
-        $this->initialize();
-        $return = $this->search($distinguishedName, $filter);
+        $return = $this->search($distinguishedName, $filter, $attributes, $limit);
 
-        return ($return === false ? $this->fetchErrors() : $this->countResults($return));
+        return ($return === false ?: $this->countResults($return));
+    }
+
+    /**
+     * @param string $distinguishedName
+     * @param string $filter
+     * @param array $attributes
+     * @param int|null $limit
+     * @return array|bool
+     */
+    public function listAndGetResults($distinguishedName = '', $filter = '', $attributes = [], $limit = null)
+    {
+        $return = $this->listDirectory($distinguishedName, $filter, $attributes, $limit);
+
+        return ($return === false ?: $this->getResults($return));
     }
 
     /**
@@ -361,7 +391,7 @@ class LdapDriver extends AbstractDriver
     public function delete($distinguishedName)
     {
         $this->initialize();
-        $return = ldap_delete($this->connection, $distinguishedName);
+        $return = ldap_delete($this->connection, $this->getFullDn($distinguishedName));
 
         return ($return === false ? $this->fetchErrors() : $return);
     }
@@ -375,7 +405,7 @@ class LdapDriver extends AbstractDriver
     {
         // Do not escape values anymore
         $this->initialize();
-        $return = ldap_modify($this->connection, $distinguishedName, $values);
+        $return = ldap_modify($this->connection, $this->getFullDn($distinguishedName), $values);
 
         return ($return === false ? $this->fetchErrors() : $return);
     }
@@ -389,7 +419,7 @@ class LdapDriver extends AbstractDriver
     {
         // Do not escape values anymore
         $this->initialize();
-        $return = ldap_add($this->connection, $distinguishedName, $values);
+        $return = ldap_add($this->connection, $this->getFullDn($distinguishedName), $values);
 
         return ($return === false ? $this->fetchErrors() : $return);
     }
@@ -403,28 +433,10 @@ class LdapDriver extends AbstractDriver
     {
         // Do not escape values anymore
         $this->initialize();
-        $return = ldap_mod_del($this->connection, $distinguishedName, $values);
+        $return = ldap_mod_del($this->connection, $this->getFullDn($distinguishedName), $values);
 
         return ($return === false ? $this->fetchErrors() : $return);
     }
-
-
-    // currently unused
-    //    /**
-    //     * @param string $distinguishedName
-    //     * @param array $values
-    //     * @return bool
-    //     */
-    //    public function addAttribute($distinguishedName, array $values)
-    //    {
-    //        foreach ($values as $key => $unescaped) {
-    //            $values[$key] = $this->escape($unescaped);
-    //        }
-    //        $this->initialize();
-    //        $return = ldap_mod_add($this->connection, $distinguishedName, $values);
-    //
-    //        return ($return === false ? $this->fetchErrors() : $return);
-    //    }
 
     /**
      * @return array
@@ -471,14 +483,6 @@ class LdapDriver extends AbstractDriver
     /**
      *
      */
-    public function __destruct()
-    {
-        $this->logout();
-    }
-
-    /**
-     *
-     */
     public function logout()
     {
         if (is_resource($this->connection)) {
@@ -495,7 +499,7 @@ class LdapDriver extends AbstractDriver
     public function testLogin($distinguishedName, $password)
     {
         $settings = $this->settings;
-        $settings['username'] = $distinguishedName;
+        $settings['username'] = $this->getFullDn($distinguishedName);
         $settings['password'] = $password;
 
         $ldapDriver = clone $this;
@@ -520,9 +524,14 @@ class LdapDriver extends AbstractDriver
     }
 
     /**
+     * @param int $level
+     * @param string $message
+     * @param string $file
+     * @param int $line
+     * @param array $context
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function testFail($level, $message, $file, $line, $context)
+    public function testFail($level, $message, $file, $line, array $context)
     {
         if (strpos($message, 'Invalid credentials') !== false) {
             $this->testResult = false;
@@ -578,10 +587,7 @@ class LdapDriver extends AbstractDriver
     {
         $this->lastErrorCode = ldap_errno($this->connection);
         $this->lastErrorMessage = ldap_error($this->connection);
-        $this->logger->error(
-            'Fetched error',
-            ['code' => $this->lastErrorCode, 'message' => $this->lastErrorMessage]
-        );
+        $this->logger->error('Fetched error', ['code' => $this->lastErrorCode, 'message' => $this->lastErrorMessage]);
         return false;
     }
 
@@ -611,5 +617,22 @@ class LdapDriver extends AbstractDriver
     public function hasErrors()
     {
         return 0 !== $this->lastErrorCode || '' !== $this->lastErrorMessage;
+    }
+
+    /**
+     * @param $distinguishedName
+     * @return string
+     */
+    protected function getFullDn($distinguishedName)
+    {
+        return $distinguishedName . $this->settings['baseDn'];
+    }
+
+    /**
+     *
+     */
+    public function __destruct()
+    {
+        $this->logout();
     }
 }
