@@ -20,6 +20,11 @@ class LdapBackend implements BackendInterface
     protected $config = [];
 
     /**
+     * @var LdapQueryParser
+     */
+    protected $ldapQueryParser = [];
+
+    /**
      * LdapBackend constructor.
      *
      * @throws InvalidConfigurationTypeException
@@ -155,12 +160,8 @@ class LdapBackend implements BackendInterface
         $rows = [];
 
         foreach ($results as $result) {
-            $uid = $result[$config['ldap_mapping']['uid']][0];
-            if (!is_numeric($uid) || !($uid > 0)) {
-                continue;
-            }
             $row = [
-                'uid' => (int)$uid,
+                'uid' => (int)$result[$config['ldap_mapping']['uid']][0],
                 'pid' => 0,
             ];
             foreach ($config['ldap_mapping']['columns'] as $ldapKey => $localKey) {
@@ -191,7 +192,7 @@ class LdapBackend implements BackendInterface
     }
 
     /**
-     * @param string $class
+     * @param string $identityKey
      * @return LdapDriver
      * @throws InvalidDriverException
      */
@@ -227,9 +228,8 @@ class LdapBackend implements BackendInterface
     {
         $class = $query->getType();
         if (!isset($this->config[$class]['ldap_mapping'])) {
-            throw new \InvalidArgumentException('Class ' . $class . ' is no configured');
+            throw new \InvalidArgumentException('Class ' . $class . ' is not configured');
         }
-        $config = $this->config[$class];
-        return $config;
+        return $this->config[$class];
     }
 }

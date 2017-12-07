@@ -102,47 +102,47 @@ class LdapQueryParser
         if ($operator === QueryInterface::OPERATOR_EQUAL_TO) {
             $operands[] = $propertyName;
             if (empty($propertyValue)) {
-                $filter = '!(%s=*)';
+                $filter = '(!(%s=*))';
             } else {
-                $filter = '%s=%s';
+                $filter = '(%s=%s)';
                 $operands[] = $propertyValue;
             }
         } elseif ($operator === QueryInterface::OPERATOR_EQUAL_TO_NULL) {
-            $filter = '!(%s=*)';
+            $filter = '(!(%s=*))';
             $operands[] = $propertyName;
         } elseif ($operator === QueryInterface::OPERATOR_LESS_THAN) {
-            $filter = '!(%s>=%s)';
+            $filter = '(!(%s>=%s))';
             $operands[] = $propertyName;
             $operands[] = $propertyValue;
         } elseif ($operator === QueryInterface::OPERATOR_LESS_THAN_OR_EQUAL_TO) {
-            $filter = '%s<=%s';
+            $filter = '(%s<=%s)';
             $operands[] = $propertyName;
             $operands[] = $propertyValue;
         } elseif ($operator === QueryInterface::OPERATOR_GREATER_THAN) {
-            $filter = '!(%s<=%s)';
+            $filter = '(!(%s<=%s))';
             $operands[] = $propertyName;
             $operands[] = $propertyValue;
         } elseif ($operator === QueryInterface::OPERATOR_GREATER_THAN_OR_EQUAL_TO) {
-            $filter = '%s>=%s';
+            $filter = '(%s>=%s)';
             $operands[] = $propertyName;
             $operands[] = $propertyValue;
         } elseif ($operator === QueryInterface::OPERATOR_LIKE) {
             $operands[] = $propertyName;
             if (empty($propertyValue)) {
-                $filter = '!(%s=*)';
+                $filter = '(!(%s=*))';
             } else {
-                $filter = '%s=*%s*';
+                $filter = '(%s=*%s*)';
                 $operands[] = $propertyValue;
             }
         } elseif ($operator === QueryInterface::OPERATOR_CONTAINS) {
-            $filter = '|(%s=%s)(%s=*,%s)(%s=%s,*)(%s=*,%s,*)';
+            $filter = '(|(%s=%s)(%s=*,%s)(%s=%s,*)(%s=*,%s,*))';
             $operands = [
                 $propertyName,
                 $propertyValue,
             ];
             $operands = array_merge($operands, $operands, $operands, $operands);
         } elseif ($operator === QueryInterface::OPERATOR_IN) {
-            $filter = '|%s';
+            $filter = '(|%s)';
             $possibilities = '';
             foreach ($propertyValue as $value) {
                 $subComparison = new Comparison($comparison->getOperand1(), QueryInterface::OPERATOR_EQUAL_TO, $value);
@@ -153,7 +153,7 @@ class LdapQueryParser
             throw new NotImplementedException('The operator was not implemented (because TYPO3 didn\'t either)');
         }
 
-        return '(' . vsprintf($filter, $operands) . ')';
+        return vsprintf($filter, $operands);
     }
 
     /**
