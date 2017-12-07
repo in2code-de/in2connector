@@ -46,18 +46,58 @@ class LdapBackend implements BackendInterface
         $this->ldapQueryParser = $this->objectManager->get(LdapQueryParser::class);
     }
 
+    /**
+     * @param string $tableName
+     * @param array $fieldValues
+     * @param bool $isRelation
+     * @return int|void
+     * @throws InvalidDriverException
+     * @throws \Exception
+     */
     public function addRow($tableName, array $fieldValues, $isRelation = false)
     {
-        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump(
-            func_get_args(),
-            __FILE__ . '@' . __LINE__,
-            20,
-            false,
-            true,
-            false,
-            array()
-        );
-        die;
+        unset($fieldValues['pid']);
+        $config = $this->getConfig($tableName);
+        $driver = $this->getDriver($tableName);
+        $mapping = array_flip($config['ldap_mapping']['columns']);
+
+        foreach ($fieldValues as $name => $value) {
+            $row[isset($mapping[$name]) ? $mapping[$name] : $name] = $value;
+        }
+
+        $pattern = $config['ldap_mapping']['idGenerator'];
+        $parts = [];
+        $index = 0;
+        $openNew = false;
+        foreach (str_split($pattern) as $char) {
+            if ($char === '{') {
+                if ($openNew) {
+                    $index++;
+                    $openNew = false;
+                }
+            } elseif ($char === '}') {
+                $index++;
+                $openNew = true;
+            } else {
+                $parts[$index] .= $char;
+            }
+        }
+
+        $rdn = '';
+        foreach ($parts as $part) {
+            if (isset($fieldValues[$part])) {
+                $rdn .= $fieldValues[$part];
+            } else {
+                $rdn .= $part;
+            }
+        }
+
+        $idField = $config['ldap_mapping']['id'];
+        $row[$idField] = $rdn;
+        $row['objectClass'] = $config['ldap_mapping']['objectClass'];
+        $row['gidnumber'] = $config['ldap_mapping']['gidnumber'];
+
+        $driver->add($idField . '=' . $rdn, $row);
     }
 
     /**
