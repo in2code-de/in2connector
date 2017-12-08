@@ -63,6 +63,8 @@ The `rdnAttribute` is used to identify a record (the last part of the record's D
 Also add all `objectClass`es new objects should have.
 The `mapping` part is for extbase. The `tableName` contains the connection identifier of your connection demand:
 
+Relations to other tables are supported. Currently relations are limited to type inline without relation tables (MM).
+
 ext_localconf.php:
 ```
 $connectionRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(In2code\In2connector\Registry\ConnectionRegistry::class);
