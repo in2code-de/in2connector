@@ -13,40 +13,6 @@
                 <source>in2connector</source>
             </trans-unit>
 
-            <trans-unit id="domain.model.dto.configuration.field.log_level">
-                <source>Log level</source>
-            </trans-unit>
-            <trans-unit id="domain.model.dto.configuration.field.log_level.emergency">
-                <source>Emergency</source>
-            </trans-unit>
-            <trans-unit id="domain.model.dto.configuration.field.log_level.alert">
-                <source>Alert</source>
-            </trans-unit>
-            <trans-unit id="domain.model.dto.configuration.field.log_level.critical">
-                <source>Critical</source>
-            </trans-unit>
-            <trans-unit id="domain.model.dto.configuration.field.log_level.error">
-                <source>Error</source>
-            </trans-unit>
-            <trans-unit id="domain.model.dto.configuration.field.log_level.warning">
-                <source>Warning</source>
-            </trans-unit>
-            <trans-unit id="domain.model.dto.configuration.field.log_level.notice">
-                <source>Notice</source>
-            </trans-unit>
-            <trans-unit id="domain.model.dto.configuration.field.log_level.info">
-                <source>Info</source>
-            </trans-unit>
-            <trans-unit id="domain.model.dto.configuration.field.log_level.debug">
-                <source>Debug</source>
-            </trans-unit>
-            <trans-unit id="domain.model.dto.configuration.field.logs_per_page">
-                <source>Logs per page</source>
-            </trans-unit>
-            <trans-unit id="domain.model.dto.configuration.field.production_context">
-                <source>Production context</source>
-            </trans-unit>
-
             <trans-unit id="view.save">
                 <source>Save</source>
             </trans-unit>
@@ -224,6 +190,10 @@
             </trans-unit>
             <trans-unit id="controller.connection.delete.delete_failed">
                 <source>Deletion failed</source>
+            </trans-unit>
+
+            <trans-unit id="logs">
+                <source>Latest log entries</source>
             </trans-unit>
         </body>
     </file>

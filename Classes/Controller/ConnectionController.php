@@ -27,6 +27,8 @@ use In2code\In2connector\Translation\TranslationTrait;
 use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use VerteXVaaR\Logs\Domain\Model\Filter;
+use VerteXVaaR\Logs\Log\Reader\DatabaseReader;
 
 /**
  * Class ConnectionController
@@ -56,6 +58,19 @@ class ConnectionController extends ActionController
     protected $connectionRepository = null;
 
     /**
+     * @var \VerteXVaaR\Logs\Log\Reader\DatabaseReader
+     */
+    protected $logReader = null;
+
+    /**
+     * ConnectionController constructor.
+     */
+    public function initializeObject()
+    {
+        $this->logReader = $this->objectManager->get(DatabaseReader::class, ['logTable' => 'tx_in2connector_log']);
+    }
+
+    /**
      *
      */
     public function indexAction()
@@ -67,6 +82,12 @@ class ConnectionController extends ActionController
                 $this->connectionRegistry->getDemandedConnections()
             )
         );
+        $filter = new Filter(false);
+        $filter->setLimit(250);
+        $filter->setFullMessage(true);
+        $filter->setLevel(7);
+        $filter->setShowData(true);
+        $this->view->assign('logs', $this->logReader->findByFilter($filter));
     }
 
     /**
