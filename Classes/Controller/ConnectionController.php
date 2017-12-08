@@ -72,6 +72,8 @@ class ConnectionController extends ActionController
     /**
      * @param string $identityKey
      * @param string $driverName
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
     public function newFromDemandAction($identityKey, $driverName)
     {
@@ -91,6 +93,8 @@ class ConnectionController extends ActionController
 
     /**
      * @param Connection $connection
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
     public function createAction(Connection $connection)
     {
@@ -112,6 +116,8 @@ class ConnectionController extends ActionController
 
     /**
      * @param array $connection
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
     public function setConfigAction(array $connection)
     {
@@ -122,6 +128,8 @@ class ConnectionController extends ActionController
 
     /**
      * @param Connection $connection
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\StopActionException
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException
      */
     public function deleteAction(Connection $connection)
     {
