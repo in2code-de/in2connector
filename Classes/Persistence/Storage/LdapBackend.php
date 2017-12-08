@@ -200,6 +200,12 @@ class LdapBackend implements BackendInterface
 
         $ldapColumns = $config['ldap_mapping']['columns'];
         $typo3Columns = array_flip($ldapColumns);
+        $extbaseColumns = [];
+        foreach ($config['mapping']['columns'] as $colName => $colConf) {
+            if (!isset($typo3Columns[$colName])) {
+                $extbaseColumns[$colName] = $colConf;
+            }
+        }
 
         $results = $driver->listAndGetResults('', $filter, array_keys($ldapColumns));
         unset($results['count']);
@@ -217,6 +223,11 @@ class LdapBackend implements BackendInterface
                     $row[$localKey] = implode(',', $result[$ldapKey]);
                 } else {
                     $row[$localKey] = null;
+                }
+            }
+            foreach ($extbaseColumns as $colName => $colConf) {
+                if ($colConf['config']['type'] === 'inline') {
+                    $row[$colName] = 1;
                 }
             }
             $rows[] = $row;
