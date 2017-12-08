@@ -84,10 +84,11 @@ class DynamicStorageBackend implements BackendInterface
     /**
      * @param AbstractValueObject $object
      * @return BackendInterface
+     * @throws Exception
      */
     protected function getBackendForObject(AbstractValueObject $object)
     {
-        $a = '';
+        return $this->getBackendForTable($this->dataMapper->getDataMap(get_class($object))->getTableName());
     }
 
     /**

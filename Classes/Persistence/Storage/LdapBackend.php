@@ -7,8 +7,10 @@ use In2code\In2connector\Service\ConnectionService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
 use TYPO3\CMS\Extbase\Configuration\Exception\InvalidConfigurationTypeException;
+use TYPO3\CMS\Extbase\DomainObject\AbstractValueObject;
 use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\Exception\NotImplementedException;
+use TYPO3\CMS\Extbase\Persistence\Generic\Query;
 use TYPO3\CMS\Extbase\Persistence\Generic\Storage\BackendInterface;
 use TYPO3\CMS\Extbase\Persistence\QueryInterface;
 
@@ -50,54 +52,25 @@ class LdapBackend implements BackendInterface
      * @param string $tableName
      * @param array $fieldValues
      * @param bool $isRelation
-     * @return int|void
+     * @return int
      * @throws InvalidDriverException
      * @throws \Exception
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function addRow($tableName, array $fieldValues, $isRelation = false)
     {
-        unset($fieldValues['pid']);
-        $config = $this->getConfig($tableName);
+        $config = $this->getConfigForTable($tableName);
         $driver = $this->getDriver($tableName);
-        $mapping = array_flip($config['ldap_mapping']['columns']);
 
-        foreach ($fieldValues as $name => $value) {
-            $row[isset($mapping[$name]) ? $mapping[$name] : $name] = $value;
-        }
+        $typo3Columns = array_flip($config['ldap_mapping']['columns']);
+        $row = $this->mapValues($fieldValues, $typo3Columns);
 
-        $pattern = $config['ldap_mapping']['idGenerator'];
-        $parts = [];
-        $index = 0;
-        $openNew = false;
-        foreach (str_split($pattern) as $char) {
-            if ($char === '{') {
-                if ($openNew) {
-                    $index++;
-                    $openNew = false;
-                }
-            } elseif ($char === '}') {
-                $index++;
-                $openNew = true;
-            } else {
-                $parts[$index] .= $char;
-            }
-        }
-
-        $rdn = '';
-        foreach ($parts as $part) {
-            if (isset($fieldValues[$part])) {
-                $rdn .= $fieldValues[$part];
-            } else {
-                $rdn .= $part;
-            }
-        }
-
-        $idField = $config['ldap_mapping']['id'];
-        $row[$idField] = $rdn;
         $row['objectClass'] = $config['ldap_mapping']['objectClass'];
-        $row['gidnumber'] = $config['ldap_mapping']['gidnumber'];
+        $row = $this->setAutoValues($row, $driver);
 
-        $driver->add($idField . '=' . $rdn, $row);
+        $rdnAttribute = $config['ldap_mapping']['rdnAttribute'];
+        $driver->add(sprintf('%s=%s', $rdnAttribute, $row[$rdnAttribute]), $row);
+        return $row[$typo3Columns['uid']];
     }
 
     /**
@@ -111,65 +84,76 @@ class LdapBackend implements BackendInterface
      */
     public function updateRow($tableName, array $fieldValues, $isRelation = false)
     {
-        $config = $this->getConfig($tableName);
+        $config = $this->getConfigForTable($tableName);
         $driver = $this->getDriver($tableName);
-        $mapping = array_flip($config['ldap_mapping']['columns']);
 
-        $uid = (int)$fieldValues['uid'];
-        unset($fieldValues['uid']);
+        $typo3Columns = array_flip($config['ldap_mapping']['columns']);
+        $row = $this->mapValues($fieldValues, $typo3Columns);
 
-        $row = [];
-        foreach ($fieldValues as $name => $value) {
-            $row[isset($mapping[$name]) ? $mapping[$name] : $name] = $value;
-        }
-
-        $result = $driver->search('', '(' . $config['ldap_mapping']['uid'] . '=' . $uid . ')');
+        $result = $driver->search('', '(' . $typo3Columns['uid'] . '=' . $fieldValues['uid'] . ')');
         $entry = $driver->fetchFirst($result);
         $distinguishedName = $driver->getDnOfEntry($entry);
 
         return $driver->modify($distinguishedName, $row);
     }
 
+    /**
+     * @param string $tableName
+     * @param array $fieldValues
+     * @return bool|void
+     * @throws NotImplementedException
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function updateRelationTableRow($tableName, array $fieldValues)
     {
-        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump(
-            func_get_args(),
-            __FILE__ . '@' . __LINE__,
-            20,
-            false,
-            true,
-            false,
-            array()
-        );
-        die;
+        throw new NotImplementedException('updateRelationTableRow is not yet supported');
     }
 
+    /**
+     * @param string $tableName
+     * @param array $where
+     * @param bool $isRelation
+     * @return bool
+     * @throws InvalidDriverException
+     * @throws NotImplementedException
+     * @throws \Exception
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function removeRow($tableName, array $where, $isRelation = false)
     {
-        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump(
-            func_get_args(),
-            __FILE__ . '@' . __LINE__,
-            20,
-            false,
-            true,
-            false,
-            array()
-        );
-        die;
+        $config = $this->getConfigForTable($tableName);
+        $driver = $this->getDriver($config['mapping']['tableName']);
+        $query = $this->objectManager->get(Query::class, $config['class']);
+        $constraints = [];
+        foreach ($where as $field => $value) {
+            $constraints[] = $query->equals($field, $value);
+        }
+        $query->matching($query->logicalAnd($constraints));
+        $filter = $this->ldapQueryParser->parseQuery($query, $config);
+        $result = $driver->search('', $filter, ['dn']);
+        $count = $driver->countResults($result);
+        $success = true;
+        if ($count > 0) {
+            $entries = $driver->getResults($result);
+            unset($entries['count']);
+            foreach ($entries as $entry) {
+                $driver->delete($entry['dn']) ?: $success = false;
+            }
+        }
+        return $success;
     }
 
+    /**
+     * @param string $tableName
+     * @param array $where
+     * @param string $columnName
+     * @return mixed|void
+     * @throws NotImplementedException
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function getMaxValueFromTable($tableName, array $where, $columnName)
     {
-        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump(
-            func_get_args(),
-            __FILE__ . '@' . __LINE__,
-            20,
-            false,
-            true,
-            false,
-            array()
-        );
-        die;
+        throw new NotImplementedException('getMaxValueFromTable is not used by TYPO3');
     }
 
     /**
@@ -180,7 +164,7 @@ class LdapBackend implements BackendInterface
      */
     public function getObjectCountByQuery(QueryInterface $query)
     {
-        $config = $this->getConfigForQuery($query);
+        $config = $this->getConfigForClass($query->getType());
         $driver = $this->getDriver($config['mapping']['tableName']);
         $filter = $this->ldapQueryParser->parseQuery($query, $config);
         return $driver->searchAndCountResults('', $filter);
@@ -194,7 +178,7 @@ class LdapBackend implements BackendInterface
      */
     public function getObjectDataByQuery(QueryInterface $query)
     {
-        $config = $this->getConfigForQuery($query);
+        $config = $this->getConfigForClass($query->getType());
         $filter = $this->ldapQueryParser->parseQuery($query, $config);
         $driver = $this->getDriver($config['mapping']['tableName']);
 
@@ -236,18 +220,15 @@ class LdapBackend implements BackendInterface
         return $rows;
     }
 
-    public function getUidOfAlreadyPersistedValueObject(\TYPO3\CMS\Extbase\DomainObject\AbstractValueObject $object)
+    /**
+     * @param AbstractValueObject $object
+     * @return mixed|void
+     * @throws NotImplementedException
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getUidOfAlreadyPersistedValueObject(AbstractValueObject $object)
     {
-        \TYPO3\CMS\Extbase\Utility\DebuggerUtility::var_dump(
-            func_get_args(),
-            __FILE__ . '@' . __LINE__,
-            20,
-            false,
-            true,
-            false,
-            array()
-        );
-        die;
+        throw new NotImplementedException('Value Objects are not supported by LdapBackend');
     }
 
     /**
@@ -269,26 +250,64 @@ class LdapBackend implements BackendInterface
      * @return array
      * @throws \Exception
      */
-    protected function getConfig($tableName)
+    protected function getConfigForTable($tableName)
     {
-        foreach ($this->config as $config) {
+        foreach ($this->config as $class => $config) {
             if (isset($config['mapping']['tableName']) && $config['mapping']['tableName'] === $tableName) {
-                return $config;
+                return $this->getConfigForClass($class);
             }
         }
         throw new \Exception('Could not identify config for table name');
     }
 
     /**
-     * @param QueryInterface $query
-     * @return mixed
+     * @param string $class
+     * @return array
      */
-    protected function getConfigForQuery(QueryInterface $query)
+    protected function getConfigForClass($class)
     {
-        $class = $query->getType();
         if (!isset($this->config[$class]['ldap_mapping'])) {
             throw new \InvalidArgumentException('Class ' . $class . ' is not configured');
         }
-        return $this->config[$class];
+        return array_merge($this->config[$class], ['class' => $class]);
+    }
+
+    /**
+     * @param array $fieldValues
+     * @param array $typo3Columns
+     * @return array
+     */
+    protected function mapValues(array $fieldValues, array $typo3Columns)
+    {
+        $row = [];
+        foreach ($fieldValues as $typo3Name => $value) {
+            if (isset($typo3Columns[$typo3Name])) {
+                $ldapName = $typo3Columns[$typo3Name];
+                if ($typo3Name === 'uid') {
+                    $value = (int)$value;
+                }
+                $row[$ldapName] = $value;
+            }
+        }
+        return $row;
+    }
+
+    /**
+     * @param array $row
+     * @param LdapDriver $driver
+     * @return array
+     */
+    protected function setAutoValues(array $row, LdapDriver $driver)
+    {
+        if (in_array('posixAccount', $row['objectClass'])) {
+            $uidNumber = 1000;
+            $results = $driver->searchAndGetResults('', '(objectClass=posixAccount)', ['uidNumber']);
+            unset($results['count']);
+            foreach ($results as $result) {
+                $uidNumber = max($uidNumber, $result['uidnumber'][0]);
+            }
+            $row['uidnumber'] = $uidNumber + 1;
+        }
+        return $row;
     }
 }
