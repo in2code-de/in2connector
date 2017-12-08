@@ -50,3 +50,6 @@ class PersonRepository
     }
 }
 ```
+
+You can, of course, register your own drivers (Rest-API with JSON or XML for example).
+Have a look at the registration of the shipped drivers to get the idea.
