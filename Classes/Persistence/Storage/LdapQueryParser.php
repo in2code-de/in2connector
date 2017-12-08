@@ -39,14 +39,11 @@ class LdapQueryParser
      */
     public function parseQuery(QueryInterface $query, array $config)
     {
-        $propertyMap = array_flip($config['ldap_mapping']['columns']);
-        $propertyMap['uid'] = $config['ldap_mapping']['uid'];
-
         $constraint = $query->getConstraint();
         if ($constraint instanceof ConstraintInterface) {
-            return $this->parseConstraint($constraint, $propertyMap);
+            return $this->parseConstraint($constraint, array_flip($config['ldap_mapping']['columns']));
         }
-        return sprintf('(%s=*)', $config['ldap_mapping']['id']);
+        return '(objectClass=*)';
     }
 
     /**

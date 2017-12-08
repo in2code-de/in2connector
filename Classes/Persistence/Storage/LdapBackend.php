@@ -198,21 +198,20 @@ class LdapBackend implements BackendInterface
         $filter = $this->ldapQueryParser->parseQuery($query, $config);
         $driver = $this->getDriver($config['mapping']['tableName']);
 
-        $results = $driver->listAndGetResults(
-            '',
-            $filter,
-            array_merge([$config['ldap_mapping']['uid']], array_keys($config['ldap_mapping']['columns']))
-        );
+        $ldapColumns = $config['ldap_mapping']['columns'];
+        $typo3Columns = array_flip($ldapColumns);
+
+        $results = $driver->listAndGetResults('', $filter, array_keys($ldapColumns));
         unset($results['count']);
 
         $rows = [];
 
         foreach ($results as $result) {
             $row = [
-                'uid' => (int)$result[$config['ldap_mapping']['uid']][0],
+                'uid' => (int)$result[$typo3Columns['uid']][0],
                 'pid' => 0,
             ];
-            foreach ($config['ldap_mapping']['columns'] as $ldapKey => $localKey) {
+            foreach ($ldapColumns as $ldapKey => $localKey) {
                 if (isset($result[$ldapKey][0])) {
                     unset($result[$ldapKey]['count']);
                     $row[$localKey] = implode(',', $result[$ldapKey]);

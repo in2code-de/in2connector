@@ -263,7 +263,7 @@ class LdapDriver extends AbstractDriver
     public function listDirectory($distinguishedName = '', $filter = '', $attributes = [], $limit = null)
     {
         $this->initialize();
-        $distinguishedName .= ',' . $this->settings['baseDn'];
+        $distinguishedName = $this->expandRdn($distinguishedName);
         $return = ldap_list($this->connection, $distinguishedName, $filter, $attributes, 0, $limit);
         return ($return === false ? $this->fetchErrors() : $return);
     }
@@ -310,7 +310,7 @@ class LdapDriver extends AbstractDriver
     public function search($distinguishedName = '', $filter = '', array $attributes = [], $limit = null)
     {
         $this->initialize();
-        $distinguishedName .= ',' . $this->settings['baseDn'];
+        $distinguishedName = $this->expandRdn($distinguishedName);
         $return = ldap_search($this->connection, $distinguishedName, $filter, $attributes, 0, $limit);
         return ($return === false ? $this->fetchErrors() : $return);
     }
@@ -383,7 +383,7 @@ class LdapDriver extends AbstractDriver
     public function delete($distinguishedName)
     {
         $this->initialize();
-        $distinguishedName .= ',' . $this->settings['baseDn'];
+        $distinguishedName = $this->expandRdn($distinguishedName);
         $return = ldap_delete($this->connection, $distinguishedName);
         return ($return === false ? $this->fetchErrors() : $return);
     }
@@ -396,6 +396,7 @@ class LdapDriver extends AbstractDriver
     public function modify($distinguishedName, array $values)
     {
         $this->initialize();
+        $distinguishedName = $this->expandRdn($distinguishedName);
         $return = ldap_modify($this->connection, $distinguishedName, $values);
         return ($return === false ? $this->fetchErrors() : $return);
     }
@@ -408,7 +409,7 @@ class LdapDriver extends AbstractDriver
     public function add($distinguishedName, array $values)
     {
         $this->initialize();
-        $distinguishedName .= ',' . $this->settings['baseDn'];
+        $distinguishedName = $this->expandRdn($distinguishedName);
         $return = ldap_add($this->connection, $distinguishedName, $values);
         return ($return === false ? $this->fetchErrors() : $return);
     }
@@ -421,7 +422,7 @@ class LdapDriver extends AbstractDriver
     public function removeAttributes($distinguishedName, array $values)
     {
         $this->initialize();
-        $distinguishedName .= ',' . $this->settings['baseDn'];
+        $distinguishedName = $this->expandRdn($distinguishedName);
         $return = ldap_mod_del($this->connection, $distinguishedName, $values);
         return ($return === false ? $this->fetchErrors() : $return);
     }
@@ -487,7 +488,7 @@ class LdapDriver extends AbstractDriver
     public function testLogin($distinguishedName, $password)
     {
         $settings = $this->settings;
-        $distinguishedName .= ',' . $this->settings['baseDn'];
+        $distinguishedName = $this->expandRdn($distinguishedName);
 
         $settings['username'] = $distinguishedName;
         $settings['password'] = $password;
@@ -615,5 +616,28 @@ class LdapDriver extends AbstractDriver
     public function __destruct()
     {
         $this->logout();
+    }
+
+    /**
+     * @param $rdn
+     * @return string
+     */
+    protected function expandRdn($rdn)
+    {
+        $baseDn = $this->settings['baseDn'];
+
+        if (empty($rdn)) {
+            return $baseDn;
+        }
+
+        $baseDnLength = strlen($baseDn);
+        $userDn = substr($rdn, strlen($rdn) - $baseDnLength);
+
+        if (strlen($rdn) < $baseDnLength) {
+            $rdn .= ',' . $baseDn;
+        } elseif ($userDn !== $baseDn) {
+            $rdn .= $baseDn;
+        }
+        return $rdn;
     }
 }
