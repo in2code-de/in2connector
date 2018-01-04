@@ -27,7 +27,7 @@ About CATO properties:
 * Additional properties are OPTIONAL. They are called "buffer properties". They MUST obey ALL of the following rules:
   * Any buffer property MUST exclusively reference values from the storage properties.
   * They MUST have following annotation ``@cato\buffer``
-  * They MUST not be publicly writable (by visibility or setter)
+  * They MUST NOT be publicly writable (by visibility or setter)
 * Buffer properties SHOULD be altered, set or unset by protected methods.
 
 CATOs in general:
