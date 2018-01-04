@@ -3,6 +3,7 @@
     "description": "Enterprise Level Connection Manager for LDAP, SOAP etc.",
     "type": "typo3-cms-extension",
     "license": "GPL-3.0",
+    "keywords": ["TYPO3", "SOAP", "LDAP", "connection", "extbase", "storage", "extbase-storage", "backend", "interface", "driver", "SAP", "AD", "VD"],
     "authors": [
         {
             "name": "Oliver Eglseder",
