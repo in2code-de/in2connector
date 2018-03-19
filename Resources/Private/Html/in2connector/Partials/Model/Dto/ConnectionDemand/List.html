@@ -1,35 +1,35 @@
-{namespace core=TYPO3\CMS\Core\ViewHelpers}
-<table class="table">
-	<thead>
-		<tr>
-			<th>
-				<f:translate key="domain.model.dto.connection_demand.field.identity_key">identity key</f:translate>
-			</th>
-			<th>
-				<f:translate key="domain.model.dto.connection_demand.field.driver">driver</f:translate>
-			</th>
-			<th>
-				<f:translate key="view.options">options</f:translate>
-			</th>
-		</tr>
-	</thead>
-	<tbody>
-		<f:for each="{connections}" as="connection">
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
+	<table class="table">
+		<thead>
 			<tr>
-				<td>
-					{connection.identityKey}
-				</td>
-				<td>
-					{connection.driverName}
-				</td>
-				<td>
-					<f:link.action class="btn btn-default" action="newFromDemand" controller="Connection"
-								   arguments="{identityKey:connection.identityKey, driverName:connection.driverName}">
-						<core:icon identifier="actions-document-new"/>
-					</f:link.action>
-				</td>
+				<th>
+					<f:translate key="domain.model.dto.connection_demand.field.identity_key">identity key</f:translate>
+				</th>
+				<th>
+					<f:translate key="domain.model.dto.connection_demand.field.driver">driver</f:translate>
+				</th>
+				<th>
+					<f:translate key="view.options">options</f:translate>
+				</th>
 			</tr>
-		</f:for>
-	</tbody>
-</table>
+		</thead>
+		<tbody>
+			<f:for each="{connections}" as="connection">
+				<tr>
+					<td>
+						{connection.identityKey}
+					</td>
+					<td>
+						{connection.driverName}
+					</td>
+					<td>
+						<f:link.action class="btn btn-default" action="newFromDemand" controller="Connection" arguments="{identityKey:connection.identityKey, driverName:connection.driverName}">
+							<core:icon identifier="actions-document-new" />
+						</f:link.action>
+					</td>
+				</tr>
+			</f:for>
+		</tbody>
+	</table>
+</html>
 

@@ -1,4 +1,4 @@
-
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
 	<table class="table">
 		<thead>
 			<tr>
@@ -23,15 +23,15 @@
 						{connection.driver}
 					</td>
 					<td>
-						<f:render partial="View/ButtonGroup/Open"/>
+						<f:render partial="View/ButtonGroup/Open" />
 						<f:render partial="View/Buttons/ActionButton"
-								  arguments="{icon:'actions-system-extension-configure', action:'configure', controller:'Connection', arguments:'{connection:connection}'}"/>
+								  arguments="{icon:'actions-system-extension-configure', action:'configure', controller:'Connection', arguments:'{connection:connection}'}" />
 						<f:render partial="View/Buttons/ActionButton"
-								  arguments="{icon:'actions-edit-delete', action:'delete', controller:'Connection', arguments:'{connection:connection}'}"/>
-						<f:render partial="View/ButtonGroup/Close"/>
+								  arguments="{icon:'actions-edit-delete', action:'delete', controller:'Connection', arguments:'{connection:connection}'}" />
+						<f:render partial="View/ButtonGroup/Close" />
 					</td>
 				</tr>
 			</f:for>
 		</tbody>
 	</table>
-
+</html>

@@ -1,18 +1,19 @@
-<fieldset class="form-section">
-	<div class="form-group">
-		<label>
-			<f:translate key="domain.model.connection.field.identity_key">identity key</f:translate>
-		</label>
-		<div class="form-control-wrap" style="max-width: 480px">
-			<f:if condition="{isDemanded}">
-				<f:then>
-					<input class="form-control" disabled="disabled" value="{connection.identityKey}"/>
-				</f:then>
-				<f:else>
-					<f:form.textfield class="form-control" property="identityKey"/>
-				</f:else>
-			</f:if>
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+	<fieldset class="form-section">
+		<div class="form-group">
+			<label>
+				<f:translate key="domain.model.connection.field.identity_key">identity key</f:translate>
+			</label>
+			<div class="form-control-wrap" style="max-width: 480px">
+				<f:if condition="{isDemanded}">
+					<f:then>
+						<input class="form-control" disabled="disabled" value="{connection.identityKey}" />
+					</f:then>
+					<f:else>
+						<f:form.textfield class="form-control" property="identityKey" />
+					</f:else>
+				</f:if>
+			</div>
 		</div>
-	</div>
-</fieldset>
-
+	</fieldset>
+</html>

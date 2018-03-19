@@ -1,6 +1,4 @@
-{namespace core=TYPO3\CMS\Core\ViewHelpers}
-
-
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" xmlns:core="http://typo3.org/ns/TYPO3/CMS/Core/ViewHelpers" data-namespace-typo3-fluid="true">
 	<table class="table">
 		<thead>
 			<tr>
@@ -30,34 +28,33 @@
 					<td>
 						<f:switch expression="{connection.connectionTestResult}">
 							<f:case value="0">
-								<core:icon identifier="status-dialog-ok"/>
+								<core:icon identifier="status-dialog-ok" />
 								{connection.testResultMessage}
 							</f:case>
 							<f:case value="1">
-								<core:icon identifier="status-dialog-information"/>
+								<core:icon identifier="status-dialog-information" />
 								{connection.testResultMessage}
 							</f:case>
 							<f:case value="2">
-								<core:icon identifier="status-dialog-warning"/>
+								<core:icon identifier="status-dialog-warning" />
 								{connection.testResultMessage}
 							</f:case>
 							<f:case value="3">
-								<core:icon identifier="status-dialog-error"/>
+								<core:icon identifier="status-dialog-error" />
 								{connection.testResultMessage}
 							</f:case>
 							<f:case default="TRUE">
-								<core:icon identifier="status-dialog-notification"/>
-								<f:translate
-									key="domain.model.connection.connection_test.no_result">no test result</f:translate>
+								<core:icon identifier="status-dialog-notification" />
+								<f:translate key="domain.model.connection.connection_test.no_result">no test result
+								</f:translate>
 							</f:case>
 						</f:switch>
 					</td>
 					<td>
-						<f:render partial="View/Buttons/ActionButton"
-								  arguments="{icon:'actions-system-extension-configure', action:'configure', controller:'Connection', arguments:'{connection:connection}'}"/>
+						<f:render partial="View/Buttons/ActionButton" arguments="{icon:'actions-system-extension-configure', action:'configure', controller:'Connection', arguments:'{connection:connection}'}" />
 					</td>
 				</tr>
 			</f:for>
 		</tbody>
 	</table>
-
+</html>

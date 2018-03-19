@@ -1,29 +1,40 @@
-<f:layout name="Backend" />
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+	<f:layout name="Backend" />
 
-<f:section name="ToolBarLeft" />
-<f:section name="ToolBarRight" />
-<f:section name="Welcome" />
+	<f:section name="ToolBarLeft" />
+	<f:section name="ToolBarRight" />
+	<f:section name="Welcome" />
 
-<f:section name="Main">
-	<f:if condition="{connectionLinker.matchingConnections}">
-		<h2><f:translate key="view.template.connection.index.matching_connections">matching connections</f:translate></h2>
-		<f:render partial="Model/Connection/List" arguments="{connections:connectionLinker.matchingConnections}" />
-	</f:if>
+	<f:section name="Main">
+		<f:if condition="{connectionLinker.matchingConnections}">
+			<h2>
+				<f:translate key="view.template.connection.index.matching_connections">matching connections
+				</f:translate>
+			</h2>
+			<f:render partial="Model/Connection/List" arguments="{connections:connectionLinker.matchingConnections}" />
+		</f:if>
 
-	<f:if condition="{connectionLinker.orphanedConnections}">
-		<h2><f:translate key="view.template.connection.index.orphaned_connections">orphaned connections</f:translate></h2>
-		<f:render partial="Model/Connection/OrphanList" arguments="{connections:connectionLinker.orphanedConnections}" />
-	</f:if>
+		<f:if condition="{connectionLinker.orphanedConnections}">
+			<h2>
+				<f:translate key="view.template.connection.index.orphaned_connections">orphaned connections
+				</f:translate>
+			</h2>
+			<f:render partial="Model/Connection/OrphanList" arguments="{connections:connectionLinker.orphanedConnections}" />
+		</f:if>
 
-	<f:if condition="{connectionLinker.unconfiguredConnections}">
-		<h2><f:translate key="view.template.connection.index.missing_connections">missing connections</f:translate></h2>
-		<f:render partial="Model/Dto/ConnectionDemand/List" arguments="{connections:connectionLinker.unconfiguredConnections}" />
-	</f:if>
+		<f:if condition="{connectionLinker.unconfiguredConnections}">
+			<h2>
+				<f:translate key="view.template.connection.index.missing_connections">missing connections</f:translate>
+			</h2>
+			<f:render partial="Model/Dto/ConnectionDemand/List" arguments="{connections:connectionLinker.unconfiguredConnections}" />
+		</f:if>
 
-	<f:if condition="{logs}">
-		<h1><f:translate key="logs">logs</f:translate></h1>
-		<f:render partial="Logs/List" arguments="{logs:logs}" />
-	</f:if>
+		<f:if condition="{logs}">
+			<h1>
+				<f:translate key="logs">logs</f:translate>
+			</h1>
+			<f:render partial="Logs/List" arguments="{logs:logs}" />
+		</f:if>
 
-</f:section>
-
+	</f:section>
+</html>

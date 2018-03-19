@@ -1,13 +1,12 @@
-{namespace in2connector=In2code\In2connector\ViewHelpers}
-<fieldset class="form-section">
-	<div class="form-group">
-		<label>
-			<f:translate key="domain.model.connection.field.driver">driver</f:translate>
-		</label>
-		<div class="form-control-wrap" style="max-width: 480px">
-			<f:form.select class="form-control" property="driver" options="{in2connector:availableDrivers()}"
-						   optionValueField="name" optionLabelField="name"/>
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" xmlns:in2connector="http://typo3.org/ns/In2code/In2connector/ViewHelpers" data-namespace-typo3-fluid="true">
+	<fieldset class="form-section">
+		<div class="form-group">
+			<label>
+				<f:translate key="domain.model.connection.field.driver">driver</f:translate>
+			</label>
+			<div class="form-control-wrap" style="max-width: 480px">
+				<f:form.select class="form-control" property="driver" options="{in2connector:availableDrivers()}" optionValueField="name" optionLabelField="name"/>
+			</div>
 		</div>
-	</div>
-</fieldset>
-
+	</fieldset>
+</html>
