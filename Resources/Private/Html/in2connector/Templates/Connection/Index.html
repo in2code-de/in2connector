@@ -6,6 +6,12 @@
 	<f:section name="Welcome" />
 
 	<f:section name="Main">
+		<f:if condition="{connectionLinker.anyConnection}">
+			<f:else>
+				<f:translate key="view.template.connection.index.no_connection">orphaned connections</f:translate>
+			</f:else>
+		</f:if>
+
 		<f:if condition="{connectionLinker.matchingConnections}">
 			<h2>
 				<f:translate key="view.template.connection.index.matching_connections">matching connections

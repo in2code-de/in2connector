@@ -131,4 +131,12 @@ class ConnectionLinker
         $this->compute();
         return $this->unconfiguredConnections;
     }
+
+    /**
+     * @return bool
+     */
+    public function hasAnyConnection()
+    {
+        return !empty($this->configuredConnections) && !empty($this->demandedConnections);
+    }
 }

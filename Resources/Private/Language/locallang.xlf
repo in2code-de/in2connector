@@ -23,6 +23,9 @@
                 <source>The driver was not registered or did not define a settings partial</source>
             </trans-unit>
 
+            <trans-unit id="view.template.connection.index.no_connection">
+                <source>No connection was demanded nor configured</source>
+            </trans-unit>
             <trans-unit id="view.template.connection.index.matching_connections">
                 <source>Matching connection</source>
             </trans-unit>
