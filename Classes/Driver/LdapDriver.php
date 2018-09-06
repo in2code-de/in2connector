@@ -248,6 +248,7 @@ class LdapDriver extends AbstractDriver
                     sprintf('Authentication to LDAP failed for user "%s"', $this->settings['username'])
                 );
             }
+            ldap_control_paged_result($this->connection, 100);
         }
         return $success;
     }
