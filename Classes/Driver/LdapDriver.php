@@ -248,7 +248,6 @@ class LdapDriver extends AbstractDriver
                     sprintf('Authentication to LDAP failed for user "%s"', $this->settings['username'])
                 );
             }
-            ldap_control_paged_result($this->connection, 100);
         }
         return $success;
     }
@@ -325,9 +324,30 @@ class LdapDriver extends AbstractDriver
     public function searchAndGetResults($distinguishedName, $filter, $attributes = [], $limit = PHP_INT_MAX)
     {
         $this->initialize();
-        $return = ldap_search($this->connection, $distinguishedName, $filter, $attributes, 0, $limit);
 
-        return ($return === false ? $this->fetchErrors() : $this->getResults($return));
+        $cookie = '';
+        $all = [];
+        do {
+
+            ldap_control_paged_result($this->connection, 1000, true, $cookie);
+
+            $result = ldap_search($this->connection, $distinguishedName, $filter, $attributes, 0, $limit);
+            if (!($entries = ldap_get_entries($this->connection, $result))) {
+                return $this->getErrors();
+            }
+
+            foreach ($entries as $key => $value) {
+                if ($key === 'count') {
+                    continue;
+                }
+                $all[] = $value;
+            }
+
+            ldap_control_paged_result_response($this->connection, $result, $cookie);
+
+        } while($cookie !== null && $cookie != '');
+
+        return $all;
     }
 
     /**
