@@ -342,7 +342,6 @@ class LdapDriver extends AbstractDriver
         $cookie = '';
         $all = [];
         do {
-
             ldap_control_paged_result($this->connection, 1000, true, $cookie);
 
             $result = ldap_search($this->connection, $distinguishedName, $filter, $attributes, 0, $limit);
@@ -358,8 +357,20 @@ class LdapDriver extends AbstractDriver
             }
 
             ldap_control_paged_result_response($this->connection, $result, $cookie);
+        } while ($cookie !== null && $cookie != '');
 
-        } while($cookie !== null && $cookie != '');
+        $this->connection = null;
+        $this->initialize();
+
+        foreach ($all as $entryIndex => $entry) {
+            foreach ($entry as $property) {
+                if (false !== strpos($property, 'member;range')) {
+                    unset($entry[$property]);
+                    $entry['member'] = $this->getAllMembers($entry['dn']);
+                    $all[$entryIndex] = $entry;
+                }
+            }
+        }
 
         return $all;
     }
@@ -590,10 +601,10 @@ class LdapDriver extends AbstractDriver
      */
     public function escape($string, $distinguishedName = null)
     {
-        $escapeDn = array('\\', '*', '(', ')', "\x00");
-        $escape = array('\\', ',', '=', '+', '<', '>', ';', '"', '#');
+        $escapeDn = ['\\', '*', '(', ')', "\x00"];
+        $escape = ['\\', ',', '=', '+', '<', '>', ';', '"', '#'];
 
-        $search = array();
+        $search = [];
         if ($distinguishedName === null) {
             $search = array_merge($search, $escapeDn, $escape);
         } elseif ($distinguishedName === false) {
@@ -602,7 +613,7 @@ class LdapDriver extends AbstractDriver
             $search = array_merge($search, $escapeDn);
         }
 
-        $replace = array();
+        $replace = [];
         foreach ($search as $char) {
             $replace[] = sprintf('\\%02x', ord($char));
         }
@@ -652,5 +663,68 @@ class LdapDriver extends AbstractDriver
     public function hasErrors()
     {
         return 0 !== $this->lastErrorCode || '' !== $this->lastErrorMessage;
+    }
+
+    /**
+     * @link https://samjlevy.com/mydap/
+     * @param string $dn
+     * @return array
+     */
+    protected function getAllMembers($dn)
+    {
+        $output = [];
+        $rangeSize = 1500;
+        $rangeStart = 0;
+        $rangeEnd = $rangeSize - 1;
+        $rangeStop = false;
+
+        do {
+            // Query Group members
+            $results = ldap_search($this->connection, $dn, 'cn=*', ["member;range=$rangeStart-$rangeEnd"]);
+            if (!$results) {
+                $this->fetchErrors();
+                return $output;
+            }
+            $members = ldap_get_entries($this->connection, $results);
+
+            if (!$members) {
+                $this->fetchErrors();
+                return $output;
+            }
+
+            $memberBase = false;
+
+            // Determine array key of the member results
+
+            // If array key matches the format of range=$rangeStart-* we are at the end of the results
+            if (isset($members[0]["member;range=$rangeStart-*"])) {
+                // Set flag to break the do loop
+                $rangeStop = true;
+                // Establish the key of this last segment
+                $memberBase = $members[0]["member;range=$rangeStart-*"];
+                // Otherwise establish the key of this next segment
+            } elseif (isset($members[0]["member;range=$rangeStart-$rangeEnd"])) {
+                $memberBase = $members[0]["member;range=$rangeStart-$rangeEnd"];
+            }
+
+            if ($memberBase && isset($memberBase['count']) && $memberBase['count'] != 0) {
+                // Remove 'count' element from array
+                array_shift($memberBase);
+
+                // Append this segment of members to output
+                $output = array_merge($output, $memberBase);
+            } else {
+                $rangeStop = true;
+            }
+
+            if (!$rangeStop) {
+                // Advance range
+                $rangeStart = $rangeEnd + 1;
+                $rangeEnd = $rangeEnd + $rangeSize;
+            }
+        } while ($rangeStop == false);
+
+        sort($output);
+        return $output;
     }
 }
