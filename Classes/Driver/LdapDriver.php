@@ -58,6 +58,11 @@ class LdapDriver extends AbstractDriver
     protected $testResult = true;
 
     /**
+     * @var null|string
+     */
+    protected $lastQuery = null;
+
+    /**
      * @return bool
      */
     public function validateSettings()
@@ -269,6 +274,13 @@ class LdapDriver extends AbstractDriver
     public function listDirectory($distinguishedName = '', $filter = '', $attributes = [], $limit = null)
     {
         $this->initialize();
+        $this->lastQuery = [
+            'action' => 'listDirectory',
+            'dn' => $distinguishedName,
+            'filter' => $filter,
+            'attr' => $attributes,
+            'limit' => $limit,
+        ];
         $distinguishedName = $this->expandRdn($distinguishedName);
         $return = ldap_list($this->connection, $distinguishedName, $filter, $attributes, 0, $limit);
         return ($return === false ? $this->fetchErrors() : $return);
@@ -316,6 +328,13 @@ class LdapDriver extends AbstractDriver
     public function search($distinguishedName = '', $filter = '', array $attributes = [], $limit = null)
     {
         $this->initialize();
+        $this->lastQuery = [
+            'action' => 'search',
+            'dn' => $distinguishedName,
+            'filter' => $filter,
+            'attr' => $attributes,
+            'limit' => $limit,
+        ];
         $distinguishedName = $this->expandRdn($distinguishedName);
         $return = ldap_search($this->connection, $distinguishedName, $filter, $attributes, 0, $limit);
         return ($return === false ? $this->fetchErrors() : $return);
@@ -389,6 +408,10 @@ class LdapDriver extends AbstractDriver
     public function delete($distinguishedName)
     {
         $this->initialize();
+        $this->lastQuery = [
+            'action' => 'delete',
+            'dn' => $distinguishedName,
+        ];
         $distinguishedName = $this->expandRdn($distinguishedName);
         $return = ldap_delete($this->connection, $distinguishedName);
         return ($return === false ? $this->fetchErrors() : $return);
@@ -402,6 +425,11 @@ class LdapDriver extends AbstractDriver
     public function modify($distinguishedName, array $values)
     {
         $this->initialize();
+        $this->lastQuery = [
+            'action' => 'delete',
+            'dn' => $distinguishedName,
+            'values' => $values,
+        ];
         $distinguishedName = $this->expandRdn($distinguishedName);
         $return = ldap_modify($this->connection, $distinguishedName, $values);
         return ($return === false ? $this->fetchErrors() : $return);
@@ -415,6 +443,11 @@ class LdapDriver extends AbstractDriver
     public function add($distinguishedName, array $values)
     {
         $this->initialize();
+        $this->lastQuery = [
+            'action' => 'add',
+            'dn' => $distinguishedName,
+            'values' => $values,
+        ];
         $distinguishedName = $this->expandRdn($distinguishedName);
         $return = ldap_add($this->connection, $distinguishedName, $values);
         return ($return === false ? $this->fetchErrors() : $return);
@@ -428,6 +461,11 @@ class LdapDriver extends AbstractDriver
     public function removeAttributes($distinguishedName, array $values)
     {
         $this->initialize();
+        $this->lastQuery = [
+            'action' => 'removeAttributes',
+            'dn' => $distinguishedName,
+            'values' => $values,
+        ];
         $distinguishedName = $this->expandRdn($distinguishedName);
         $return = ldap_mod_del($this->connection, $distinguishedName, $values);
         return ($return === false ? $this->fetchErrors() : $return);
@@ -468,6 +506,12 @@ class LdapDriver extends AbstractDriver
         if (false === $result) {
             return false;
         }
+        $this->lastQuery = [
+            'action' => 'getAttributes',
+            'dn' => $distinguishedName,
+            'filter' => $filter,
+            'attributes' => $attributes,
+        ];
         $attributes = ldap_get_attributes($this->connection, $result);
         if ($attributes === false) {
             return $this->fetchErrors();
@@ -584,7 +628,14 @@ class LdapDriver extends AbstractDriver
     {
         $this->lastErrorCode = ldap_errno($this->connection);
         $this->lastErrorMessage = ldap_error($this->connection);
-        $this->logger->error('Fetched error', ['code' => $this->lastErrorCode, 'message' => $this->lastErrorMessage]);
+        $this->logger->error(
+            'Fetched error',
+            [
+                'code' => $this->lastErrorCode,
+                'message' => $this->lastErrorMessage,
+                'last_query' => json_encode($this->lastQuery),
+            ]
+        );
         return false;
     }
 
