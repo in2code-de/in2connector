@@ -364,7 +364,7 @@ class LdapDriver extends AbstractDriver
 
         foreach ($all as $entryIndex => $entry) {
             foreach ($entry as $property) {
-                if (false !== strpos($property, 'member;range')) {
+                if (is_string($property) && false !== strpos($property, 'member;range')) {
                     unset($entry[$property]);
                     $entry['member'] = $this->getAllMembers($entry['dn']);
                     $all[$entryIndex] = $entry;
